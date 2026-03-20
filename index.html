@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     <title>업무 현황 통합 관리 시스템</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
@@ -36,6 +37,9 @@
             min-height: 100vh;
             color: var(--text-primary);
         }
+
+        /* 하이퍼링크 기본 스타일 강제 초기화 */
+        a { text-decoration: none !important; color: inherit !important; }
 
         /* ── HEADER ─────────────────────────────── */
         .app-header {
@@ -102,7 +106,7 @@
         }
         .header-refresh:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
 
-        /* ── MAIN CONTENT (pulled up) ─────────── */
+        /* ── MAIN CONTENT ─────────── */
         .main-wrap {
             padding: 0 24px 48px;
             margin-top: -52px;
@@ -267,7 +271,7 @@
         }
         .fc .fc-button-primary:hover { opacity: .85; }
         .fc .fc-col-header-cell { font-size: 12px; }
-        .fc-event { font-size: 11px !important; border-radius: 5px !important; }
+        .fc-event { font-size: 11px !important; border-radius: 5px !important; border: none !important; }
         .fc-daygrid-event { padding: 1px 5px !important; }
 
         /* ── LOADING OVERLAY ─────────────────── */
@@ -445,7 +449,7 @@
         }
         .meta-chip.internet { background: #ecfdf5; color: #065f46; }
         .meta-chip.smart    { background: #eff6ff; color: #1e40af; }
-        .meta-chip.date     { background: #f9fafb; color: var(--text-secondary); }
+        .meta-chip.date     { background: #f9fafb; color: var(--text-secondary); text-decoration: none !important; }
         .drawer-empty {
             text-align: center;
             padding: 60px 20px;
@@ -665,8 +669,13 @@
             activeTabTarget = btn.dataset.target;
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(activeTabTarget).classList.add('active');
-            if (activeTabTarget === 'gantt-view') renderGantt();
-            else renderCalendar();
+            
+            // 패널이 완전히 나타난 후 간트차트 렌더링 (크기 오류 방지)
+            if (activeTabTarget === 'gantt-view') {
+                setTimeout(renderGantt, 150);
+            } else {
+                renderCalendar();
+            }
         }
 
         function fetchData() {
@@ -677,7 +686,10 @@
                     rawData = data;
                     showLoading(false);
                     updateStats();
-                    try { renderCalendar(); } catch(e) { console.error('Calendar render error:', e); }
+                    try { 
+                        if (activeTabTarget === 'calendar-view') renderCalendar();
+                        else renderGantt(); 
+                    } catch(e) { console.error('Render error:', e); }
                 })
                 .catch(err => {
                     console.error('Fetch error:', err);
@@ -686,8 +698,11 @@
                 });
         }
 
-        function toDateStr(date) {
-            const d = new Date(date);
+        // 안전한 날짜 변환 함수 (간트차트 에러 방지용)
+        function safeDateStr(dateVal, fallbackDateStr) {
+            if (!dateVal) return fallbackDateStr;
+            const d = new Date(dateVal);
+            if (isNaN(d.getTime())) return fallbackDateStr;
             const yyyy = d.getFullYear();
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             const dd = String(d.getDate()).padStart(2, '0');
@@ -748,7 +763,6 @@
         }
 
         function renderGantt() {
-            // 1. 구글 시트에서 넘어온 빈 행(요구사항 ID가 없는 데이터) 필터링
             const validData = getFilteredData().filter(item => item['요구사항 ID'] && String(item['요구사항 ID']).trim() !== '');
 
             if (validData.length === 0) {
@@ -756,24 +770,33 @@
                 return;
             }
 
-            const tasks = validData.map(item => {
-                let sDate = item['접수일자'];
-                sDate = (!sDate || isNaN(Date.parse(sDate))) ? toDateStr(new Date()) : toDateStr(sDate);
+            const todayStr = safeDateStr(new Date());
 
-                let eDate = item['운영이관(예정)일'];
-                if (!eDate || isNaN(Date.parse(eDate))) {
-                    const tmp = new Date(sDate); tmp.setDate(tmp.getDate() + 7);
-                    eDate = toDateStr(tmp);
-                } else {
-                    eDate = toDateStr(eDate);
+            const tasks = validData.map(item => {
+                let sDate = safeDateStr(item['접수일자'], todayStr);
+                let eDate = safeDateStr(item['운영이관(예정)일'], null);
+
+                // 종료일이 없거나 형식 오류 시, 시작일 + 7일로 강제 설정
+                if (!eDate) {
+                    let tmp = new Date(sDate); 
+                    tmp.setDate(tmp.getDate() + 7);
+                    eDate = safeDateStr(tmp);
                 }
+
+                // 시작일이 종료일보다 늦으면 데이터 보정
+                if (new Date(sDate) > new Date(eDate)) {
+                    eDate = sDate;
+                }
+
+                // Frappe Gantt 에러 방지: 시작일과 종료일이 같으면 종료일에 1일 추가
                 if (sDate === eDate) {
-                    const tmp = new Date(eDate); tmp.setDate(tmp.getDate() + 1);
-                    eDate = toDateStr(tmp);
+                    let tmp = new Date(eDate); 
+                    tmp.setDate(tmp.getDate() + 1);
+                    eDate = safeDateStr(tmp);
                 }
 
                 return {
-                    id: String(item['요구사항 ID']), // 안전한 문자열 처리
+                    id: String(item['요구사항 ID']),
                     name: `[${item['출처시트']}] ${item['요건명']}`,
                     start: sDate, end: eDate,
                     progress: 100,
@@ -784,31 +807,29 @@
 
             document.getElementById('gantt').innerHTML = '';
             
-            // 2. 탭 전환 애니메이션이 끝난 후 차트를 그려 크기 인식 오류 방지 (setTimeout 적용)
-            setTimeout(() => {
-                try {
-                    gantt = new Gantt("#gantt", tasks, {
-                        language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
-                        on_click: (task) => openModal(task.extendedProps)
-                    });
+            try {
+                gantt = new Gantt("#gantt", tasks, {
+                    language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
+                    on_click: (task) => openModal(task.extendedProps)
+                });
 
-                    if (!document.getElementById('ganttStyles')) {
-                        const style = document.createElement('style');
-                        style.id = 'ganttStyles';
-                        style.innerHTML = `
-                            .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
-                            .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
-                            .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
-                            .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
-                            .gantt .bar-label { font-size: 11px; fill: #fff; }
-                            .gantt .grid-header { fill: #f4fbf7; }
-                        `;
-                        document.head.appendChild(style);
-                    }
-                } catch(e) {
-                    console.error("간트차트 렌더링 에러:", e);
+                if (!document.getElementById('ganttStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'ganttStyles';
+                    style.innerHTML = `
+                        .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
+                        .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
+                        .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
+                        .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
+                        .gantt .bar-label { font-size: 11px; fill: #fff; }
+                        .gantt .grid-header { fill: #f4fbf7; }
+                    `;
+                    document.head.appendChild(style);
                 }
-            }, 100);
+            } catch(e) {
+                console.error("간트차트 렌더링 에러:", e);
+                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트차트를 그릴 수 없는 데이터가 포함되어 있습니다.</p>';
+            }
         }
 
         function openModal(data) {
@@ -866,8 +887,11 @@
                     const badgeBg   = item['진행단계'] === '개발 대기' ? '#fffbeb' :
                                       item['진행단계'] === '취소'      ? '#f9fafb' : '#fff';
 
+                    // 요구사항 ID만 안전하게 매개변수로 전달
+                    const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
+
                     return `
-                        <div class="drawer-item" onclick="closeDrawer(); openModal(${JSON.stringify(item).replace(/'/g,"&#39;")})">
+                        <div class="drawer-item" onclick="handleDrawerItemClick('${safeId}')">
                             <div class="drawer-item-id">${item['요구사항 ID'] || ''}</div>
                             <div class="drawer-item-name">${item['요건명'] || ''}</div>
                             <div class="drawer-item-meta">
@@ -882,6 +906,16 @@
 
             document.getElementById('drawerOverlay').style.display = 'block';
             requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
+        }
+
+        // 서랍 항목 클릭 시 실행되는 안전한 함수
+        function handleDrawerItemClick(id) {
+            closeDrawer();
+            const targetItem = rawData.find(item => String(item['요구사항 ID']) === id);
+            if (targetItem) {
+                // 서랍이 닫히는 애니메이션 시간을 고려하여 0.3초 후 모달 오픈
+                setTimeout(() => openModal(targetItem), 300);
+            }
         }
 
         function closeDrawer() {
