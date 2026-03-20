@@ -127,7 +127,7 @@
         .stats-wrap {
             display: flex;
             gap: 14px;
-            flex-wrap: wrap; /* 가로 공간 부족 시 자동으로 아래로 줄바꿈 */
+            flex-wrap: wrap; 
             margin-bottom: 20px;
         }
         .stat-card {
@@ -142,7 +142,7 @@
             transition: transform .2s, box-shadow .2s;
             cursor: pointer;
             user-select: none;
-            flex: 1 1 calc(25% - 14px); /* 기본적으로 4단 배열, 화면 좁아지면 크기 유지하며 줄바꿈 */
+            flex: 1 1 calc(25% - 14px); 
             min-width: 170px; 
         }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
@@ -468,12 +468,26 @@
             font-size: 14px;
         }
 
-        /* ── RESPONSIVE ──────────────────────── */
+        /* ── RESPONSIVE (MOBILE OPTIMIZATION) ──────────────────────── */
         @media (max-width: 640px) {
             .app-header { padding: 20px 16px 70px; }
             .main-wrap { padding: 0 12px 32px; }
             .panel-toolbar { flex-direction: column; align-items: flex-start; }
             .view-body { padding: 16px; }
+
+            /* 상태 카드 모바일 전용 UI (최대 2줄, 한 줄에 4개 배치) */
+            .stats-wrap { gap: 8px; margin-bottom: 16px; }
+            .stat-card {
+                flex: 1 1 calc(25% - 6px);
+                min-width: 0;
+                padding: 10px 2px;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .stat-icon { width: 26px; height: 26px; font-size: 13px; margin: 0 auto; }
+            .stat-text-box { text-align: center; }
+            .stat-num { font-size: 15px; }
+            .stat-label { font-size: 10px; margin-top: 2px; letter-spacing: -0.5px; white-space: nowrap; }
         }
     </style>
 </head>
@@ -635,7 +649,7 @@
                 html += `
                     <div class="stat-card" onclick="showStatusDetail('${idName}')">
                         <div class="stat-icon" style="background-color: ${config.bg}; color: ${config.color}">${config.icon}</div>
-                        <div>
+                        <div class="stat-text-box">
                             <div class="stat-num" id="stat-${idName.replace(/\s/g, '')}">—</div>
                             <div class="stat-label">${status}</div>
                         </div>
