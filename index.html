@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>업무 현황 통합 관리 시스템</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-start: #009A44;
+            --brand-end: #005BAC;
+            --surface: #ffffff;
+            --surface-2: #f4fbf7;
+            --border: #d6eee3;
+            --text-primary: #0d2318;
+            --text-secondary: #527060;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
+            --shadow-md: 0 8px 32px rgba(0,154,68,.12);
+            --shadow-lg: 0 20px 60px rgba(0,91,172,.18);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            background: #eef8f2;
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(0,154,68,.09) 0%, transparent 60%),
+                              radial-gradient(ellipse at 80% 100%, rgba(0,91,172,.07) 0%, transparent 60%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* ── HEADER ─────────────────────────────── */
+        .app-header {
+            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
+            padding: 28px 32px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 260px; height: 260px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+        }
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: 20%;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.05);
+        }
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: .5px;
+        }
+        .header-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 6px;
+            letter-spacing: -.3px;
+        }
+        .header-sub {
+            font-size: 13px;
+            color: rgba(255,255,255,.7);
+            margin: 0;
+        }
+        .header-refresh {
+            position: absolute;
+            top: 28px; right: 32px;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.3);
+            color: #fff;
+            border-radius: var(--radius-md);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
+        }
+        .header-refresh:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
+
+        /* ── MAIN CONTENT (pulled up) ─────────── */
+        .main-wrap {
+            padding: 0 24px 48px;
+            margin-top: -52px;
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -52px;
+        }
+
+        /* ── STATS ROW ─────────────────────────── */
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: transform .2s, box-shadow .2s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .stat-card:active { transform: translateY(0); }
+        .stat-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .stat-icon.green  { background: #ecfdf5; }
+        .stat-icon.blue   { background: #eff6ff; }
+        .stat-icon.yellow { background: #fffbeb; }
+        .stat-icon.gray   { background: #f9fafb; }
+        .stat-num { font-size: 22px; font-weight: 700; line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+        /* ── PANEL CARD ─────────────────────────── */
+        .panel {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .panel-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px 24px 0;
+        }
+
+        /* ── FILTER CHIPS ─────────────────────── */
+        .filter-group {
+            display: flex;
+            gap: 6px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 4px;
+        }
+        .filter-chip input[type="radio"] { display: none; }
+        .filter-chip label {
+            display: block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all .2s;
+            user-select: none;
+        }
+        .filter-chip input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #009A44, #007a36);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0,154,68,.35);
+        }
+        .filter-chip label:hover { color: var(--brand-start); }
+
+        /* ── VIEW TABS ─────────────────────────── */
+        .view-tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 4px;
+        }
+        .view-tab-btn {
+            padding: 7px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .view-tab-btn.active {
+            background: var(--surface);
+            color: #005BAC;
+            box-shadow: 0 1px 4px rgba(0,91,172,.12);
+            font-weight: 600;
+        }
+        .view-tab-btn:hover:not(.active) { color: #009A44; }
+
+        /* ── TAB PANELS ─────────────────────────── */
+        .view-body {
+            padding: 20px 24px 24px;
+            min-height: 520px;
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn .25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── GANTT VIEW CONTROLS ─────────────── */
+        .gantt-controls {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        .gantt-view-btn {
+            padding: 5px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all .15s;
+            font-family: inherit;
+        }
+        .gantt-view-btn.active,
+        .gantt-view-btn:hover {
+            background: #005BAC;
+            border-color: #005BAC;
+            color: #fff;
+        }
+        .gantt-target { overflow-x: auto; }
+
+        /* ── CALENDAR CUSTOMISATION ──────────── */
+        #calendar { max-width: 100%; }
+        .fc { font-family: 'Noto Sans KR', sans-serif; }
+        .fc .fc-button-primary {
+            background: #005BAC !important;
+            border-color: #005BAC !important;
+            border-radius: 7px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+        }
+        .fc .fc-button-primary:hover { opacity: .85; }
+        .fc .fc-col-header-cell { font-size: 12px; }
+        .fc-event { font-size: 11px !important; border-radius: 5px !important; }
+        .fc-daygrid-event { padding: 1px 5px !important; }
+
+        /* ── LOADING OVERLAY ─────────────────── */
+        #loading {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(238,248,242,.88);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        .loader-ring {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            border: 4px solid var(--border);
+            border-top-color: #009A44;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+
+        /* ── MODAL ───────────────────────────── */
+        .modal-content {
+            border: none;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
+            border: none;
+            padding: 20px 24px;
+        }
+        .modal-title { color: #fff !important; font-size: 15px; font-weight: 600; }
+        .modal-header .btn-close { filter: invert(1); opacity: .8; }
+        .modal-body { padding: 24px; background: var(--surface); }
+        .modal-footer { border-color: var(--border); padding: 16px 24px; background: var(--surface); }
+        .form-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+        .form-control, .form-select {
+            border-radius: var(--radius-md);
+            border-color: var(--border);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #009A44;
+            box-shadow: 0 0 0 3px rgba(0,154,68,.15);
+        }
+        .form-control.bg-light { background: var(--surface-2) !important; }
+        .btn-save {
+            background: linear-gradient(135deg, #009A44, #007a36);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 9px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity .2s, transform .1s;
+        }
+        .btn-save:hover { opacity: .88; transform: translateY(-1px); }
+        .btn-close-modal {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 9px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: inherit;
+            transition: .15s;
+        }
+        .btn-close-modal:hover { background: var(--border); }
+
+        /* ── STATUS DRAWER ─────────────────────── */
+        .drawer-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(13,35,24,.35);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            animation: fadeOverlay .2s ease;
+        }
+        @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
+        .drawer {
+            position: fixed;
+            top: 0; right: -480px;
+            width: 480px; max-width: 96vw;
+            height: 100%;
+            background: var(--surface);
+            box-shadow: -8px 0 40px rgba(0,0,0,.15);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            transition: right .3s cubic-bezier(.4,0,.2,1);
+        }
+        .drawer.open { right: 0; }
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
+            flex-shrink: 0;
+        }
+        .drawer-title { color: #fff; font-size: 15px; font-weight: 600; margin: 0; }
+        .drawer-close {
+            background: rgba(255,255,255,.2);
+            border: none;
+            color: #fff;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .15s;
+        }
+        .drawer-close:hover { background: rgba(255,255,255,.35); }
+        .drawer-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: 16px 20px;
+        }
+        .drawer-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: box-shadow .15s, border-color .15s;
+            cursor: pointer;
+            background: var(--surface);
+        }
+        .drawer-item:hover {
+            border-color: #009A44;
+            box-shadow: 0 2px 12px rgba(0,154,68,.12);
+        }
+        .drawer-item-id {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: .5px;
+            margin-bottom: 4px;
+        }
+        .drawer-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        .drawer-item-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .meta-chip {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .meta-chip.internet { background: #ecfdf5; color: #065f46; }
+        .meta-chip.smart    { background: #eff6ff; color: #1e40af; }
+        .meta-chip.date     { background: #f9fafb; color: var(--text-secondary); }
+        .drawer-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ── STATUS BADGE ─────────────────────── */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ── RESPONSIVE ──────────────────────── */
+        @media (max-width: 640px) {
+            .app-header { padding: 20px 16px 70px; }
+            .main-wrap { padding: 0 12px 32px; }
+            .panel-toolbar { flex-direction: column; align-items: flex-start; }
+            .view-body { padding: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOADING -->
+    <div id="loading" style="display:none;">
+        <div class="loader-ring"></div>
+        <div class="loader-text">데이터를 불러오는 중...</div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="app-header">
+        <div class="header-badge">📋 WORK MANAGEMENT</div>
+        <h1 class="header-title">업무 현황 관리</h1>
+        <p class="header-sub">기업인터넷 · 스마트뱅킹 업무 일정 통합 조회</p>
+        <button class="header-refresh" onclick="fetchData()">↺ 새로고침</button>
+    </div>
+
+    <div class="main-wrap">
+
+        <!-- STAT CARDS -->
+        <div class="row g-3 mb-4" id="statsRow">
+            <div class="col-6 col-md-3">
+                <div class="stat-card" onclick="showStatusDetail('적용 완료')">
+                    <div class="stat-icon green">✅</div>
+                    <div>
+                        <div class="stat-num" id="statDone">—</div>
+                        <div class="stat-label">적용 완료</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" onclick="showStatusDetail('진행중')">
+                    <div class="stat-icon blue">🔵</div>
+                    <div>
+                        <div class="stat-num" id="statInProgress">—</div>
+                        <div class="stat-label">진행중</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" onclick="showStatusDetail('개발 대기')">
+                    <div class="stat-icon yellow">🟡</div>
+                    <div>
+                        <div class="stat-num" id="statWaiting">—</div>
+                        <div class="stat-label">개발 대기</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" onclick="showStatusDetail('all')">
+                    <div class="stat-icon gray">⚫</div>
+                    <div>
+                        <div class="stat-num" id="statTotal">—</div>
+                        <div class="stat-label">전체 건수</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN PANEL -->
+        <div class="panel">
+            <div class="panel-toolbar">
+                <!-- Filter chips -->
+                <div class="filter-group" role="group">
+                    <div class="filter-chip">
+                        <input type="radio" name="sheetFilter" id="filterAll" value="all" checked>
+                        <label for="filterAll">전체</label>
+                    </div>
+                    <div class="filter-chip">
+                        <input type="radio" name="sheetFilter" id="filterInternet" value="인터넷">
+                        <label for="filterInternet">인터넷</label>
+                    </div>
+                    <div class="filter-chip">
+                        <input type="radio" name="sheetFilter" id="filterSmart" value="스마트">
+                        <label for="filterSmart">스마트</label>
+                    </div>
+                </div>
+                <!-- View tabs -->
+                <div class="view-tabs" role="tablist">
+                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
+                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                </div>
+            </div>
+
+            <div class="view-body">
+                <!-- Calendar -->
+                <div id="calendar-view" class="tab-panel active">
+                    <div id="calendar"></div>
+                </div>
+                <!-- Gantt -->
+                <div id="gantt-view" class="tab-panel">
+                    <div class="gantt-controls">
+                        <button class="gantt-view-btn active" data-view="Day">일별</button>
+                        <button class="gantt-view-btn" data-view="Week">주별</button>
+                        <button class="gantt-view-btn" data-view="Month">월별</button>
+                    </div>
+                    <div id="gantt" class="gantt-target"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- STATUS DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="statusDrawer">
+        <div class="drawer-header">
+            <h5 class="drawer-title" id="drawerTitle">요구사항 목록</h5>
+            <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerBody"></div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTaskTitle">업무 상세</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <input type="hidden" id="formSheet" name="출처시트">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">요구사항 ID</label>
+                                <input type="text" class="form-control bg-light" id="formId" name="요구사항 ID" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">진행단계</label>
+                                <select class="form-select" id="formStatus" name="진행단계">
+                                    <option>적용 완료</option>
+                                    <option>진행중</option>
+                                    <option>개발 대기</option>
+                                    <option>취소</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">요건명</label>
+                                <textarea class="form-control" id="formTitle" name="요건명" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">접수일자</label>
+                                <input type="date" class="form-control" id="formStart" name="접수일자">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">운영이관(예정)일</label>
+                                <input type="date" class="form-control" id="formEnd" name="운영이관(예정)일">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-close-modal" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn-save" onclick="saveChanges()">저장하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
+
+    <script>
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxJ2RfBGpKPy3xPgN83iW_dQMf5TsRYoCXp9nmkU6nO9TX-xFTCn21LaCu-uYBnJeQF/exec';
+        let rawData = [];
+        let currentFilter = 'all';
+        let calendar, gantt;
+        let activeTabTarget = 'calendar-view';
+        const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (GAS_WEB_APP_URL.includes('YOUR_GAS')) return alert('GAS 웹 앱 URL 입력 필요');
+            setupEventListeners();
+            fetchData();
+        });
+
+        function setupEventListeners() {
+            document.querySelectorAll('input[name="sheetFilter"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    currentFilter = this.value;
+                    updateStats();
+                    if (activeTabTarget === 'calendar-view') renderCalendar();
+                    else renderGantt();
+                });
+            });
+
+            document.querySelectorAll('.gantt-view-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelector('.gantt-view-btn.active').classList.remove('active');
+                    this.classList.add('active');
+                    if (gantt) gantt.change_view_mode(this.dataset.view);
+                });
+            });
+        }
+
+        function switchTab(btn) {
+            document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeTabTarget = btn.dataset.target;
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(activeTabTarget).classList.add('active');
+            if (activeTabTarget === 'gantt-view') renderGantt();
+            else renderCalendar();
+        }
+
+        function fetchData() {
+            showLoading(true);
+            fetch(GAS_WEB_APP_URL)
+                .then(res => res.json())
+                .then(data => {
+                    rawData = data;
+                    showLoading(false);
+                    updateStats();
+                    try { renderCalendar(); } catch(e) { console.error('Calendar render error:', e); }
+                })
+                .catch(err => {
+                    console.error('Fetch error:', err);
+                    alert('데이터 로드 실패\n(상세 에러: ' + err.message + ')');
+                    showLoading(false);
+                });
+        }
+
+        function toDateStr(date) {
+            const d = new Date(date);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function getFilteredData() {
+            return rawData.filter(item => currentFilter === 'all' || item['출처시트'] === currentFilter);
+        }
+
+        function updateStats() {
+            const d = getFilteredData();
+            document.getElementById('statDone').textContent = d.filter(i => i['진행단계'] === '적용 완료').length;
+            document.getElementById('statInProgress').textContent = d.filter(i => i['진행단계'] === '진행중').length;
+            document.getElementById('statWaiting').textContent = d.filter(i => i['진행단계'] === '개발 대기').length;
+            document.getElementById('statTotal').textContent = d.length;
+        }
+
+        function getColor(status) {
+            switch (status) {
+                case '적용 완료': return '#009A44';
+                case '진행중':    return '#005BAC';
+                case '개발 대기': return '#f59e0b';
+                case '취소':      return '#9ca3af';
+                default:          return '#6b7280';
+            }
+        }
+
+        function renderCalendar() {
+            const filteredData = getFilteredData();
+            let events = [];
+            filteredData.forEach(item => {
+                const color = getColor(item['진행단계']);
+                const txtColor = item['진행단계'] === '개발 대기' ? '#000' : '#fff';
+                const prefix = item['출처시트'] === '인터넷' ? '[인]' : '[스]';
+
+                if (item['접수일자'] && !isNaN(Date.parse(item['접수일자']))) {
+                    events.push({ id: item['요구사항 ID'] + '_s', extendedProps: item, title: `${prefix} ${item['요건명']}`, start: item['접수일자'], color: color, textColor: txtColor });
+                }
+                if (item['운영이관(예정)일'] && !isNaN(Date.parse(item['운영이관(예정)일']))) {
+                    events.push({ id: item['요구사항 ID'] + '_e', extendedProps: item, title: `${prefix} [이관] ${item['요건명']}`, start: item['운영이관(예정)일'], color: color, textColor: txtColor });
+                }
+            });
+
+            if (calendar) calendar.destroy();
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
+                locale: 'ko',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
+                events: events,
+                eventClick: (info) => openModal(info.event.extendedProps),
+                windowResize: () => calendar.changeView(window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth'),
+                eventDidMount: (info) => {
+                    info.el.title = info.event.extendedProps['요건명'] || '';
+                }
+            });
+            calendar.render();
+        }
+
+        function renderGantt() {
+            const filteredData = getFilteredData();
+            if (filteredData.length === 0) {
+                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4" style="color:var(--text-secondary)">데이터 없음</p>';
+                return;
+            }
+
+            const tasks = filteredData.map(item => {
+                let sDate = item['접수일자'];
+                sDate = (!sDate || isNaN(Date.parse(sDate))) ? toDateStr(new Date()) : toDateStr(sDate);
+
+                let eDate = item['운영이관(예정)일'];
+                if (!eDate || isNaN(Date.parse(eDate))) {
+                    const tmp = new Date(sDate); tmp.setDate(tmp.getDate() + 7);
+                    eDate = toDateStr(tmp);
+                } else {
+                    eDate = toDateStr(eDate);
+                }
+                if (sDate === eDate) {
+                    const tmp = new Date(eDate); tmp.setDate(tmp.getDate() + 1);
+                    eDate = toDateStr(tmp);
+                }
+
+                return {
+                    id: item['요구사항 ID'],
+                    name: `[${item['출처시트']}] ${item['요건명']}`,
+                    start: sDate, end: eDate,
+                    progress: 100,
+                    custom_class: 'status-' + item['진행단계'].replace(/\s/g, ''),
+                    extendedProps: item
+                };
+            });
+
+            document.getElementById('gantt').innerHTML = '';
+            gantt = new Gantt("#gantt", tasks, {
+                language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
+                on_click: (task) => openModal(task.extendedProps)
+            });
+
+            if (!document.getElementById('ganttStyles')) {
+                const style = document.createElement('style');
+                style.id = 'ganttStyles';
+                style.innerHTML = `
+                    .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
+                    .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
+                    .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
+                    .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
+                    .gantt .bar-label { font-size: 11px; fill: #fff; }
+                    .gantt .grid-header { fill: #f4fbf7; }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function openModal(data) {
+            document.getElementById('modalTaskTitle').innerText = `${data['요건명']}`;
+            const form = document.getElementById('taskForm');
+            for (const key in data) if (form.elements[key]) form.elements[key].value = data[key];
+            eventModal.show();
+        }
+
+        function saveChanges() {
+            const formData = new FormData(document.getElementById('taskForm'));
+            const payload = Object.fromEntries(formData.entries());
+            fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            }).then(res => res.json()).then(data => {
+                if (data.result === 'success') { eventModal.hide(); fetchData(); }
+                else alert('저장 실패: ' + data.message);
+            }).catch(() => alert('전송 오류 발생'));
+        }
+
+        function showStatusDetail(statusFilter) {
+            const filtered = getFilteredData().filter(item =>
+                statusFilter === 'all' || item['진행단계'] === statusFilter
+            );
+
+            const labelMap = {
+                '적용 완료': '✅ 적용 완료',
+                '진행중':    '🔵 진행중',
+                '개발 대기': '🟡 개발 대기',
+                'all':       '⚫ 전체 요구사항'
+            };
+            document.getElementById('drawerTitle').textContent =
+                `${labelMap[statusFilter] || statusFilter} (${filtered.length}건)`;
+
+            const body = document.getElementById('drawerBody');
+            if (filtered.length === 0) {
+                body.innerHTML = '<div class="drawer-empty">해당 상태의 요구사항이 없습니다.</div>';
+            } else {
+                body.innerHTML = filtered.map(item => {
+                    const sheet = item['출처시트'] || '';
+                    const chipClass = sheet === '인터넷' ? 'internet' : 'smart';
+                    const chipLabel = sheet === '인터넷' ? '인터넷' : '스마트';
+
+                    const fmtDate = (d) => {
+                        if (!d || isNaN(Date.parse(d))) return d || '—';
+                        return new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    };
+
+                    const statusColors = {
+                        '적용 완료': '#009A44', '진행중': '#005BAC',
+                        '개발 대기': '#f59e0b', '취소': '#9ca3af'
+                    };
+                    const badgeColor = statusColors[item['진행단계']] || '#6b7280';
+                    const badgeBg   = item['진행단계'] === '개발 대기' ? '#fffbeb' :
+                                      item['진행단계'] === '취소'      ? '#f9fafb' : '#fff';
+
+                    return `
+                        <div class="drawer-item" onclick="closeDrawer(); openModal(${JSON.stringify(item).replace(/'/g,"&#39;")})">
+                            <div class="drawer-item-id">${item['요구사항 ID'] || ''}</div>
+                            <div class="drawer-item-name">${item['요건명'] || ''}</div>
+                            <div class="drawer-item-meta">
+                                <span class="meta-chip ${chipClass}">${chipLabel}</span>
+                                <span class="meta-chip date">접수 ${fmtDate(item['접수일자'])}</span>
+                                <span class="meta-chip date">이관 ${fmtDate(item['운영이관(예정)일'])}</span>
+                                <span style="font-size:11px;font-weight:600;color:${badgeColor};background:${badgeBg};border:1px solid ${badgeColor}33;padding:2px 8px;border-radius:10px;">${item['진행단계'] || ''}</span>
+                            </div>
+                        </div>`;
+                }).join('');
+            }
+
+            document.getElementById('drawerOverlay').style.display = 'block';
+            requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
+        }
+
+        function closeDrawer() {
+            document.getElementById('statusDrawer').classList.remove('open');
+            setTimeout(() => { document.getElementById('drawerOverlay').style.display = 'none'; }, 300);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+
+</html>
