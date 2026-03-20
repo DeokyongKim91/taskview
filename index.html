@@ -41,6 +41,12 @@
         /* 하이퍼링크 기본 스타일 강제 초기화 */
         a { text-decoration: none !important; color: inherit !important; }
 
+        /* 모달 오픈 시 스크롤바 영역 유지 (화면 흔들림 방지) */
+        body.modal-open {
+            padding-right: 0 !important;
+            overflow-y: scroll !important;
+        }
+
         /* ── HEADER ─────────────────────────────── */
         .app-header {
             background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
@@ -117,18 +123,13 @@
             margin-right: auto;
         }
 
-        /* ── HORIZONTAL SCROLL STATS ─────────────────────────── */
-        .stats-scroll-wrap {
+        /* ── STATS WRAP (자동 줄바꿈 적용) ─────────────────────────── */
+        .stats-wrap {
             display: flex;
             gap: 14px;
-            overflow-x: auto;
-            padding-bottom: 8px;
+            flex-wrap: wrap; /* 가로 공간 부족 시 자동으로 아래로 줄바꿈 */
             margin-bottom: 20px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
         }
-        .stats-scroll-wrap::-webkit-scrollbar { display: none; }
-
         .stat-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -141,8 +142,8 @@
             transition: transform .2s, box-shadow .2s;
             cursor: pointer;
             user-select: none;
-            min-width: 170px;
-            flex: 0 0 auto;
+            flex: 1 1 calc(25% - 14px); /* 기본적으로 4단 배열, 화면 좁아지면 크기 유지하며 줄바꿈 */
+            min-width: 170px; 
         }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
         .stat-card:active { transform: translateY(0); }
@@ -493,7 +494,7 @@
 
     <div class="main-wrap">
 
-        <div class="stats-scroll-wrap" id="statsContainer">
+        <div class="stats-wrap" id="statsContainer">
             </div>
 
         <div class="panel">
