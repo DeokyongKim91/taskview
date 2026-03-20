@@ -28,130 +28,88 @@
         body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 
         /* HEADER */
-        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 28px 32px 80px; position: relative; overflow: hidden; }
-        .app-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.08); }
-        .app-header::after { content: ''; position: absolute; bottom: -40px; left: 20%; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.05); }
-        .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 500; color: #fff; margin-bottom: 12px; }
-        .header-title { font-size: 26px; font-weight: 700; color: #fff; margin: 0 0 6px; letter-spacing: -.3px; }
-        .header-sub { font-size: 13px; color: rgba(255,255,255,.7); margin: 0; }
-        .header-refresh { position: absolute; top: 28px; right: 32px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; }
-        .header-refresh:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
+        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 24px 24px 60px; position: relative; overflow: hidden; }
+        .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 500; color: #fff; margin-bottom: 8px; }
+        .header-title { font-size: 24px; font-weight: 700; color: #fff; margin: 0 0 4px; }
+        .header-sub { font-size: 12px; color: rgba(255,255,255,.7); margin: 0; }
+        .header-refresh { position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all .2s; }
 
-        /* MAIN CONTENT */
-        .main-wrap { padding: 0 24px 48px; margin-top: -52px; position: relative; z-index: 1; max-width: 1400px; margin-left: auto; margin-right: auto; }
+        /* MAIN WRAP */
+        .main-wrap { padding: 0 16px 40px; margin-top: -40px; position: relative; z-index: 1; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
         /* STATS WRAP */
-        .stats-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding: 0 4px; }
-        .stats-wrap { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; transition: all 0.3s ease; }
-        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; flex: 1 1 calc(25% - 14px); min-width: 170px; transition: all .2s; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; transition: all .2s; }
-        .stat-num { font-size: 20px; font-weight: 700; line-height: 1; transition: all .2s; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; transition: all .2s; }
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; }
+        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 140px; transition: transform .2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-        /* STATS COLLAPSED */
-        .stats-wrap.collapsed { gap: 8px; margin-bottom: 12px; }
-        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: auto; padding: 6px 14px; border-radius: 30px; flex-direction: row; gap: 8px; }
-        .stats-wrap.collapsed .stat-icon { width: 24px; height: 24px; font-size: 12px; border-radius: 50%; }
-        .stats-wrap.collapsed .stat-text-box { display: flex; flex-direction: row; align-items: center; gap: 6px; }
-        .stats-wrap.collapsed .stat-num { font-size: 14px; margin: 0;}
-        .stats-wrap.collapsed .stat-label { font-size: 12px; margin: 0; white-space: nowrap; }
+        /* 접힘 상태 최적화 (잘림 방지) */
+        .stats-wrap.collapsed { gap: 6px; }
+        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 80px; padding: 4px 10px; border-radius: 20px; flex-direction: row; gap: 6px; }
+        .stats-wrap.collapsed .stat-icon { width: 20px; height: 20px; font-size: 10px; }
+        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 4px; }
+        .stats-wrap.collapsed .stat-num { font-size: 13px; }
+        .stats-wrap.collapsed .stat-label { font-size: 10px; margin-top: 0; white-space: nowrap; }
 
-        /* PANEL */
+        /* PANEL & TABS */
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; }
-        .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 20px 24px 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-        .filter-group { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 40px; padding: 4px; }
+        .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 16px; border-bottom: 1px solid var(--border); }
+        .filter-group { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 30px; padding: 3px; }
         .filter-chip input[type="radio"] { display: none; }
-        .filter-chip label { display: block; padding: 6px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; user-select: none; }
-        .filter-chip input[type="radio"]:checked + label { background: linear-gradient(135deg, #009A44, #007a36); color: #fff; box-shadow: 0 2px 8px rgba(0,154,68,.35); }
+        .filter-chip label { display: block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; }
+        .filter-chip input[type="radio"]:checked + label { background: linear-gradient(135deg, #009A44, #007a36); color: #fff; }
         
-        .view-tabs-wrapper { max-width: 100%; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
-        .view-tabs-wrapper::-webkit-scrollbar { display: none; }
-        .view-tabs { display: flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 4px; width: max-content; }
-        .view-tab-btn { padding: 7px 16px; border: none; background: transparent; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; white-space: nowrap; }
-        .view-tab-btn.active { background: var(--surface); color: #005BAC; box-shadow: 0 1px 4px rgba(0,91,172,.12); font-weight: 600; }
+        .view-tabs { display: flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 3px; }
+        .view-tab-btn { padding: 5px 12px; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+        .view-tab-btn.active { background: var(--surface); color: #005BAC; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 
-        .view-body { padding: 20px 24px 24px; min-height: 520px; }
+        .view-body { padding: 16px; min-height: 500px; }
         .tab-panel { display: none; }
-        .tab-panel.active { display: block; animation: fadeIn .25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-panel.active { display: block; }
 
         /* GANTT */
-        .gantt-controls { display: flex; gap: 6px; margin-bottom: 16px; justify-content: flex-end; }
-        .gantt-view-btn { padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
-        .gantt-view-btn.active { background: #005BAC; border-color: #005BAC; color: #fff; }
-        .gantt-target { overflow-x: auto; min-height: 400px; }
+        .gantt-target { overflow-x: auto; min-height: 400px; border: 1px solid var(--border); border-radius: 8px; }
+        .gantt-empty { text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: 14px; }
 
-        /* ASSIGNEE KANBAN */
-        .assignee-roles { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .role-btn { border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-secondary); padding: 5px 10px; cursor: pointer; position: relative; }
-        .role-btn.active { color: #009A44; }
-        .role-btn.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 3px; background: #009A44; border-radius: 3px 3px 0 0; }
-        .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
-        .assignee-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
-        .assignee-name { font-size: 15px; font-weight: 700; color: #005BAC; }
-        .assignee-count { background: #fff; border: 1px solid var(--border); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: bold; }
-        .task-item { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); cursor: pointer; transition: all .15s; }
-        .task-item:hover { border-color: #009A44; }
-        .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-        .task-dday { font-size: 11px; font-weight: bold; color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
-        .task-dday.safe { color: #059669; background: #d1fae5; }
+        /* CHART & KANBAN */
+        .chart-container { height: 260px; width: 100%; margin-bottom: 20px; }
+        .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .assignee-name { font-size: 14px; font-weight: 700; color: #005BAC; }
+        .task-item { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; cursor: pointer; }
 
-        /* MONTHLY STATS */
-        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
-        .accordion-button:not(.collapsed) { background-color: var(--surface-2); color: #009A44; box-shadow: inset 0 -1px 0 rgba(0,0,0,.125); }
-        .settle-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        .settle-done { background: #e5e7eb; color: #374151; }
-        .settle-wait { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-
-        /* CALENDAR */
-        #calendar { max-width: 100%; }
-        .fc .fc-button-primary { background: #005BAC !important; border-color: #005BAC !important; font-size: 12px !important; }
-        .fc-event { font-size: 11px !important; border: none !important; cursor: pointer; }
-
-        /* MODAL & DRAWER */
-        #loading { display: none; position: fixed; inset: 0; background: rgba(238,248,242,.88); backdrop-filter: blur(4px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
-        .loader-ring { width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--border); border-top-color: #009A44; animation: spin .8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(13,35,24,.35); backdrop-filter: blur(2px); z-index: 1040; animation: fadeOverlay .2s ease; }
-        @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
-        .drawer { position: fixed; top: 0; right: -480px; width: 480px; max-width: 96vw; height: 100%; background: var(--surface); box-shadow: -8px 0 40px rgba(0,0,0,.15); z-index: 1045; display: flex; flex-direction: column; transition: right .3s cubic-bezier(.4,0,.2,1); }
+        /* DRAWER & MODAL */
+        #loading { display: none; position: fixed; inset: 0; background: rgba(238,248,242,.8); backdrop-filter: blur(4px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: var(--surface); box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1045; transition: right .3s ease; display: flex; flex-direction: column; }
         .drawer.open { right: 0; }
-        .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); flex-shrink: 0; }
-        .drawer-title { color: #fff; font-size: 15px; font-weight: 600; margin: 0; }
-        .drawer-close { background: rgba(255,255,255,.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .drawer-body { overflow-y: auto; flex: 1; padding: 16px 20px; }
-        .drawer-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; cursor: pointer; background: var(--surface); }
-        .drawer-item-name { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
-        .meta-chip { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-        .meta-chip.internet { background: #ecfdf5; color: #065f46; }
-        .meta-chip.smart { background: #eff6ff; color: #1e40af; }
+        .drawer-header { padding: 16px; background: linear-gradient(135deg, #009A44, #005BAC); color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-body { padding: 12px; overflow-y: auto; flex: 1; }
+        .drawer-item { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
         
         @media (max-width: 640px) {
-            .app-header { padding: 20px 16px 70px; }
-            .main-wrap { padding: 0 12px 32px; }
-            .stats-wrap:not(.collapsed) .stat-card { flex: 1 1 calc(25% - 6px); padding: 10px 2px; flex-direction: column; gap: 4px; }
-            .stats-wrap:not(.collapsed) .stat-text-box { text-align: center; }
+            .stat-card { flex: 1 1 calc(50% - 10px); }
+            .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); }
         }
     </style>
 </head>
 
 <body>
-    <div id="loading"><div class="loader-ring"></div><div class="loader-text">데이터 동기화 중...</div></div>
+    <div id="loading"><div class="spinner-border text-success mb-2"></div><div>데이터를 불러오고 있습니다...</div></div>
 
     <div class="app-header">
         <div class="header-badge">📋 WORK MANAGEMENT</div>
         <h1 class="header-title">업무 현황 관리</h1>
-        <p class="header-sub">기업인터넷 · 스마트뱅킹 업무 일정 통합 조회</p>
+        <p class="header-sub">기업인터넷 · 스마트뱅킹 통합 프로젝트 대시보드</p>
         <button class="header-refresh" onclick="fetchData()">↺ 새로고침</button>
     </div>
 
     <div class="main-wrap">
         <div class="stats-header">
-            <span class="small fw-bold" style="color: rgba(13,35,24,.6);">📊 진행 상태 요약</span>
-            <button id="statsToggleBtn" class="btn btn-sm p-0" style="color: rgba(13,35,24,.5); font-size: 12px; font-weight: 500;" onclick="toggleStats()">접기 ▲</button>
+            <span class="small fw-bold text-muted">📊 실시간 현황 요약</span>
+            <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
         </div>
         <div class="stats-wrap" id="statsContainer"></div>
 
@@ -162,42 +120,29 @@
                     <div class="filter-chip"><input type="radio" name="sheetFilter" id="filterInternet" value="인터넷"><label for="filterInternet">인터넷</label></div>
                     <div class="filter-chip"><input type="radio" name="sheetFilter" id="filterSmart" value="스마트"><label for="filterSmart">스마트</label></div>
                 </div>
-                <div class="view-tabs-wrapper">
-                    <div class="view-tabs" role="tablist">
-                        <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
-                        <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
-                        <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 월별 통계</button>
-                        <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자 현황</button>
-                    </div>
+                <div class="view-tabs" role="tablist">
+                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
+                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 월별통계</button>
+                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
                 </div>
             </div>
 
             <div class="view-body">
                 <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
-                
                 <div id="gantt-view" class="tab-panel">
-                    <div class="gantt-controls">
-                        <button class="gantt-view-btn active" data-view="Day">일별</button>
-                        <button class="gantt-view-btn" data-view="Week">주별</button>
-                        <button class="gantt-view-btn" data-view="Month">월별</button>
+                    <div class="d-flex justify-content-end mb-3 gap-1">
+                        <button class="btn btn-xs btn-outline-secondary gantt-v-btn active" data-v="Day" onclick="changeGanttMode(this)">일</button>
+                        <button class="btn btn-xs btn-outline-secondary gantt-v-btn" data-v="Week" onclick="changeGanttMode(this)">주</button>
+                        <button class="btn btn-xs btn-outline-secondary gantt-v-btn" data-v="Month" onclick="changeGanttMode(this)">월</button>
                     </div>
                     <div id="gantt" class="gantt-target"></div>
                 </div>
-
                 <div id="monthly-view" class="tab-panel">
-                    <h5 class="fw-bold mb-3" style="color: #005BAC;">월별 완료/정산 현황 (최근 1년)</h5>
                     <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
-                    <h6 class="fw-bold mt-4 mb-3">월별 상세 내역 (완료건)</h6>
                     <div class="accordion" id="monthlyAccordion"></div>
                 </div>
-
                 <div id="assignee-view" class="tab-panel">
-                    <div class="assignee-roles" id="roleTabs">
-                        <button class="role-btn active" data-role="all">전체</button>
-                        <button class="role-btn" data-role="기획">기획</button>
-                        <button class="role-btn" data-role="디자인">디자인</button>
-                        <button class="role-btn" data-role="퍼블">퍼블</button>
-                    </div>
                     <div class="assignee-grid" id="assigneeGrid"></div>
                 </div>
             </div>
@@ -206,72 +151,38 @@
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
     <div class="drawer" id="statusDrawer">
-        <div class="drawer-header">
-            <h5 class="drawer-title" id="drawerTitle">요구사항 목록</h5>
-            <button class="drawer-close" onclick="closeDrawer()">✕</button>
-        </div>
+        <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="border-0 bg-transparent text-white" onclick="closeDrawer()">✕</button></div>
         <div class="drawer-body" id="drawerBody"></div>
     </div>
 
     <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white" id="modalTaskTitle">업무 상세</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h6 class="modal-title" id="modalTaskTitle">상세 정보</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <form id="taskForm">
                         <input type="hidden" id="formSheet" name="출처시트">
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">요구사항 ID</label>
-                                <input type="text" class="form-control bg-light" id="formId" name="요구사항 ID" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">진행단계</label>
+                            <div class="col-md-6"><label class="form-label small fw-bold">요구사항 ID</label><input type="text" class="form-control bg-light" id="formId" name="요구사항 ID" readonly></div>
+                            <div class="col-md-6"><label class="form-label small fw-bold">진행단계</label>
                                 <select class="form-select" id="formStatus" name="진행단계">
-                                    <option>작업 대기</option><option>진행중</option><option>검증 반영</option>
-                                    <option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
+                                    <option>작업 대기</option><option>진행중</option><option>검증 반영</option><option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
                                 </select>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label">요건명</label>
-                                <textarea class="form-control" id="formTitle" name="요건명" rows="2"></textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">담당_기획</label>
-                                <input type="text" class="form-control" id="formPlan" name="담당_기획">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">담당_디자인</label>
-                                <input type="text" class="form-control" id="formDesign" name="담당_디자인">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">담당_퍼블</label>
-                                <input type="text" class="form-control" id="formPub" name="담당_퍼블">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">접수일자</label>
-                                <input type="date" class="form-control" id="formStart" name="접수일자">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">운영이관일</label>
-                                <input type="date" class="form-control" id="formEnd" name="운영이관(예정)일">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">정산완료</label>
-                                <select class="form-select" id="formSettle" name="정산완료">
-                                    <option value="">-</option><option value="여">여</option><option value="부">부</option>
-                                </select>
-                            </div>
+                            <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" id="formTitle" name="요건명" rows="2"></textarea></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">담당 기획</label><input type="text" class="form-control" id="formPlan" name="담당_기획"></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">담당 디자인</label><input type="text" class="form-control" id="formDesign" name="담당_디자인"></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">담당 퍼블</label><input type="text" class="form-control" id="formPub" name="담당_퍼블"></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">접수일자</label><input type="date" class="form-control" id="formStart" name="접수일자"></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">운영이관일</label><input type="date" class="form-control" id="formEnd" name="운영이관(예정)일"></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold">정산여부</label><select class="form-select" id="formSettle" name="정산완료"><option value="">-</option><option value="여">여</option><option value="부">부</option></select></div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-success" onclick="saveChanges()" style="background:#009A44; border:none;">저장하기</button>
-                </div>
+                <div class="modal-footer bg-light"><button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">닫기</button><button type="button" class="btn btn-success px-4" onclick="saveChanges()">저장하기</button></div>
             </div>
         </div>
     </div>
@@ -282,419 +193,219 @@
 
     <script>
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxJ2RfBGpKPy3xPgN83iW_dQMf5TsRYoCXp9nmkU6nO9TX-xFTCn21LaCu-uYBnJeQF/exec';
-        let rawData = [];
-        let currentFilter = 'all';
-        let calendar, gantt, chartInstance;
-        let activeTabTarget = 'calendar-view';
-        let isStatsCollapsed = false; 
-        const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+        let rawData = [], currentFilter = 'all', calendar, gantt, chartInstance, activeTab = 'calendar-view', isCollapsed = false;
+        const modal = new bootstrap.Modal(document.getElementById('eventModal'));
 
-        const STATUS_CONFIG = {
-            '전체':      { color: '#4b5563', icon: '📋', bg: '#f3f4f6' },
+        const STATUS_MAP = {
+            '전체': { color: '#4b5563', icon: '📋', bg: '#f3f4f6' },
             '작업 대기': { color: '#8b5cf6', icon: '⏳', bg: '#f3e8ff' },
-            '진행중':    { color: '#005BAC', icon: '🔵', bg: '#eff6ff' },
+            '진행중': { color: '#005BAC', icon: '🔵', bg: '#eff6ff' },
             '검증 반영': { color: '#14b8a6', icon: '🧪', bg: '#ccfbf1' },
             '개발 대기': { color: '#f59e0b', icon: '🟡', bg: '#fef3c7' },
-            '개발중':    { color: '#f97316', icon: '💻', bg: '#ffedd5' },
+            '개발중': { color: '#f97316', icon: '💻', bg: '#ffedd5' },
             '적용 완료': { color: '#009A44', icon: '✅', bg: '#dcfce7' },
-            '취소':      { color: '#9ca3af', icon: '⚪', bg: '#f3f4f6' }
+            '취소': { color: '#9ca3af', icon: '⚪', bg: '#f3f4f6' }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            initStatsUI();
-            setupEventListeners();
+            initStats();
+            setupEvents();
             fetchData();
         });
 
-        function initStatsUI() {
-            let html = '';
-            for (const [status, config] of Object.entries(STATUS_CONFIG)) {
-                const idName = status === '전체' ? 'all' : status;
-                html += `
-                    <div class="stat-card" onclick="showStatusDetail('${idName}')">
-                        <div class="stat-icon" style="background-color: ${config.bg}; color: ${config.color}">${config.icon}</div>
-                        <div class="stat-text-box">
-                            <div class="stat-num" id="stat-${idName.replace(/\s/g, '')}">—</div>
-                            <div class="stat-label">${status}</div>
-                        </div>
-                    </div>`;
+        function initStats() {
+            let h = '';
+            for (const [k, v] of Object.entries(STATUS_MAP)) {
+                const id = k === '전체' ? 'all' : k;
+                h += `<div class="stat-card" onclick="showDrawer('${id}')"><div class="stat-icon" style="background:${v.bg};color:${v.color}">${v.icon}</div><div class="stat-text-box"><div class="stat-num" id="stat-${id.replace(/\s/g,'')}">-</div><div class="stat-label">${k}</div></div></div>`;
             }
-            document.getElementById('statsContainer').innerHTML = html;
+            document.getElementById('statsContainer').innerHTML = h;
+        }
+
+        function setupEvents() {
+            document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.addEventListener('change', e => { currentFilter = e.target.value; updateStats(); renderActive(); }));
         }
 
         function toggleStats() {
-            const container = document.getElementById('statsContainer');
-            const btn = document.getElementById('statsToggleBtn');
-            isStatsCollapsed = !isStatsCollapsed;
-            if (isStatsCollapsed) { container.classList.add('collapsed'); btn.innerHTML = '펼치기 ▼'; } 
-            else { container.classList.remove('collapsed'); btn.innerHTML = '접기 ▲'; }
-        }
-
-        function setupEventListeners() {
-            document.querySelectorAll('input[name="sheetFilter"]').forEach(radio => {
-                radio.addEventListener('change', function () {
-                    currentFilter = this.value;
-                    updateStats();
-                    triggerActiveTabRender();
-                });
-            });
-
-            document.querySelectorAll('.gantt-view-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelector('.gantt-view-btn.active').classList.remove('active');
-                    this.classList.add('active');
-                    if (gantt) gantt.change_view_mode(this.dataset.view);
-                });
-            });
-
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    renderAssignee();
-                });
-            });
+            isCollapsed = !isCollapsed;
+            document.getElementById('statsContainer').classList.toggle('collapsed', isCollapsed);
+            document.getElementById('statsToggleBtn').innerText = isCollapsed ? '펼치기 ▼' : '접기 ▲';
         }
 
         function switchTab(btn) {
             document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            activeTabTarget = btn.dataset.target;
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(activeTabTarget).classList.add('active');
-            triggerActiveTabRender();
-        }
-
-        // 탭이 완전히 노출된 후 렌더링을 실행하여 라이브러리 충돌 및 크기 계산 오류 원천 차단
-        function triggerActiveTabRender() {
-            if (activeTabTarget === 'gantt-view') {
-                setTimeout(renderGantt, 150);
-            } else if (activeTabTarget === 'monthly-view') {
-                setTimeout(renderMonthly, 150);
-            } else if (activeTabTarget === 'assignee-view') {
-                renderAssignee();
-            } else {
-                renderCalendar();
-            }
+            activeTab = btn.dataset.target;
+            document.getElementById(activeTab).classList.add('active');
+            renderActive();
         }
 
         function fetchData() {
             showLoading(true);
-            fetch(GAS_WEB_APP_URL)
-                .then(res => res.json())
-                .then(data => { rawData = data; showLoading(false); updateStats(); triggerActiveTabRender(); })
-                .catch(err => { alert('데이터 로드 실패'); showLoading(false); });
-        }
-
-        function safeDateStr(dateVal, fallbackDateStr) {
-            if (!dateVal) return fallbackDateStr;
-            const d = new Date(dateVal);
-            if (isNaN(d.getTime())) return fallbackDateStr;
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            return `${yyyy}-${mm}-${dd}`;
-        }
-
-        function getFilteredData() {
-            return rawData.filter(item => currentFilter === 'all' || item['출처시트'] === currentFilter);
+            fetch(GAS_WEB_APP_URL).then(res => res.json()).then(data => { rawData = data; showLoading(false); updateStats(); renderActive(); }).catch(e => { alert('데이터 로드 실패'); showLoading(false); });
         }
 
         function updateStats() {
-            const d = getFilteredData();
-            document.getElementById('stat-all').textContent = d.length;
-            for (const status of Object.keys(STATUS_CONFIG)) {
-                if (status === '전체') continue;
-                const el = document.getElementById('stat-' + status.replace(/\s/g, ''));
-                if (el) el.textContent = d.filter(i => i['진행단계'] === status).length;
+            const d = getFiltered();
+            document.getElementById('stat-all').innerText = d.length;
+            for (const k of Object.keys(STATUS_MAP)) {
+                if (k === '전체') continue;
+                const el = document.getElementById('stat-' + k.replace(/\s/g,''));
+                if (el) el.innerText = d.filter(i => i['진행단계'] === k).length;
             }
         }
 
-        /* ── 1. CALENDAR ── */
-        function renderCalendar() {
-            const events = getFilteredData().map(item => {
-                const color = STATUS_CONFIG[item['진행단계']]?.color || '#6b7280';
-                const txtColor = ['개발 대기', '검증 반영', '개발중', '작업 대기'].includes(item['진행단계']) ? '#000' : '#fff';
-                const prefix = item['출처시트'] === '인터넷' ? '[인]' : '[스]';
-                let evs = [];
-                if (item['접수일자']) evs.push({ id: item['요구사항 ID']+'_s', extendedProps: item, title: `${prefix} ${item['요건명']}`, start: item['접수일자'], color: color, textColor: txtColor });
-                if (item['운영이관(예정)일']) evs.push({ id: item['요구사항 ID']+'_e', extendedProps: item, title: `${prefix} [이관] ${item['요건명']}`, start: item['운영이관(예정)일'], color: color, textColor: txtColor });
-                return evs;
-            }).flat();
+        function renderActive() {
+            if (activeTab === 'calendar-view') renderCalendar();
+            else if (activeTab === 'gantt-view') setTimeout(renderGantt, 100);
+            else if (activeTab === 'monthly-view') renderMonthly();
+            else if (activeTab === 'assignee-view') renderAssignee();
+        }
 
-            if (calendar) calendar.destroy();
-            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', locale: 'ko',
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
-                events: events, eventClick: (info) => openModal(info.event.extendedProps)
+        function getFiltered() { return rawData.filter(i => currentFilter === 'all' || i['출처시트'] === currentFilter); }
+
+        function renderCalendar() {
+            const evs = getFiltered().flatMap(i => {
+                const c = STATUS_MAP[i['진행단계']]?.color || '#666';
+                const res = [];
+                if(i['접수일자']) res.push({ title: `[${i['출처시트'][0]}] ${i['요건명']}`, start: i['접수일자'], color: c, extendedProps: i });
+                if(i['운영이관(예정)일'] && i['운영이관(예정)일'] !== '미정') res.push({ title: `[이관] ${i['요건명']}`, start: i['운영이관(예정)일'], color: c, extendedProps: i });
+                return res;
             });
+            if (calendar) calendar.destroy();
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', locale: 'ko', events: evs, eventClick: info => openDetail(info.event.extendedProps) });
             calendar.render();
         }
 
-        /* ── 2. GANTT (예외 처리 및 무결성 강화) ── */
+        /* ── GANTT (무결성 최상위 버전) ── */
         function renderGantt() {
-            const ganttContainer = document.getElementById('gantt');
-            
-            // 컨테이너가 화면에 표시되지 않은 상태면 렌더링 중단
-            if (ganttContainer.offsetWidth === 0) return;
+            const el = document.getElementById('gantt');
+            if (el.offsetWidth === 0) return;
+            const data = getFiltered();
+            if (data.length === 0) { el.innerHTML = '<div class="gantt-empty">데이터가 없습니다.</div>'; return; }
 
-            let validData = getFilteredData();
-            if (validData.length === 0) { 
-                ganttContainer.innerHTML = '<p class="text-center mt-4">데이터 없음</p>'; 
-                return; 
-            }
-
-            // 정렬: 접수일자 오름차순
-            validData.sort((a, b) => {
-                let d1 = new Date(a['접수일자'] || new Date());
-                let d2 = new Date(b['접수일자'] || new Date());
-                return d1 - d2;
-            });
-
-            const todayStr = safeDateStr(new Date(), null);
-
-            const tasks = validData.map((item, index) => {
-                let sDateRaw = item['접수일자'];
-                let eDateRaw = item['운영이관(예정)일'];
-
-                let isInvalid = false;
-                let sDate = safeDateStr(sDateRaw, null);
-                let eDate = safeDateStr(eDateRaw, null);
-
-                if (!sDate) {
-                    isInvalid = true;
-                    sDate = todayStr;
-                }
-                
-                if (!eDate) {
-                    isInvalid = true;
-                    let tmp = new Date(sDate);
-                    tmp.setDate(tmp.getDate() + 7);
-                    eDate = safeDateStr(tmp, null);
-                }
-
-                if (new Date(sDate) > new Date(eDate)) {
-                    isInvalid = true;
-                    let tmp = new Date(sDate);
-                    tmp.setDate(tmp.getDate() + 1);
-                    eDate = safeDateStr(tmp, null);
-                } else if (sDate === eDate) {
-                    let tmp = new Date(eDate);
-                    tmp.setDate(tmp.getDate() + 1);
-                    eDate = safeDateStr(tmp, null);
-                }
-
-                let customClass = isInvalid ? 'status-errorData' : 'status-' + (item['진행단계'] || '').replace(/\s/g, '');
-                let taskName = isInvalid ? `[날짜확인] [${item['출처시트']}] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`;
-
-                // DOM 파싱 오류 방지 무결성 ID 발급
-                const safeHtmlId = 'gantt_task_' + index;
+            const today = new Date().toISOString().split('T')[0];
+            const tasks = data.map((i, idx) => {
+                let s = i['접수일자'], e = i['운영이관(예정)일'], invalid = false;
+                if(!s || isNaN(new Date(s))) { s = today; invalid = true; }
+                if(!e || isNaN(new Date(e))) { e = new Date(new Date(s).getTime() + 86400000 * 7).toISOString().split('T')[0]; invalid = true; }
+                if(new Date(s) >= new Date(e)) { e = new Date(new Date(s).getTime() + 86400000).toISOString().split('T')[0]; invalid = true; }
 
                 return {
-                    id: safeHtmlId,
-                    name: taskName,
-                    start: sDate, 
-                    end: eDate, 
-                    progress: 100,
-                    custom_class: customClass,
-                    extendedProps: item
+                    id: 'gt_' + idx,
+                    name: (invalid ? '[날짜확인] ' : '') + `[${i['출처시트'][0]}] ` + i['요건명'],
+                    start: s, end: e, progress: 100,
+                    custom_class: invalid ? 'g-err' : 'g-' + (i['진행단계']||'').replace(/\s/g,''),
+                    extendedProps: i
                 };
             });
 
-            ganttContainer.innerHTML = '';
-            
+            el.innerHTML = '';
             try {
-                gantt = new Gantt("#gantt", tasks, { 
-                    language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day', 
-                    on_click: (task) => openModal(task.extendedProps) 
-                });
-
-                if (!document.getElementById('ganttStyles')) {
-                    let css = `.gantt .bar-label { font-size: 11px; fill: #fff; } .gantt .grid-header { fill: #f4fbf7; }\n`;
-                    for (const [k, v] of Object.entries(STATUS_CONFIG)) {
-                        if(k === '전체') continue;
-                        css += `.gantt .bar.status-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.color}; }\n`;
-                    }
-                    css += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
-                    const st = document.createElement('style'); st.id = 'ganttStyles'; st.innerHTML = css; document.head.appendChild(st);
-                }
-            } catch(e) { 
-                console.error("Gantt Error:", e);
-                ganttContainer.innerHTML = '<p class="text-center mt-4 text-danger">데이터 예외 발생으로 차트를 그릴 수 없습니다.</p>'; 
+                gantt = new Gantt("#gantt", tasks, { language: 'ko', bar_height: 20, view_mode: 'Day', on_click: t => openDetail(t.extendedProps) });
+                injectGanttCSS();
+            } catch(err) { 
+                el.innerHTML = `<div class="p-4 text-center text-danger small">차트 초기화 에러: ${err.message}<br>데이터 형식을 확인해주세요.</div>`; 
             }
         }
 
-        /* ── 3. MONTHLY STATS ── */
+        function injectGanttCSS() {
+            if (document.getElementById('g-css')) return;
+            let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } `;
+            for(const [k, v] of Object.entries(STATUS_MAP)) css += `.gantt .bar.g-${k.replace(/\s/g,'')} .bar-progress { fill: ${v.color}; } `;
+            css += `.gantt .bar.g-err .bar-progress { fill: #ff4d4f; }`;
+            const s = document.createElement('style'); s.id = 'g-css'; s.innerHTML = css; document.head.appendChild(s);
+        }
+
+        function changeGanttMode(btn) {
+            document.querySelectorAll('.gantt-v-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if(gantt) gantt.change_view_mode(btn.dataset.v);
+        }
+
+        /* ── MONTHLY & ASSIGNEE ── */
         function renderMonthly() {
-            const data = getFilteredData().filter(item => item['진행단계'] === '적용 완료' && item['운영이관(예정)일']);
-            
-            let monthMap = {};
-            data.forEach(item => {
-                const d = new Date(item['운영이관(예정)일']);
-                if(isNaN(d)) return;
-                const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-                if(!monthMap[ym]) monthMap[ym] = { labels: ym, 대:0, 중:0, 소:0, items: [] };
-                
-                const scale = item['규모'] || '소';
-                if(monthMap[ym][scale] !== undefined) monthMap[ym][scale]++;
-                else monthMap[ym]['소']++; 
-                
-                monthMap[ym].items.push(item);
+            const data = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
+            const mData = {};
+            data.forEach(i => {
+                const ym = i['운영이관(예정)일'].substring(0,7);
+                if(!mData[ym]) mData[ym] = { 대:0, 중:0, 소:0, list:[] };
+                const sz = i['규모'] || '소';
+                if(mData[ym][sz] !== undefined) mData[ym][sz]++;
+                mData[ym].list.push(i);
             });
-
-            const sortedMonths = Object.keys(monthMap).sort().slice(-12); 
-            const labels = sortedMonths;
-            const dataLarge = labels.map(m => monthMap[m]['대']);
-            const dataMedium = labels.map(m => monthMap[m]['중']);
-            const dataSmall = labels.map(m => monthMap[m]['소']);
-
+            const sorted = Object.keys(mData).sort().slice(-12);
             const ctx = document.getElementById('monthlyChart').getContext('2d');
             if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: '대', data: dataLarge, backgroundColor: '#005BAC' },
-                        { label: '중', data: dataMedium, backgroundColor: '#009A44' },
-                        { label: '소', data: dataSmall, backgroundColor: '#76c893' }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }, plugins: { legend: { position: 'bottom' } } }
-            });
-
-            let accHtml = '';
-            sortedMonths.reverse().forEach((ym, idx) => {
-                const items = monthMap[ym].items;
-                let listHtml = items.map(i => {
-                    const isSettled = i['정산완료'] === '여';
-                    const badgeClass = isSettled ? 'settle-done' : 'settle-wait';
-                    const badgeText = isSettled ? '정산완료' : '미정산/확인요망';
-                    return `<div class="d-flex justify-content-between align-items-center border-bottom py-2" style="font-size:13px; cursor:pointer;" onclick="openModalById('${String(i['요구사항 ID']).replace(/'/g, "\\'")}')">
-                                <div class="text-truncate pe-2"><span class="badge bg-secondary me-2">${i['규모']||'-'}</span>${i['요건명']}</div>
-                                <span class="settle-badge ${badgeClass}">${badgeText}</span>
-                            </div>`;
-                }).join('');
-
-                accHtml += `
-                    <div class="accordion-item">
-                        <h2 class="accordion-header"><button class="accordion-button ${idx!==0?'collapsed':''}" type="button" data-bs-toggle="collapse" data-bs-target="#acc-${idx}">${ym} 완료내역 (${items.length}건)</button></h2>
-                        <div id="acc-${idx}" class="accordion-collapse collapse ${idx===0?'show':''}"><div class="accordion-body px-3 py-2">${listHtml}</div></div>
-                    </div>`;
-            });
-            document.getElementById('monthlyAccordion').innerHTML = accHtml || '<p class="text-center text-muted">완료 데이터가 없습니다.</p>';
-        }
-
-        function openModalById(id) {
-            const t = rawData.find(i => String(i['요구사항 ID']) === id);
-            if(t) openModal(t);
-        }
-
-        /* ── 4. ASSIGNEE KANBAN ── */
-        function renderAssignee() {
-            const roleFilter = document.querySelector('.role-btn.active').dataset.role;
-            const activeTasks = getFilteredData().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
+            chartInstance = new Chart(ctx, { type:'bar', data: { labels: sorted, datasets: [
+                { label:'대', data: sorted.map(m => mData[m].대), backgroundColor:'#005BAC' },
+                { label:'중', data: sorted.map(m => mData[m].중), backgroundColor:'#009A44' },
+                { label:'소', data: sorted.map(m => mData[m].소), backgroundColor:'#76c893' }
+            ]}, options: { responsive:true, maintainAspectRatio:false, scales:{ x:{stacked:true}, y:{stacked:true} } }});
             
-            let userMap = {}; 
-            activeTasks.forEach(task => {
-                ['기획', '디자인', '퍼블'].forEach(role => {
-                    if (roleFilter !== 'all' && roleFilter !== role) return;
-                    const val = task[`담당_${role}`];
-                    if (val && val !== 'X' && val !== '-' && val.trim() !== '') {
-                        const names = val.split(/[,/]/).map(n => n.trim());
-                        names.forEach(n => {
-                            if(!userMap[n]) userMap[n] = [];
-                            if(!userMap[n].find(t => t['요구사항 ID'] === task['요구사항 ID'])) userMap[n].push(task);
+            let acc = '';
+            sorted.reverse().forEach((m, idx) => {
+                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openDetailById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모']||'소'}] ${i['요건명']}</span><span class="badge ${i['정산완료']==='여'?'bg-light text-dark':'bg-danger'}">${i['정산완료']==='여'?'정산완료':'미정산'}</span></div>`).join('');
+                acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${m} 완료내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body">${items}</div></div></div>`;
+            });
+            document.getElementById('monthlyAccordion').innerHTML = acc || '<p class="text-center text-muted small mt-4">데이터 없음</p>';
+        }
+
+        function renderAssignee() {
+            const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
+            const uMap = {};
+            active.forEach(i => {
+                ['기획','디자인','퍼블'].forEach(r => {
+                    const val = i['담당_'+r];
+                    if(val && val !== '-' && val !== 'X') {
+                        val.split(/[,/]/).map(n => n.trim()).forEach(n => {
+                            if(!uMap[n]) uMap[n] = [];
+                            if(!uMap[n].find(x => x['요구사항 ID'] === i['요구사항 ID'])) uMap[n].push(i);
                         });
                     }
                 });
             });
-
-            let html = '';
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            for (const [name, tasks] of Object.entries(userMap).sort()) {
-                let tasksHtml = tasks.map(t => {
-                    let ddayHtml = '';
-                    if(t['운영이관(예정)일']) {
-                        const ed = new Date(t['운영이관(예정)일']);
-                        if(!isNaN(ed)) {
-                            ed.setHours(0,0,0,0);
-                            const diff = Math.ceil((ed - today) / (1000 * 60 * 60 * 24));
-                            if(diff > 0) ddayHtml = `<span class="task-dday safe">D-${diff}</span>`;
-                            else if(diff === 0) ddayHtml = `<span class="task-dday">D-Day</span>`;
-                            else ddayHtml = `<span class="task-dday">D+${Math.abs(diff)}</span>`;
-                        }
-                    }
-                    const stColor = STATUS_CONFIG[t['진행단계']]?.color || '#333';
-                    return `
-                        <div class="task-item" onclick="openModalById('${String(t['요구사항 ID']).replace(/'/g, "\\'")}')">
-                            <div style="font-size:12px; font-weight:500; line-height:1.3">${t['요건명']}</div>
-                            <div class="task-meta">
-                                <span style="font-size:10px; color:${stColor}; font-weight:bold;">● ${t['진행단계']}</span>
-                                ${ddayHtml}
-                            </div>
-                        </div>`;
-                }).join('');
-
-                html += `
-                    <div class="assignee-card">
-                        <div class="assignee-header">
-                            <span class="assignee-name">${name}</span>
-                            <span class="assignee-count">${tasks.length}건</span>
-                        </div>
-                        <div>${tasksHtml}</div>
-                    </div>`;
-            }
-            document.getElementById('assigneeGrid').innerHTML = html || '<p class="text-center text-muted w-100 mt-4">진행중인 담당자 내역이 없습니다.</p>';
+            let h = '';
+            Object.keys(uMap).sort().forEach(u => {
+                const tasks = uMap[u].map(t => `<div class="task-item" onclick="openDetailById('${t['요구사항 ID']}')"><div>${t['요건명']}</div><div class="mt-1 d-flex justify-content-between align-items-center"><span class="badge bg-light text-dark border" style="font-size:9px">${t['진행단계']}</span><span class="text-danger fw-bold" style="font-size:10px">${getDday(t['운영이관(예정)일'])}</span></div></div>`).join('');
+                h += `<div class="assignee-card"><div class="assignee-name mb-2 d-flex justify-content-between"><span>${u}</span><span class="badge bg-white text-primary border">${uMap[u].length}</span></div>${tasks}</div>`;
+            });
+            document.getElementById('assigneeGrid').innerHTML = h || '<p class="text-center w-100 text-muted mt-4">진행 중인 업무가 없습니다.</p>';
         }
 
-        /* ── COMMON ── */
-        function openModal(data) {
-            document.getElementById('modalTaskTitle').innerText = `${data['요건명']}`;
-            const form = document.getElementById('taskForm');
-            for (const key in data) {
-                if (form.elements[key]) form.elements[key].value = data[key] || '';
-            }
-            eventModal.show();
+        function getDday(date) {
+            if(!date || date === '미정') return '';
+            const diff = Math.ceil((new Date(date) - new Date()) / 86400000);
+            return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
+
+        /* ── MODAL & DRAWER ── */
+        function openDetail(data) {
+            document.getElementById('modalTaskTitle').innerText = data['요건명'];
+            const f = document.getElementById('taskForm');
+            for (const key in data) if(f.elements[key]) f.elements[key].value = data[key] || '';
+            modal.show();
+        }
+
+        function openDetailById(id) { const d = rawData.find(x => String(x['요구사항 ID']) === String(id)); if(d) openDetail(d); }
 
         function saveChanges() {
-            const fd = new FormData(document.getElementById('taskForm'));
-            const payload = Object.fromEntries(fd.entries());
-            fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(res => res.json())
-                .then(data => { if(data.result === 'success'){ eventModal.hide(); fetchData(); } else alert('저장 실패: '+data.message); })
-                .catch(() => alert('전송 오류'));
+            const payload = Object.fromEntries(new FormData(document.getElementById('taskForm')).entries());
+            showLoading(true);
+            fetch(GAS_WEB_APP_URL, { method:'POST', body: JSON.stringify(payload) }).then(res => res.json()).then(res => { if(res.result === 'success') { modal.hide(); fetchData(); } else alert('저장 실패'); });
         }
 
-        function showStatusDetail(filter) {
-            const d = getFilteredData().filter(i => filter === 'all' || i['진행단계'] === filter);
-            document.getElementById('drawerTitle').textContent = `${filter} (${d.length}건)`;
-            let html = d.map(item => {
-                const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
-                const cfg = STATUS_CONFIG[item['진행단계']] || {color:'#333', bg:'#eee'};
-                return `
-                    <div class="drawer-item" onclick="openModalById('${safeId}')">
-                        <div class="drawer-item-name">${item['요건명']}</div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <span class="meta-chip ${item['출처시트']==='인터넷'?'internet':'smart'}">${item['출처시트']}</span>
-                            <span style="font-size:11px; font-weight:bold; color:${cfg.color}">${item['진행단계']}</span>
-                        </div>
-                    </div>`;
-            }).join('');
-            document.getElementById('drawerBody').innerHTML = html || '<div class="drawer-empty">데이터 없음</div>';
+        function showDrawer(st) {
+            const d = getFiltered().filter(i => st === 'all' || i['진행단계'] === st);
+            document.getElementById('drawerTitle').innerText = `${st} 목록 (${d.length}건)`;
+            document.getElementById('drawerBody').innerHTML = d.map(i => `<div class="drawer-item" onclick="openDetailById('${i['요구사항 ID']}')"><div class="drawer-item-name">${i['요건명']}</div><div class="d-flex gap-2"><span class="meta-chip ${i['출처시트']==='인터넷'?'internet':'smart'}">${i['출처시트']}</span><span class="small text-muted">${i['진행단계']}</span></div></div>`).join('') || '<div class="text-center py-5 text-muted">데이터가 없습니다.</div>';
             document.getElementById('drawerOverlay').style.display = 'block';
-            requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
+            document.getElementById('statusDrawer').classList.add('open');
         }
 
-        function closeDrawer() {
-            document.getElementById('statusDrawer').classList.remove('open');
-            setTimeout(() => { document.getElementById('drawerOverlay').style.display = 'none'; }, 300);
-        }
-
-        function showLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
+        function closeDrawer() { document.getElementById('statusDrawer').classList.remove('open'); setTimeout(()=>document.getElementById('drawerOverlay').style.display='none', 300); }
+        function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
     </script>
 </body>
 </html>
