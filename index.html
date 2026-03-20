@@ -121,7 +121,7 @@
             margin-right: auto;
         }
 
-        /* ── STATS WRAP (기본 상태) ─────────────────────────── */
+        /* ── STATS WRAP ─────────────────────────── */
         .stats-header {
             display: flex;
             justify-content: space-between;
@@ -191,7 +191,6 @@
         }
         .stats-wrap.collapsed .stat-num { font-size: 14px; }
         .stats-wrap.collapsed .stat-label { font-size: 12px; margin-top: 0; white-space: nowrap; }
-
 
         /* ── PANEL CARD ─────────────────────────── */
         .panel {
@@ -510,7 +509,6 @@
             .panel-toolbar { flex-direction: column; align-items: flex-start; }
             .view-body { padding: 16px; }
 
-            /* 펼쳐진 상태의 모바일 뷰 강제 (칩 레이아웃과 분리) */
             .stats-wrap:not(.collapsed) { gap: 8px; margin-bottom: 16px; }
             .stats-wrap:not(.collapsed) .stat-card {
                 flex: 1 1 calc(25% - 6px);
@@ -659,7 +657,7 @@
         let currentFilter = 'all';
         let calendar, gantt;
         let activeTabTarget = 'calendar-view';
-        let isStatsCollapsed = false; // 토글 상태 변수
+        let isStatsCollapsed = false; 
         const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
 
         // ── 중앙 상태(Status) 관리 설정 ──
@@ -837,7 +835,7 @@
 
             const todayStr = safeDateStr(new Date());
 
-            const tasks = validData.map(item => {
+            const tasks = validData.map((item, index) => {
                 let sDateRaw = item['접수일자'];
                 let eDateRaw = item['운영이관(예정)일'];
 
@@ -847,14 +845,15 @@
 
                 if (!sDate || !eDate) {
                     isInvalid = true;
-                    sDate = todayStr;
+                    sDate = sDate || todayStr; 
                     let tmp = new Date(sDate); 
                     tmp.setDate(tmp.getDate() + 1);
                     eDate = safeDateStr(tmp);
                 } else if (new Date(sDate) > new Date(eDate)) {
                     isInvalid = true;
                     eDate = sDate;
-                } else if (sDate === eDate) {
+                }
+                if (sDate === eDate) {
                     let tmp = new Date(eDate); 
                     tmp.setDate(tmp.getDate() + 1);
                     eDate = safeDateStr(tmp);
@@ -863,8 +862,11 @@
                 let customClass = isInvalid ? 'status-errorData' : 'status-' + (item['진행단계'] || '').replace(/\s/g, '');
                 let taskName = isInvalid ? `[날짜확인] [${item['출처시트']}] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`;
 
+                // DOM 셀렉터 에러 원천 차단 무결성 ID 생성
+                const safeHtmlId = 'task_' + index + '_' + String(item['요구사항 ID']).replace(/[^a-zA-Z0-9]/g, '');
+
                 return {
-                    id: String(item['요구사항 ID']),
+                    id: safeHtmlId,
                     name: taskName,
                     start: sDate, end: eDate,
                     progress: 100,
@@ -910,7 +912,7 @@
 
             } catch(e) {
                 console.error("간트차트 렌더링 에러:", e);
-                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트차트를 그릴 수 없는 데이터가 포함되어 있습니다.</p>';
+                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트차트 렌더링에 실패했습니다.</p>';
             }
         }
 
@@ -960,6 +962,7 @@
                     const statusVal = item['진행단계'] || '';
                     const cfg = STATUS_CONFIG[statusVal] || { color: '#6b7280', bg: '#f3f4f6' };
 
+                    // DOM 파싱 에러 방지를 위한 특수기호 안전 처리
                     const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
 
                     return `
