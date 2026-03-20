@@ -11,526 +11,145 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --brand-start: #009A44;
-            --brand-end: #005BAC;
-            --surface: #ffffff;
-            --surface-2: #f4fbf7;
-            --border: #d6eee3;
-            --text-primary: #0d2318;
-            --text-secondary: #527060;
-            --radius-lg: 16px;
-            --radius-md: 10px;
+            --brand-start: #009A44; --brand-end: #005BAC;
+            --surface: #ffffff; --surface-2: #f4fbf7; --border: #d6eee3;
+            --text-primary: #0d2318; --text-secondary: #527060;
+            --radius-lg: 16px; --radius-md: 10px;
             --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
             --shadow-md: 0 8px 32px rgba(0,154,68,.12);
             --shadow-lg: 0 20px 60px rgba(0,91,172,.18);
         }
-
         *, *::before, *::after { box-sizing: border-box; }
-
         body {
             font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
             background: #eef8f2;
             background-image: radial-gradient(ellipse at 20% 0%, rgba(0,154,68,.09) 0%, transparent 60%),
                               radial-gradient(ellipse at 80% 100%, rgba(0,91,172,.07) 0%, transparent 60%);
-            min-height: 100vh;
-            color: var(--text-primary);
+            min-height: 100vh; color: var(--text-primary);
         }
-
         a { text-decoration: none !important; color: inherit !important; }
+        body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 
-        body.modal-open {
-            padding-right: 0 !important;
-            overflow-y: scroll !important;
-        }
-
-        /* ── HEADER ─────────────────────────────── */
-        .app-header {
-            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
-            padding: 28px 32px 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        .app-header::before {
-            content: '';
-            position: absolute;
-            top: -60px; right: -60px;
-            width: 260px; height: 260px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.08);
-        }
-        .app-header::after {
-            content: '';
-            position: absolute;
-            bottom: -40px; left: 20%;
-            width: 180px; height: 180px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.05);
-        }
-        .header-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,.18);
-            border: 1px solid rgba(255,255,255,.3);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #fff;
-            margin-bottom: 12px;
-            letter-spacing: .5px;
-        }
-        .header-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #fff;
-            margin: 0 0 6px;
-            letter-spacing: -.3px;
-        }
-        .header-sub {
-            font-size: 13px;
-            color: rgba(255,255,255,.7);
-            margin: 0;
-        }
-        .header-refresh {
-            position: absolute;
-            top: 28px; right: 32px;
-            background: rgba(255,255,255,.15);
-            border: 1px solid rgba(255,255,255,.3);
-            color: #fff;
-            border-radius: var(--radius-md);
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all .2s;
-            font-family: inherit;
-        }
+        /* ── HEADER ── */
+        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 28px 32px 80px; position: relative; overflow: hidden; }
+        .app-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.08); }
+        .app-header::after { content: ''; position: absolute; bottom: -40px; left: 20%; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.05); }
+        .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 500; color: #fff; margin-bottom: 12px; }
+        .header-title { font-size: 26px; font-weight: 700; color: #fff; margin: 0 0 6px; letter-spacing: -.3px; }
+        .header-sub { font-size: 13px; color: rgba(255,255,255,.7); margin: 0; }
+        .header-refresh { position: absolute; top: 28px; right: 32px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; }
         .header-refresh:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
 
-        /* ── MAIN CONTENT ─────────── */
-        .main-wrap {
-            padding: 0 24px 48px;
-            margin-top: -52px;
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+        /* ── MAIN CONTENT ── */
+        .main-wrap { padding: 0 24px 48px; margin-top: -52px; position: relative; z-index: 1; max-width: 1400px; margin-left: auto; margin-right: auto; }
 
-        /* ── STATS WRAP ─────────────────────────── */
-        .stats-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 10px;
-            padding: 0 4px;
-        }
-        .stats-wrap {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap; 
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all .2s;
-            cursor: pointer;
-            user-select: none;
-            flex: 1 1 calc(25% - 14px); 
-            min-width: 170px; 
-        }
+        /* ── STATS WRAP ── */
+        .stats-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding: 0 4px; }
+        .stats-wrap { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; transition: all 0.3s ease; }
+        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; flex: 1 1 calc(25% - 14px); min-width: 170px; transition: all .2s; }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .stat-card:active { transform: translateY(0); }
-        .stat-icon {
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-            transition: all .2s;
-        }
-        .stat-text-box { transition: all .2s; }
+        .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; transition: all .2s; }
         .stat-num { font-size: 20px; font-weight: 700; line-height: 1; transition: all .2s; }
         .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; transition: all .2s; }
 
-        /* ── STATS WRAP (접힘/Collapsed 상태) ─────────────────────────── */
-        .stats-wrap.collapsed {
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .stats-wrap.collapsed::-webkit-scrollbar { display: none; }
-        .stats-wrap.collapsed .stat-card {
-            flex: 0 0 auto;
-            min-width: auto;
-            padding: 6px 14px;
-            border-radius: 30px;
-            flex-direction: row;
-            gap: 8px;
-        }
-        .stats-wrap.collapsed .stat-icon {
-            width: 24px; height: 24px; font-size: 12px; border-radius: 50%;
-        }
-        .stats-wrap.collapsed .stat-text-box {
-            display: flex; flex-direction: row; align-items: center; gap: 6px;
-        }
-        .stats-wrap.collapsed .stat-num { font-size: 14px; }
-        .stats-wrap.collapsed .stat-label { font-size: 12px; margin-top: 0; white-space: nowrap; }
+        /* 접힘 상태 (오버플로우 숨김 없이 자연스러운 뱃지 랩핑) */
+        .stats-wrap.collapsed { gap: 8px; margin-bottom: 12px; }
+        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: auto; padding: 6px 14px; border-radius: 30px; flex-direction: row; gap: 8px; }
+        .stats-wrap.collapsed .stat-icon { width: 24px; height: 24px; font-size: 12px; border-radius: 50%; }
+        .stats-wrap.collapsed .stat-text-box { display: flex; flex-direction: row; align-items: center; gap: 6px; }
+        .stats-wrap.collapsed .stat-num { font-size: 14px; margin: 0;}
+        .stats-wrap.collapsed .stat-label { font-size: 12px; margin: 0; white-space: nowrap; }
 
-        /* ── PANEL CARD ─────────────────────────── */
-        .panel {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-        .panel-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 20px 24px 0;
-        }
-
-        /* ── FILTER CHIPS ─────────────────────── */
-        .filter-group {
-            display: flex;
-            gap: 6px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 4px;
-        }
+        /* ── PANEL ── */
+        .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; }
+        .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 20px 24px 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        
+        .filter-group { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 40px; padding: 4px; }
         .filter-chip input[type="radio"] { display: none; }
-        .filter-chip label {
-            display: block;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all .2s;
-            user-select: none;
-        }
-        .filter-chip input[type="radio"]:checked + label {
-            background: linear-gradient(135deg, #009A44, #007a36);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0,154,68,.35);
-        }
-        .filter-chip label:hover { color: var(--brand-start); }
+        .filter-chip label { display: block; padding: 6px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; user-select: none; }
+        .filter-chip input[type="radio"]:checked + label { background: linear-gradient(135deg, #009A44, #007a36); color: #fff; box-shadow: 0 2px 8px rgba(0,154,68,.35); }
+        
+        /* 탭 스크롤 대응 (모바일) */
+        .view-tabs-wrapper { max-width: 100%; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+        .view-tabs-wrapper::-webkit-scrollbar { display: none; }
+        .view-tabs { display: flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 4px; width: max-content; }
+        .view-tab-btn { padding: 7px 16px; border: none; background: transparent; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; white-space: nowrap; }
+        .view-tab-btn.active { background: var(--surface); color: #005BAC; box-shadow: 0 1px 4px rgba(0,91,172,.12); font-weight: 600; }
 
-        /* ── VIEW TABS ─────────────────────────── */
-        .view-tabs {
-            display: flex;
-            gap: 2px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 4px;
-        }
-        .view-tab-btn {
-            padding: 7px 20px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all .2s;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-        .view-tab-btn.active {
-            background: var(--surface);
-            color: #005BAC;
-            box-shadow: 0 1px 4px rgba(0,91,172,.12);
-            font-weight: 600;
-        }
-        .view-tab-btn:hover:not(.active) { color: #009A44; }
-
-        /* ── TAB PANELS ─────────────────────────── */
-        .view-body {
-            padding: 20px 24px 24px;
-            min-height: 520px;
-        }
+        .view-body { padding: 20px 24px 24px; min-height: 520px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; animation: fadeIn .25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── GANTT VIEW CONTROLS ─────────────── */
-        .gantt-controls {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 16px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-        .gantt-view-btn {
-            padding: 5px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all .15s;
-            font-family: inherit;
-        }
-        .gantt-view-btn.active,
-        .gantt-view-btn:hover {
-            background: #005BAC;
-            border-color: #005BAC;
-            color: #fff;
-        }
-        .gantt-target { overflow-x: auto; }
+        /* ── GANTT ── */
+        .gantt-controls { display: flex; gap: 6px; margin-bottom: 16px; justify-content: flex-end; }
+        .gantt-view-btn { padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
+        .gantt-view-btn.active { background: #005BAC; border-color: #005BAC; color: #fff; }
+        .gantt-target { overflow-x: auto; min-height: 400px; }
 
-        /* ── CALENDAR CUSTOMISATION ──────────── */
+        /* ── ASSIGNEE KANBAN ── */
+        .assignee-roles { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .role-btn { border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-secondary); padding: 5px 10px; cursor: pointer; position: relative; }
+        .role-btn.active { color: #009A44; }
+        .role-btn.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 3px; background: #009A44; border-radius: 3px 3px 0 0; }
+        
+        .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
+        .assignee-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
+        .assignee-name { font-size: 15px; font-weight: 700; color: #005BAC; }
+        .assignee-count { background: #fff; border: 1px solid var(--border); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: bold; }
+        .task-item { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); cursor: pointer; transition: all .15s; }
+        .task-item:hover { border-color: #009A44; }
+        .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .task-dday { font-size: 11px; font-weight: bold; color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
+        .task-dday.safe { color: #059669; background: #d1fae5; }
+
+        /* ── MONTHLY STATS ── */
+        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
+        .accordion-button:not(.collapsed) { background-color: var(--surface-2); color: #009A44; box-shadow: inset 0 -1px 0 rgba(0,0,0,.125); }
+        .settle-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .settle-done { background: #e5e7eb; color: #374151; }
+        .settle-wait { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+        /* ── CALENDAR ── */
         #calendar { max-width: 100%; }
-        .fc { font-family: 'Noto Sans KR', sans-serif; }
-        .fc .fc-button-primary {
-            background: #005BAC !important;
-            border-color: #005BAC !important;
-            border-radius: 7px !important;
-            font-size: 12px !important;
-            font-weight: 500 !important;
-        }
-        .fc .fc-button-primary:hover { opacity: .85; }
-        .fc .fc-col-header-cell { font-size: 12px; }
-        .fc-event { font-size: 11px !important; border-radius: 5px !important; border: none !important; }
-        .fc-daygrid-event { padding: 1px 5px !important; }
+        .fc .fc-button-primary { background: #005BAC !important; border-color: #005BAC !important; font-size: 12px !important; }
+        .fc-event { font-size: 11px !important; border: none !important; }
 
-        /* ── LOADING OVERLAY ─────────────────── */
-        #loading {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(238,248,242,.88);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-        }
-        .loader-ring {
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            border: 4px solid var(--border);
-            border-top-color: #009A44;
-            animation: spin .8s linear infinite;
-        }
+        /* ── LOADING & DRAWER ── */
+        #loading { display: none; position: fixed; inset: 0; background: rgba(238,248,242,.88); backdrop-filter: blur(4px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+        .loader-ring { width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--border); border-top-color: #009A44; animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loader-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
-
-        /* ── MODAL ───────────────────────────── */
-        .modal-content {
-            border: none;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-        .modal-header {
-            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
-            border: none;
-            padding: 20px 24px;
-        }
-        .modal-title { color: #fff !important; font-size: 15px; font-weight: 600; }
-        .modal-header .btn-close { filter: invert(1); opacity: .8; }
-        .modal-body { padding: 24px; background: var(--surface); }
-        .modal-footer { border-color: var(--border); padding: 16px 24px; background: var(--surface); }
-        .form-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            margin-bottom: 5px;
-        }
-        .form-control, .form-select {
-            border-radius: var(--radius-md);
-            border-color: var(--border);
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color .2s, box-shadow .2s;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: #009A44;
-            box-shadow: 0 0 0 3px rgba(0,154,68,.15);
-        }
-        .form-control.bg-light { background: var(--surface-2) !important; }
-        .btn-save {
-            background: linear-gradient(135deg, #009A44, #007a36);
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 9px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            cursor: pointer;
-            font-family: inherit;
-            transition: opacity .2s, transform .1s;
-        }
-        .btn-save:hover { opacity: .88; transform: translateY(-1px); }
-        .btn-close-modal {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 9px 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-family: inherit;
-            transition: .15s;
-        }
-        .btn-close-modal:hover { background: var(--border); }
-
-        /* ── STATUS DRAWER ─────────────────────── */
-        .drawer-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(13,35,24,.35);
-            backdrop-filter: blur(2px);
-            z-index: 1040;
-            animation: fadeOverlay .2s ease;
-        }
+        
+        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(13,35,24,.35); backdrop-filter: blur(2px); z-index: 1040; animation: fadeOverlay .2s ease; }
         @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
-        .drawer {
-            position: fixed;
-            top: 0; right: -480px;
-            width: 480px; max-width: 96vw;
-            height: 100%;
-            background: var(--surface);
-            box-shadow: -8px 0 40px rgba(0,0,0,.15);
-            z-index: 1045;
-            display: flex;
-            flex-direction: column;
-            transition: right .3s cubic-bezier(.4,0,.2,1);
-        }
+        .drawer { position: fixed; top: 0; right: -480px; width: 480px; max-width: 96vw; height: 100%; background: var(--surface); box-shadow: -8px 0 40px rgba(0,0,0,.15); z-index: 1045; display: flex; flex-direction: column; transition: right .3s cubic-bezier(.4,0,.2,1); }
         .drawer.open { right: 0; }
-        .drawer-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 24px;
-            background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%);
-            flex-shrink: 0;
-        }
+        .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); flex-shrink: 0; }
         .drawer-title { color: #fff; font-size: 15px; font-weight: 600; margin: 0; }
-        .drawer-close {
-            background: rgba(255,255,255,.2);
-            border: none;
-            color: #fff;
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            font-size: 18px;
-            line-height: 1;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background .15s;
-        }
-        .drawer-close:hover { background: rgba(255,255,255,.35); }
-        .drawer-body {
-            overflow-y: auto;
-            flex: 1;
-            padding: 16px 20px;
-        }
-        .drawer-item {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            transition: box-shadow .15s, border-color .15s;
-            cursor: pointer;
-            background: var(--surface);
-        }
-        .drawer-item:hover {
-            border-color: #009A44;
-            box-shadow: 0 2px 12px rgba(0,154,68,.12);
-        }
-        .drawer-item-id {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            letter-spacing: .5px;
-            margin-bottom: 4px;
-        }
-        .drawer-item-name {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-primary);
-            line-height: 1.4;
-            margin-bottom: 8px;
-        }
-        .drawer-item-meta {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .meta-chip {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 500;
-        }
+        .drawer-close { background: rgba(255,255,255,.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .drawer-body { overflow-y: auto; flex: 1; padding: 16px 20px; }
+        .drawer-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; cursor: pointer; background: var(--surface); }
+        .drawer-item-name { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+        .meta-chip { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
         .meta-chip.internet { background: #ecfdf5; color: #065f46; }
-        .meta-chip.smart    { background: #eff6ff; color: #1e40af; }
-        .meta-chip.date     { background: #f9fafb; color: var(--text-secondary); text-decoration: none !important; }
-        .drawer-empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        /* ── RESPONSIVE (MOBILE OPTIMIZATION) ──────────────────────── */
+        .meta-chip.smart { background: #eff6ff; color: #1e40af; }
+        
         @media (max-width: 640px) {
             .app-header { padding: 20px 16px 70px; }
             .main-wrap { padding: 0 12px 32px; }
-            .panel-toolbar { flex-direction: column; align-items: flex-start; }
-            .view-body { padding: 16px; }
-
-            .stats-wrap:not(.collapsed) { gap: 8px; margin-bottom: 16px; }
-            .stats-wrap:not(.collapsed) .stat-card {
-                flex: 1 1 calc(25% - 6px);
-                min-width: 0;
-                padding: 10px 2px;
-                flex-direction: column;
-                gap: 4px;
-            }
-            .stats-wrap:not(.collapsed) .stat-icon { width: 26px; height: 26px; font-size: 13px; margin: 0 auto; }
-            .stats-wrap:not(.collapsed) .stat-text-box { text-align: center; display: block; flex-direction: column; }
-            .stats-wrap:not(.collapsed) .stat-num { font-size: 15px; }
-            .stats-wrap:not(.collapsed) .stat-label { font-size: 10px; margin-top: 2px; letter-spacing: -0.5px; white-space: nowrap; display: block; }
+            .stats-wrap:not(.collapsed) .stat-card { flex: 1 1 calc(25% - 6px); padding: 10px 2px; flex-direction: column; gap: 4px; }
+            .stats-wrap:not(.collapsed) .stat-text-box { text-align: center; }
         }
     </style>
 </head>
 
 <body>
-
-    <div id="loading" style="display:none;">
-        <div class="loader-ring"></div>
-        <div class="loader-text">데이터를 불러오는 중...</div>
-    </div>
+    <div id="loading"><div class="loader-ring"></div><div class="loader-text">데이터 동기화 중...</div></div>
 
     <div class="app-header">
         <div class="header-badge">📋 WORK MANAGEMENT</div>
@@ -540,41 +159,32 @@
     </div>
 
     <div class="main-wrap">
-
         <div class="stats-header">
             <span class="small fw-bold" style="color: rgba(13,35,24,.6);">📊 진행 상태 요약</span>
             <button id="statsToggleBtn" class="btn btn-sm p-0" style="color: rgba(13,35,24,.5); font-size: 12px; font-weight: 500;" onclick="toggleStats()">접기 ▲</button>
         </div>
-
-        <div class="stats-wrap" id="statsContainer">
-            </div>
+        <div class="stats-wrap" id="statsContainer"></div>
 
         <div class="panel">
             <div class="panel-toolbar">
-                <div class="filter-group" role="group">
-                    <div class="filter-chip">
-                        <input type="radio" name="sheetFilter" id="filterAll" value="all" checked>
-                        <label for="filterAll">전체</label>
-                    </div>
-                    <div class="filter-chip">
-                        <input type="radio" name="sheetFilter" id="filterInternet" value="인터넷">
-                        <label for="filterInternet">인터넷</label>
-                    </div>
-                    <div class="filter-chip">
-                        <input type="radio" name="sheetFilter" id="filterSmart" value="스마트">
-                        <label for="filterSmart">스마트</label>
-                    </div>
+                <div class="filter-group">
+                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="filterAll" value="all" checked><label for="filterAll">전체</label></div>
+                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="filterInternet" value="인터넷"><label for="filterInternet">인터넷</label></div>
+                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="filterSmart" value="스마트"><label for="filterSmart">스마트</label></div>
                 </div>
-                <div class="view-tabs" role="tablist">
-                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
-                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                <div class="view-tabs-wrapper">
+                    <div class="view-tabs" role="tablist">
+                        <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
+                        <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                        <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 월별 통계</button>
+                        <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자 현황</button>
+                    </div>
                 </div>
             </div>
 
             <div class="view-body">
-                <div id="calendar-view" class="tab-panel active">
-                    <div id="calendar"></div>
-                </div>
+                <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
+                
                 <div id="gantt-view" class="tab-panel">
                     <div class="gantt-controls">
                         <button class="gantt-view-btn active" data-view="Day">일별</button>
@@ -583,9 +193,25 @@
                     </div>
                     <div id="gantt" class="gantt-target"></div>
                 </div>
+
+                <div id="monthly-view" class="tab-panel">
+                    <h5 class="fw-bold mb-3" style="color: #005BAC;">월별 완료/정산 현황 (최근 1년)</h5>
+                    <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
+                    <h6 class="fw-bold mt-4 mb-3">월별 상세 내역 (완료건)</h6>
+                    <div class="accordion" id="monthlyAccordion"></div>
+                </div>
+
+                <div id="assignee-view" class="tab-panel">
+                    <div class="assignee-roles" id="roleTabs">
+                        <button class="role-btn active" data-role="all">전체</button>
+                        <button class="role-btn" data-role="기획">기획</button>
+                        <button class="role-btn" data-role="디자인">디자인</button>
+                        <button class="role-btn" data-role="퍼블">퍼블</button>
+                    </div>
+                    <div class="assignee-grid" id="assigneeGrid"></div>
+                </div>
             </div>
         </div>
-
     </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -601,8 +227,8 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTaskTitle">업무 상세</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title text-white" id="modalTaskTitle">업무 상세</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="taskForm">
@@ -615,33 +241,46 @@
                             <div class="col-md-6">
                                 <label class="form-label">진행단계</label>
                                 <select class="form-select" id="formStatus" name="진행단계">
-                                    <option>작업 대기</option>
-                                    <option>진행중</option>
-                                    <option>검증 반영</option>
-                                    <option>개발 대기</option>
-                                    <option>개발중</option>
-                                    <option>적용 완료</option>
-                                    <option>취소</option>
+                                    <option>작업 대기</option><option>진행중</option><option>검증 반영</option>
+                                    <option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
                                 </select>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">요건명</label>
                                 <textarea class="form-control" id="formTitle" name="요건명" rows="2"></textarea>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label">담당_기획</label>
+                                <input type="text" class="form-control" id="formPlan" name="담당_기획">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">담당_디자인</label>
+                                <input type="text" class="form-control" id="formDesign" name="담당_디자인">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">담당_퍼블</label>
+                                <input type="text" class="form-control" id="formPub" name="담당_퍼블">
+                            </div>
+                            <div class="col-md-4">
                                 <label class="form-label">접수일자</label>
                                 <input type="date" class="form-control" id="formStart" name="접수일자">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">운영이관(예정)일</label>
+                            <div class="col-md-4">
+                                <label class="form-label">운영이관일</label>
                                 <input type="date" class="form-control" id="formEnd" name="운영이관(예정)일">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">정산완료</label>
+                                <select class="form-select" id="formSettle" name="정산완료">
+                                    <option value="">-</option><option value="여">여</option><option value="부">부</option>
+                                </select>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-close-modal" data-bs-dismiss="modal">닫기</button>
-                    <button type="button" class="btn-save" onclick="saveChanges()">저장하기</button>
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-success" onclick="saveChanges()" style="background:#009A44; border:none;">저장하기</button>
                 </div>
             </div>
         </div>
@@ -655,12 +294,11 @@
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxJ2RfBGpKPy3xPgN83iW_dQMf5TsRYoCXp9nmkU6nO9TX-xFTCn21LaCu-uYBnJeQF/exec';
         let rawData = [];
         let currentFilter = 'all';
-        let calendar, gantt;
+        let calendar, gantt, chartInstance;
         let activeTabTarget = 'calendar-view';
         let isStatsCollapsed = false; 
         const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
 
-        // ── 중앙 상태(Status) 관리 설정 ──
         const STATUS_CONFIG = {
             '전체':      { color: '#4b5563', icon: '📋', bg: '#f3f4f6' },
             '작업 대기': { color: '#8b5cf6', icon: '⏳', bg: '#f3e8ff' },
@@ -672,15 +310,13 @@
             '취소':      { color: '#9ca3af', icon: '⚪', bg: '#f3f4f6' }
         };
 
-        document.addEventListener('DOMContentLoaded', function () {
-            if (GAS_WEB_APP_URL.includes('YOUR_GAS')) return alert('GAS 웹 앱 URL 입력 필요');
+        document.addEventListener('DOMContentLoaded', () => {
             initStatsUI();
             setupEventListeners();
             fetchData();
         });
 
         function initStatsUI() {
-            const container = document.getElementById('statsContainer');
             let html = '';
             for (const [status, config] of Object.entries(STATUS_CONFIG)) {
                 const idName = status === '전체' ? 'all' : status;
@@ -691,24 +327,17 @@
                             <div class="stat-num" id="stat-${idName.replace(/\s/g, '')}">—</div>
                             <div class="stat-label">${status}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
-            container.innerHTML = html;
+            document.getElementById('statsContainer').innerHTML = html;
         }
 
         function toggleStats() {
             const container = document.getElementById('statsContainer');
             const btn = document.getElementById('statsToggleBtn');
             isStatsCollapsed = !isStatsCollapsed;
-            
-            if (isStatsCollapsed) {
-                container.classList.add('collapsed');
-                btn.innerHTML = '펼치기 ▼';
-            } else {
-                container.classList.remove('collapsed');
-                btn.innerHTML = '접기 ▲';
-            }
+            if (isStatsCollapsed) { container.classList.add('collapsed'); btn.innerHTML = '펼치기 ▼'; } 
+            else { container.classList.remove('collapsed'); btn.innerHTML = '접기 ▲'; }
         }
 
         function setupEventListeners() {
@@ -716,8 +345,7 @@
                 radio.addEventListener('change', function () {
                     currentFilter = this.value;
                     updateStats();
-                    if (activeTabTarget === 'calendar-view') renderCalendar();
-                    else renderGantt();
+                    triggerActiveTabRender();
                 });
             });
 
@@ -728,6 +356,14 @@
                     if (gantt) gantt.change_view_mode(this.dataset.view);
                 });
             });
+
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    renderAssignee();
+                });
+            });
         }
 
         function switchTab(btn) {
@@ -736,42 +372,22 @@
             activeTabTarget = btn.dataset.target;
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(activeTabTarget).classList.add('active');
-            
-            if (activeTabTarget === 'gantt-view') {
-                setTimeout(renderGantt, 150);
-            } else {
-                renderCalendar();
-            }
+            triggerActiveTabRender();
+        }
+
+        function triggerActiveTabRender() {
+            if (activeTabTarget === 'gantt-view') setTimeout(renderGantt, 300);
+            else if (activeTabTarget === 'monthly-view') setTimeout(renderMonthly, 150);
+            else if (activeTabTarget === 'assignee-view') renderAssignee();
+            else renderCalendar();
         }
 
         function fetchData() {
             showLoading(true);
             fetch(GAS_WEB_APP_URL)
                 .then(res => res.json())
-                .then(data => {
-                    rawData = data;
-                    showLoading(false);
-                    updateStats();
-                    try { 
-                        if (activeTabTarget === 'calendar-view') renderCalendar();
-                        else renderGantt(); 
-                    } catch(e) { console.error('Render error:', e); }
-                })
-                .catch(err => {
-                    console.error('Fetch error:', err);
-                    alert('데이터 로드 실패\n(상세 에러: ' + err.message + ')');
-                    showLoading(false);
-                });
-        }
-
-        function safeDateStr(dateVal, fallbackDateStr) {
-            if (!dateVal) return fallbackDateStr;
-            const d = new Date(dateVal);
-            if (isNaN(d.getTime())) return fallbackDateStr;
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const dd = String(d.getDate()).padStart(2, '0');
-            return `${yyyy}-${mm}-${dd}`;
+                .then(data => { rawData = data; showLoading(false); updateStats(); triggerActiveTabRender(); })
+                .catch(err => { alert('데이터 로드 실패'); showLoading(false); });
         }
 
         function getFilteredData() {
@@ -780,214 +396,239 @@
 
         function updateStats() {
             const d = getFilteredData();
-            const allEl = document.getElementById('stat-all');
-            if(allEl) allEl.textContent = d.length;
-
+            document.getElementById('stat-all').textContent = d.length;
             for (const status of Object.keys(STATUS_CONFIG)) {
                 if (status === '전체') continue;
                 const el = document.getElementById('stat-' + status.replace(/\s/g, ''));
-                if (el) {
-                    el.textContent = d.filter(i => i['진행단계'] === status).length;
-                }
+                if (el) el.textContent = d.filter(i => i['진행단계'] === status).length;
             }
         }
 
-        function getColor(status) {
-            return STATUS_CONFIG[status] ? STATUS_CONFIG[status].color : '#6b7280';
-        }
-
+        /* ── 1. CALENDAR ── */
         function renderCalendar() {
-            const filteredData = getFilteredData();
-            let events = [];
-            filteredData.forEach(item => {
-                const color = getColor(item['진행단계']);
+            const events = getFilteredData().map(item => {
+                const color = STATUS_CONFIG[item['진행단계']]?.color || '#6b7280';
                 const txtColor = ['개발 대기', '검증 반영', '개발중', '작업 대기'].includes(item['진행단계']) ? '#000' : '#fff';
                 const prefix = item['출처시트'] === '인터넷' ? '[인]' : '[스]';
-
-                if (item['접수일자'] && !isNaN(Date.parse(item['접수일자']))) {
-                    events.push({ id: item['요구사항 ID'] + '_s', extendedProps: item, title: `${prefix} ${item['요건명']}`, start: item['접수일자'], color: color, textColor: txtColor });
-                }
-                if (item['운영이관(예정)일'] && !isNaN(Date.parse(item['운영이관(예정)일']))) {
-                    events.push({ id: item['요구사항 ID'] + '_e', extendedProps: item, title: `${prefix} [이관] ${item['요건명']}`, start: item['운영이관(예정)일'], color: color, textColor: txtColor });
-                }
-            });
+                let evs = [];
+                if (item['접수일자']) evs.push({ id: item['요구사항 ID']+'_s', extendedProps: item, title: `${prefix} ${item['요건명']}`, start: item['접수일자'], color: color, textColor: txtColor });
+                if (item['운영이관(예정)일']) evs.push({ id: item['요구사항 ID']+'_e', extendedProps: item, title: `${prefix} [이관] ${item['요건명']}`, start: item['운영이관(예정)일'], color: color, textColor: txtColor });
+                return evs;
+            }).flat();
 
             if (calendar) calendar.destroy();
             calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
-                locale: 'ko',
+                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth', locale: 'ko',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
-                events: events,
-                eventClick: (info) => openModal(info.event.extendedProps),
-                windowResize: () => calendar.changeView(window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth'),
-                eventDidMount: (info) => { info.el.title = info.event.extendedProps['요건명'] || ''; }
+                events: events, eventClick: (info) => openModal(info.event.extendedProps)
             });
             calendar.render();
         }
 
+        /* ── 2. GANTT ── */
         function renderGantt() {
-            const validData = getFilteredData().filter(item => item['요구사항 ID'] && String(item['요구사항 ID']).trim() !== '');
+            const validData = getFilteredData().filter(item => item['요구사항 ID']);
+            if (validData.length === 0) { document.getElementById('gantt').innerHTML = '<p class="text-center mt-4">데이터 없음</p>'; return; }
 
-            if (validData.length === 0) {
-                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4" style="color:var(--text-secondary)">데이터 없음</p>';
-                return;
-            }
+            const todayStr = new Date().toISOString().split('T')[0];
+            const tasks = validData.map((item, idx) => {
+                let s = item['접수일자']; let e = item['운영이관(예정)일'];
+                let isInvalid = !s || !e || isNaN(new Date(s)) || isNaN(new Date(e));
+                
+                s = isInvalid ? todayStr : new Date(s).toISOString().split('T')[0];
+                e = isInvalid ? todayStr : new Date(e).toISOString().split('T')[0];
 
-            const todayStr = safeDateStr(new Date());
-
-            const tasks = validData.map((item, index) => {
-                let sDateRaw = item['접수일자'];
-                let eDateRaw = item['운영이관(예정)일'];
-
-                let isInvalid = false;
-                let sDate = safeDateStr(sDateRaw, null);
-                let eDate = safeDateStr(eDateRaw, null);
-
-                if (!sDate || !eDate) {
-                    isInvalid = true;
-                    sDate = sDate || todayStr; 
-                    let tmp = new Date(sDate); 
-                    tmp.setDate(tmp.getDate() + 1);
-                    eDate = safeDateStr(tmp);
-                } else if (new Date(sDate) > new Date(eDate)) {
-                    isInvalid = true;
-                    eDate = sDate;
-                }
-                if (sDate === eDate) {
-                    let tmp = new Date(eDate); 
-                    tmp.setDate(tmp.getDate() + 1);
-                    eDate = safeDateStr(tmp);
-                }
-
-                let customClass = isInvalid ? 'status-errorData' : 'status-' + (item['진행단계'] || '').replace(/\s/g, '');
-                let taskName = isInvalid ? `[날짜확인] [${item['출처시트']}] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`;
-
-                // DOM 셀렉터 에러 원천 차단 무결성 ID 생성
-                const safeHtmlId = 'task_' + index + '_' + String(item['요구사항 ID']).replace(/[^a-zA-Z0-9]/g, '');
+                if(new Date(s) > new Date(e)) e = s;
+                if(s === e) { let tmp = new Date(e); tmp.setDate(tmp.getDate()+1); e = tmp.toISOString().split('T')[0]; }
 
                 return {
-                    id: safeHtmlId,
-                    name: taskName,
-                    start: sDate, end: eDate,
-                    progress: 100,
-                    custom_class: customClass,
+                    id: 'task_' + idx, // DOM 파싱 에러 완전 차단 고유 ID
+                    name: isInvalid ? `[날짜확인] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`,
+                    start: s, end: e, progress: 100,
+                    custom_class: isInvalid ? 'status-errorData' : 'status-' + (item['진행단계']||'').replace(/\s/g, ''),
                     extendedProps: item
                 };
             });
 
             document.getElementById('gantt').innerHTML = '';
-            
             try {
-                gantt = new Gantt("#gantt", tasks, {
-                    language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
-                    on_click: (task) => openModal(task.extendedProps)
-                });
-
+                gantt = new Gantt("#gantt", tasks, { language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day', on_click: (task) => openModal(task.extendedProps) });
                 if (!document.getElementById('ganttStyles')) {
-                    const style = document.createElement('style');
-                    style.id = 'ganttStyles';
-                    let cssRules = `.gantt .bar-label { font-size: 11px; fill: #fff; } .gantt .grid-header { fill: #f4fbf7; }\n`;
-                    for (const [status, config] of Object.entries(STATUS_CONFIG)) {
-                        if(status === '전체') continue;
-                        const safeClass = 'status-' + status.replace(/\s/g, '');
-                        cssRules += `.gantt .bar.${safeClass} .bar-progress { fill: ${config.color}; }\n`;
-                    }
-                    cssRules += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n`;
-                    cssRules += `.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
-
-                    style.innerHTML = cssRules;
-                    document.head.appendChild(style);
+                    let css = `.gantt .bar-label { font-size: 11px; fill: #fff; } .gantt .grid-header { fill: #f4fbf7; }\n`;
+                    for (const [k, v] of Object.entries(STATUS_CONFIG)) css += `.gantt .bar.status-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.color}; }\n`;
+                    css += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
+                    const st = document.createElement('style'); st.id = 'ganttStyles'; st.innerHTML = css; document.head.appendChild(st);
                 }
-
-                setTimeout(() => {
-                    tasks.forEach(task => {
-                        if(task.custom_class === 'status-errorData') {
-                            const labelElement = document.querySelector(`.bar-wrapper[data-id="${task.id}"] .bar-label`);
-                            if(labelElement) {
-                                labelElement.innerHTML = '데이터 확인';
-                            }
-                        }
-                    });
-                }, 100);
-
-            } catch(e) {
-                console.error("간트차트 렌더링 에러:", e);
-                document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트차트 렌더링에 실패했습니다.</p>';
-            }
+            } catch(e) { document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트 렌더링 실패</p>'; }
         }
 
+        /* ── 3. MONTHLY STATS ── */
+        function renderMonthly() {
+            const data = getFilteredData().filter(item => item['진행단계'] === '적용 완료' && item['운영이관(예정)일']);
+            
+            // Group by Month
+            let monthMap = {};
+            data.forEach(item => {
+                const d = new Date(item['운영이관(예정)일']);
+                if(isNaN(d)) return;
+                const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                if(!monthMap[ym]) monthMap[ym] = { labels: ym, 대:0, 중:0, 소:0, items: [] };
+                
+                const scale = item['규모'] || '소';
+                if(monthMap[ym][scale] !== undefined) monthMap[ym][scale]++;
+                else monthMap[ym]['소']++; // fallback
+                
+                monthMap[ym].items.push(item);
+            });
+
+            const sortedMonths = Object.keys(monthMap).sort().slice(-12); // 최근 12개월
+            const labels = sortedMonths;
+            const dataLarge = labels.map(m => monthMap[m]['대']);
+            const dataMedium = labels.map(m => monthMap[m]['중']);
+            const dataSmall = labels.map(m => monthMap[m]['소']);
+
+            // Draw Chart
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: '대', data: dataLarge, backgroundColor: '#005BAC' },
+                        { label: '중', data: dataMedium, backgroundColor: '#009A44' },
+                        { label: '소', data: dataSmall, backgroundColor: '#76c893' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Draw Accordion
+            let accHtml = '';
+            sortedMonths.reverse().forEach((ym, idx) => {
+                const items = monthMap[ym].items;
+                let listHtml = items.map(i => {
+                    const isSettled = i['정산완료'] === '여';
+                    const badgeClass = isSettled ? 'settle-done' : 'settle-wait';
+                    const badgeText = isSettled ? '정산완료' : '미정산/확인요망';
+                    return `<div class="d-flex justify-content-between align-items-center border-bottom py-2" style="font-size:13px; cursor:pointer;" onclick="openModalById('${String(i['요구사항 ID']).replace(/'/g, "\\'")}')">
+                                <div class="text-truncate pe-2"><span class="badge bg-secondary me-2">${i['규모']||'-'}</span>${i['요건명']}</div>
+                                <span class="settle-badge ${badgeClass}">${badgeText}</span>
+                            </div>`;
+                }).join('');
+
+                accHtml += `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button ${idx!==0?'collapsed':''}" type="button" data-bs-toggle="collapse" data-bs-target="#acc-${idx}">${ym} 완료내역 (${items.length}건)</button></h2>
+                        <div id="acc-${idx}" class="accordion-collapse collapse ${idx===0?'show':''}"><div class="accordion-body px-3 py-2">${listHtml}</div></div>
+                    </div>`;
+            });
+            document.getElementById('monthlyAccordion').innerHTML = accHtml || '<p class="text-center text-muted">완료 데이터가 없습니다.</p>';
+        }
+
+        function openModalById(id) {
+            const t = rawData.find(i => String(i['요구사항 ID']) === id);
+            if(t) openModal(t);
+        }
+
+        /* ── 4. ASSIGNEE KANBAN ── */
+        function renderAssignee() {
+            const roleFilter = document.querySelector('.role-btn.active').dataset.role;
+            const activeTasks = getFilteredData().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
+            
+            let userMap = {}; // { '김민지': [task1, task2] }
+            activeTasks.forEach(task => {
+                ['기획', '디자인', '퍼블'].forEach(role => {
+                    if (roleFilter !== 'all' && roleFilter !== role) return;
+                    const val = task[`담당_${role}`];
+                    if (val && val !== 'X' && val !== '-' && val.trim() !== '') {
+                        const names = val.split(/[,/]/).map(n => n.trim());
+                        names.forEach(n => {
+                            if(!userMap[n]) userMap[n] = [];
+                            // Avoid duplicates if person does 2 roles
+                            if(!userMap[n].find(t => t['요구사항 ID'] === task['요구사항 ID'])) userMap[n].push(task);
+                        });
+                    }
+                });
+            });
+
+            let html = '';
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            for (const [name, tasks] of Object.entries(userMap).sort()) {
+                let tasksHtml = tasks.map(t => {
+                    let ddayHtml = '';
+                    if(t['운영이관(예정)일']) {
+                        const ed = new Date(t['운영이관(예정)일']);
+                        if(!isNaN(ed)) {
+                            ed.setHours(0,0,0,0);
+                            const diff = Math.ceil((ed - today) / (1000 * 60 * 60 * 24));
+                            if(diff > 0) ddayHtml = `<span class="task-dday safe">D-${diff}</span>`;
+                            else if(diff === 0) ddayHtml = `<span class="task-dday">D-Day</span>`;
+                            else ddayHtml = `<span class="task-dday">D+${Math.abs(diff)}</span>`;
+                        }
+                    }
+                    const stColor = STATUS_CONFIG[t['진행단계']]?.color || '#333';
+                    return `
+                        <div class="task-item" onclick="openModalById('${String(t['요구사항 ID']).replace(/'/g, "\\'")}')">
+                            <div style="font-size:12px; font-weight:500; line-height:1.3">${t['요건명']}</div>
+                            <div class="task-meta">
+                                <span style="font-size:10px; color:${stColor}; font-weight:bold;">● ${t['진행단계']}</span>
+                                ${ddayHtml}
+                            </div>
+                        </div>`;
+                }).join('');
+
+                html += `
+                    <div class="assignee-card">
+                        <div class="assignee-header">
+                            <span class="assignee-name">${name}</span>
+                            <span class="assignee-count">${tasks.length}건</span>
+                        </div>
+                        <div>${tasksHtml}</div>
+                    </div>`;
+            }
+            document.getElementById('assigneeGrid').innerHTML = html || '<p class="text-center text-muted w-100 mt-4">진행중인 담당자 내역이 없습니다.</p>';
+        }
+
+        /* ── COMMON ── */
         function openModal(data) {
             document.getElementById('modalTaskTitle').innerText = `${data['요건명']}`;
             const form = document.getElementById('taskForm');
-            for (const key in data) if (form.elements[key]) form.elements[key].value = data[key];
+            for (const key in data) {
+                if (form.elements[key]) form.elements[key].value = data[key] || '';
+            }
             eventModal.show();
         }
 
         function saveChanges() {
-            const formData = new FormData(document.getElementById('taskForm'));
-            const payload = Object.fromEntries(formData.entries());
-            fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            }).then(res => res.json()).then(data => {
-                if (data.result === 'success') { eventModal.hide(); fetchData(); }
-                else alert('저장 실패: ' + data.message);
-            }).catch(() => alert('전송 오류 발생'));
+            const fd = new FormData(document.getElementById('taskForm'));
+            const payload = Object.fromEntries(fd.entries());
+            fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(res => res.json())
+                .then(data => { if(data.result === 'success'){ eventModal.hide(); fetchData(); } else alert('저장 실패: '+data.message); })
+                .catch(() => alert('전송 오류'));
         }
 
-        function showStatusDetail(statusFilter) {
-            const filtered = getFilteredData().filter(item =>
-                statusFilter === 'all' || item['진행단계'] === statusFilter
-            );
-
-            const displayTitle = statusFilter === 'all' ? '전체' : statusFilter;
-            const icon = STATUS_CONFIG[displayTitle] ? STATUS_CONFIG[displayTitle].icon : '⚫';
-            
-            document.getElementById('drawerTitle').textContent = `${icon} ${displayTitle} (${filtered.length}건)`;
-
-            const body = document.getElementById('drawerBody');
-            if (filtered.length === 0) {
-                body.innerHTML = '<div class="drawer-empty">해당 상태의 요구사항이 없습니다.</div>';
-            } else {
-                body.innerHTML = filtered.map(item => {
-                    const sheet = item['출처시트'] || '';
-                    const chipClass = sheet === '인터넷' ? 'internet' : 'smart';
-                    const chipLabel = sheet === '인터넷' ? '인터넷' : '스마트';
-
-                    const fmtDate = (d) => {
-                        if (!d || isNaN(Date.parse(d))) return d || '—';
-                        return new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                    };
-
-                    const statusVal = item['진행단계'] || '';
-                    const cfg = STATUS_CONFIG[statusVal] || { color: '#6b7280', bg: '#f3f4f6' };
-
-                    // DOM 파싱 에러 방지를 위한 특수기호 안전 처리
-                    const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
-
-                    return `
-                        <div class="drawer-item" onclick="handleDrawerItemClick('${safeId}')">
-                            <div class="drawer-item-id">${item['요구사항 ID'] || ''}</div>
-                            <div class="drawer-item-name">${item['요건명'] || ''}</div>
-                            <div class="drawer-item-meta">
-                                <span class="meta-chip ${chipClass}">${chipLabel}</span>
-                                <span class="meta-chip date">접수 ${fmtDate(item['접수일자'])}</span>
-                                <span class="meta-chip date">이관 ${fmtDate(item['운영이관(예정)일'])}</span>
-                                <span style="font-size:11px;font-weight:600;color:${cfg.color};background:${cfg.bg};border:1px solid ${cfg.color}40;padding:2px 8px;border-radius:10px;">${statusVal}</span>
-                            </div>
-                        </div>`;
-                }).join('');
-            }
-
+        function showStatusDetail(filter) {
+            const d = getFilteredData().filter(i => filter === 'all' || i['진행단계'] === filter);
+            document.getElementById('drawerTitle').textContent = `${filter} (${d.length}건)`;
+            let html = d.map(item => {
+                const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
+                const cfg = STATUS_CONFIG[item['진행단계']] || {color:'#333', bg:'#eee'};
+                return `
+                    <div class="drawer-item" onclick="openModalById('${safeId}')">
+                        <div class="drawer-item-name">${item['요건명']}</div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="meta-chip ${item['출처시트']==='인터넷'?'internet':'smart'}">${item['출처시트']}</span>
+                            <span style="font-size:11px; font-weight:bold; color:${cfg.color}">${item['진행단계']}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+            document.getElementById('drawerBody').innerHTML = html || '<div class="drawer-empty">데이터 없음</div>';
             document.getElementById('drawerOverlay').style.display = 'block';
             requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
-        }
-
-        function handleDrawerItemClick(id) {
-            const targetItem = rawData.find(item => String(item['요구사항 ID']) === id);
-            if (targetItem) {
-                openModal(targetItem);
-            }
         }
 
         function closeDrawer() {
@@ -995,10 +636,7 @@
             setTimeout(() => { document.getElementById('drawerOverlay').style.display = 'none'; }, 300);
         }
 
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'flex' : 'none';
-        }
+        function showLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
     </script>
 </body>
-
 </html>
