@@ -38,10 +38,8 @@
             color: var(--text-primary);
         }
 
-        /* 하이퍼링크 기본 스타일 강제 초기화 */
         a { text-decoration: none !important; color: inherit !important; }
 
-        /* 모달 오픈 시 스크롤바 영역 유지 (화면 흔들림 방지) */
         body.modal-open {
             padding-right: 0 !important;
             overflow-y: scroll !important;
@@ -123,12 +121,20 @@
             margin-right: auto;
         }
 
-        /* ── STATS WRAP (자동 줄바꿈 적용) ─────────────────────────── */
+        /* ── STATS WRAP (기본 상태) ─────────────────────────── */
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 10px;
+            padding: 0 4px;
+        }
         .stats-wrap {
             display: flex;
             gap: 14px;
             flex-wrap: wrap; 
             margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
         .stat-card {
             background: var(--surface);
@@ -139,7 +145,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: transform .2s, box-shadow .2s;
+            transition: all .2s;
             cursor: pointer;
             user-select: none;
             flex: 1 1 calc(25% - 14px); 
@@ -153,9 +159,39 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 18px;
             flex-shrink: 0;
+            transition: all .2s;
         }
-        .stat-num { font-size: 20px; font-weight: 700; line-height: 1; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .stat-text-box { transition: all .2s; }
+        .stat-num { font-size: 20px; font-weight: 700; line-height: 1; transition: all .2s; }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; transition: all .2s; }
+
+        /* ── STATS WRAP (접힘/Collapsed 상태) ─────────────────────────── */
+        .stats-wrap.collapsed {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .stats-wrap.collapsed::-webkit-scrollbar { display: none; }
+        .stats-wrap.collapsed .stat-card {
+            flex: 0 0 auto;
+            min-width: auto;
+            padding: 6px 14px;
+            border-radius: 30px;
+            flex-direction: row;
+            gap: 8px;
+        }
+        .stats-wrap.collapsed .stat-icon {
+            width: 24px; height: 24px; font-size: 12px; border-radius: 50%;
+        }
+        .stats-wrap.collapsed .stat-text-box {
+            display: flex; flex-direction: row; align-items: center; gap: 6px;
+        }
+        .stats-wrap.collapsed .stat-num { font-size: 14px; }
+        .stats-wrap.collapsed .stat-label { font-size: 12px; margin-top: 0; white-space: nowrap; }
+
 
         /* ── PANEL CARD ─────────────────────────── */
         .panel {
@@ -385,7 +421,6 @@
             height: 100%;
             background: var(--surface);
             box-shadow: -8px 0 40px rgba(0,0,0,.15);
-            /* 모달(1055)보다 낮게 배치하여 충돌 방지 */
             z-index: 1045;
             display: flex;
             flex-direction: column;
@@ -475,19 +510,19 @@
             .panel-toolbar { flex-direction: column; align-items: flex-start; }
             .view-body { padding: 16px; }
 
-            /* 상태 카드 모바일 전용 UI (최대 2줄, 한 줄에 4개 배치) */
-            .stats-wrap { gap: 8px; margin-bottom: 16px; }
-            .stat-card {
+            /* 펼쳐진 상태의 모바일 뷰 강제 (칩 레이아웃과 분리) */
+            .stats-wrap:not(.collapsed) { gap: 8px; margin-bottom: 16px; }
+            .stats-wrap:not(.collapsed) .stat-card {
                 flex: 1 1 calc(25% - 6px);
                 min-width: 0;
                 padding: 10px 2px;
                 flex-direction: column;
                 gap: 4px;
             }
-            .stat-icon { width: 26px; height: 26px; font-size: 13px; margin: 0 auto; }
-            .stat-text-box { text-align: center; }
-            .stat-num { font-size: 15px; }
-            .stat-label { font-size: 10px; margin-top: 2px; letter-spacing: -0.5px; white-space: nowrap; }
+            .stats-wrap:not(.collapsed) .stat-icon { width: 26px; height: 26px; font-size: 13px; margin: 0 auto; }
+            .stats-wrap:not(.collapsed) .stat-text-box { text-align: center; display: block; flex-direction: column; }
+            .stats-wrap:not(.collapsed) .stat-num { font-size: 15px; }
+            .stats-wrap:not(.collapsed) .stat-label { font-size: 10px; margin-top: 2px; letter-spacing: -0.5px; white-space: nowrap; display: block; }
         }
     </style>
 </head>
@@ -507,6 +542,11 @@
     </div>
 
     <div class="main-wrap">
+
+        <div class="stats-header">
+            <span class="small fw-bold" style="color: rgba(13,35,24,.6);">📊 진행 상태 요약</span>
+            <button id="statsToggleBtn" class="btn btn-sm p-0" style="color: rgba(13,35,24,.5); font-size: 12px; font-weight: 500;" onclick="toggleStats()">접기 ▲</button>
+        </div>
 
         <div class="stats-wrap" id="statsContainer">
             </div>
@@ -619,6 +659,7 @@
         let currentFilter = 'all';
         let calendar, gantt;
         let activeTabTarget = 'calendar-view';
+        let isStatsCollapsed = false; // 토글 상태 변수
         const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
 
         // ── 중앙 상태(Status) 관리 설정 ──
@@ -640,7 +681,6 @@
             fetchData();
         });
 
-        // 상태값 기반 통계 현황판 동적 생성
         function initStatsUI() {
             const container = document.getElementById('statsContainer');
             let html = '';
@@ -657,6 +697,20 @@
                 `;
             }
             container.innerHTML = html;
+        }
+
+        function toggleStats() {
+            const container = document.getElementById('statsContainer');
+            const btn = document.getElementById('statsToggleBtn');
+            isStatsCollapsed = !isStatsCollapsed;
+            
+            if (isStatsCollapsed) {
+                container.classList.add('collapsed');
+                btn.innerHTML = '펼치기 ▼';
+            } else {
+                container.classList.remove('collapsed');
+                btn.innerHTML = '접기 ▲';
+            }
         }
 
         function setupEventListeners() {
@@ -728,11 +782,9 @@
 
         function updateStats() {
             const d = getFilteredData();
-            // 전체 갯수
             const allEl = document.getElementById('stat-all');
             if(allEl) allEl.textContent = d.length;
 
-            // 각 상태별 갯수
             for (const status of Object.keys(STATUS_CONFIG)) {
                 if (status === '전체') continue;
                 const el = document.getElementById('stat-' + status.replace(/\s/g, ''));
@@ -793,7 +845,6 @@
                 let sDate = safeDateStr(sDateRaw, null);
                 let eDate = safeDateStr(eDateRaw, null);
 
-                // 유효하지 않은 날짜 처리 로직 (최소 1일 생성 및 에러 상태 부여)
                 if (!sDate || !eDate) {
                     isInvalid = true;
                     sDate = todayStr;
@@ -830,7 +881,6 @@
                     on_click: (task) => openModal(task.extendedProps)
                 });
 
-                // 상태별 동적 CSS 및 에러(날짜확인) CSS 주입
                 if (!document.getElementById('ganttStyles')) {
                     const style = document.createElement('style');
                     style.id = 'ganttStyles';
@@ -840,7 +890,6 @@
                         const safeClass = 'status-' + status.replace(/\s/g, '');
                         cssRules += `.gantt .bar.${safeClass} .bar-progress { fill: ${config.color}; }\n`;
                     }
-                    // 날짜 미상 에러 바 전용 스타일
                     cssRules += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n`;
                     cssRules += `.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
 
@@ -848,7 +897,6 @@
                     document.head.appendChild(style);
                 }
 
-                // 에러 데이터 바 내부 텍스트 수정
                 setTimeout(() => {
                     tasks.forEach(task => {
                         if(task.custom_class === 'status-errorData') {
@@ -932,7 +980,6 @@
             requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
         }
 
-        // 서랍 항목 클릭 시 서랍을 닫지 않고 즉시 모달만 오픈
         function handleDrawerItemClick(id) {
             const targetItem = rawData.find(item => String(item['요구사항 ID']) === id);
             if (targetItem) {
