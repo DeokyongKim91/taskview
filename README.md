@@ -32,8 +32,6 @@
 ### 3. 프론트엔드 환경 설정
 1. 본 저장소의 `index.html` 파일 오픈
 2. 스크립트 영역 상단의 `GAS_WEB_APP_URL` 변수 값을 복사한 웹 앱 URL로 교체
-```javascript
-const GAS_WEB_APP_URL = '발급받은_웹_앱_URL_입력';
 
 ### 4. 배포 (GitHub Pages)
 코드 변경 사항 Commit 및 Push
@@ -51,6 +49,3 @@ gas_backend.gs : (참고용) 구글 시트 데이터 처리를 위한 Apps Scrip
 해당 프로젝트는 사내 업무 현황 관리를 목적으로 제작된 커스텀 시스템임.
 
 
----
-
-수정 및 추가 필요 항목 존재 시 회신 요망.
