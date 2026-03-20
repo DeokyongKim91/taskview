@@ -21,20 +21,13 @@
             --radius-lg: 16px; --radius-md: 10px;
             --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
             --shadow-md: 0 8px 32px rgba(0,154,68,.12);
-            --shadow-lg: 0 20px 60px rgba(0,91,172,.18);
         }
         *, *::before, *::after { box-sizing: border-box; }
-        body {
-            font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-            background: #eef8f2;
-            background-image: radial-gradient(ellipse at 20% 0%, rgba(0,154,68,.09) 0%, transparent 60%),
-                              radial-gradient(ellipse at 80% 100%, rgba(0,91,172,.07) 0%, transparent 60%);
-            min-height: 100vh; color: var(--text-primary);
-        }
+        body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; background: #eef8f2; background-image: radial-gradient(ellipse at 20% 0%, rgba(0,154,68,.09) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(0,91,172,.07) 0%, transparent 60%); min-height: 100vh; color: var(--text-primary); }
         a { text-decoration: none !important; color: inherit !important; }
         body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 
-        /* ── HEADER ── */
+        /* HEADER */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 28px 32px 80px; position: relative; overflow: hidden; }
         .app-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.08); }
         .app-header::after { content: ''; position: absolute; bottom: -40px; left: 20%; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,.05); }
@@ -44,10 +37,10 @@
         .header-refresh { position: absolute; top: 28px; right: 32px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; }
         .header-refresh:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
 
-        /* ── MAIN CONTENT ── */
+        /* MAIN CONTENT */
         .main-wrap { padding: 0 24px 48px; margin-top: -52px; position: relative; z-index: 1; max-width: 1400px; margin-left: auto; margin-right: auto; }
 
-        /* ── STATS WRAP ── */
+        /* STATS WRAP */
         .stats-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; padding: 0 4px; }
         .stats-wrap { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; transition: all 0.3s ease; }
         .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; flex: 1 1 calc(25% - 14px); min-width: 170px; transition: all .2s; }
@@ -56,7 +49,7 @@
         .stat-num { font-size: 20px; font-weight: 700; line-height: 1; transition: all .2s; }
         .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; transition: all .2s; }
 
-        /* 접힘 상태 (오버플로우 숨김 없이 자연스러운 뱃지 랩핑) */
+        /* STATS COLLAPSED */
         .stats-wrap.collapsed { gap: 8px; margin-bottom: 12px; }
         .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: auto; padding: 6px 14px; border-radius: 30px; flex-direction: row; gap: 8px; }
         .stats-wrap.collapsed .stat-icon { width: 24px; height: 24px; font-size: 12px; border-radius: 50%; }
@@ -64,16 +57,14 @@
         .stats-wrap.collapsed .stat-num { font-size: 14px; margin: 0;}
         .stats-wrap.collapsed .stat-label { font-size: 12px; margin: 0; white-space: nowrap; }
 
-        /* ── PANEL ── */
+        /* PANEL */
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; }
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 20px 24px 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-        
         .filter-group { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 40px; padding: 4px; }
         .filter-chip input[type="radio"] { display: none; }
         .filter-chip label { display: block; padding: 6px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all .2s; user-select: none; }
         .filter-chip input[type="radio"]:checked + label { background: linear-gradient(135deg, #009A44, #007a36); color: #fff; box-shadow: 0 2px 8px rgba(0,154,68,.35); }
         
-        /* 탭 스크롤 대응 (모바일) */
         .view-tabs-wrapper { max-width: 100%; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
         .view-tabs-wrapper::-webkit-scrollbar { display: none; }
         .view-tabs { display: flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 4px; width: max-content; }
@@ -85,18 +76,17 @@
         .tab-panel.active { display: block; animation: fadeIn .25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── GANTT ── */
+        /* GANTT */
         .gantt-controls { display: flex; gap: 6px; margin-bottom: 16px; justify-content: flex-end; }
         .gantt-view-btn { padding: 5px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
         .gantt-view-btn.active { background: #005BAC; border-color: #005BAC; color: #fff; }
         .gantt-target { overflow-x: auto; min-height: 400px; }
 
-        /* ── ASSIGNEE KANBAN ── */
+        /* ASSIGNEE KANBAN */
         .assignee-roles { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
         .role-btn { border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-secondary); padding: 5px 10px; cursor: pointer; position: relative; }
         .role-btn.active { color: #009A44; }
         .role-btn.active::after { content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 3px; background: #009A44; border-radius: 3px 3px 0 0; }
-        
         .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
         .assignee-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; }
@@ -108,19 +98,19 @@
         .task-dday { font-size: 11px; font-weight: bold; color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
         .task-dday.safe { color: #059669; background: #d1fae5; }
 
-        /* ── MONTHLY STATS ── */
+        /* MONTHLY STATS */
         .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 30px; }
         .accordion-button:not(.collapsed) { background-color: var(--surface-2); color: #009A44; box-shadow: inset 0 -1px 0 rgba(0,0,0,.125); }
         .settle-badge { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .settle-done { background: #e5e7eb; color: #374151; }
         .settle-wait { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-        /* ── CALENDAR ── */
+        /* CALENDAR */
         #calendar { max-width: 100%; }
         .fc .fc-button-primary { background: #005BAC !important; border-color: #005BAC !important; font-size: 12px !important; }
-        .fc-event { font-size: 11px !important; border: none !important; }
+        .fc-event { font-size: 11px !important; border: none !important; cursor: pointer; }
 
-        /* ── LOADING & DRAWER ── */
+        /* MODAL & DRAWER */
         #loading { display: none; position: fixed; inset: 0; background: rgba(238,248,242,.88); backdrop-filter: blur(4px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
         .loader-ring { width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--border); border-top-color: #009A44; animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -375,11 +365,17 @@
             triggerActiveTabRender();
         }
 
+        // 탭이 완전히 노출된 후 렌더링을 실행하여 라이브러리 충돌 및 크기 계산 오류 원천 차단
         function triggerActiveTabRender() {
-            if (activeTabTarget === 'gantt-view') setTimeout(renderGantt, 300);
-            else if (activeTabTarget === 'monthly-view') setTimeout(renderMonthly, 150);
-            else if (activeTabTarget === 'assignee-view') renderAssignee();
-            else renderCalendar();
+            if (activeTabTarget === 'gantt-view') {
+                setTimeout(renderGantt, 150);
+            } else if (activeTabTarget === 'monthly-view') {
+                setTimeout(renderMonthly, 150);
+            } else if (activeTabTarget === 'assignee-view') {
+                renderAssignee();
+            } else {
+                renderCalendar();
+            }
         }
 
         function fetchData() {
@@ -388,6 +384,16 @@
                 .then(res => res.json())
                 .then(data => { rawData = data; showLoading(false); updateStats(); triggerActiveTabRender(); })
                 .catch(err => { alert('데이터 로드 실패'); showLoading(false); });
+        }
+
+        function safeDateStr(dateVal, fallbackDateStr) {
+            if (!dateVal) return fallbackDateStr;
+            const d = new Date(dateVal);
+            if (isNaN(d.getTime())) return fallbackDateStr;
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
         }
 
         function getFilteredData() {
@@ -425,48 +431,103 @@
             calendar.render();
         }
 
-        /* ── 2. GANTT ── */
+        /* ── 2. GANTT (예외 처리 및 무결성 강화) ── */
         function renderGantt() {
-            const validData = getFilteredData().filter(item => item['요구사항 ID']);
-            if (validData.length === 0) { document.getElementById('gantt').innerHTML = '<p class="text-center mt-4">데이터 없음</p>'; return; }
+            const ganttContainer = document.getElementById('gantt');
+            
+            // 컨테이너가 화면에 표시되지 않은 상태면 렌더링 중단
+            if (ganttContainer.offsetWidth === 0) return;
 
-            const todayStr = new Date().toISOString().split('T')[0];
-            const tasks = validData.map((item, idx) => {
-                let s = item['접수일자']; let e = item['운영이관(예정)일'];
-                let isInvalid = !s || !e || isNaN(new Date(s)) || isNaN(new Date(e));
+            let validData = getFilteredData();
+            if (validData.length === 0) { 
+                ganttContainer.innerHTML = '<p class="text-center mt-4">데이터 없음</p>'; 
+                return; 
+            }
+
+            // 정렬: 접수일자 오름차순
+            validData.sort((a, b) => {
+                let d1 = new Date(a['접수일자'] || new Date());
+                let d2 = new Date(b['접수일자'] || new Date());
+                return d1 - d2;
+            });
+
+            const todayStr = safeDateStr(new Date(), null);
+
+            const tasks = validData.map((item, index) => {
+                let sDateRaw = item['접수일자'];
+                let eDateRaw = item['운영이관(예정)일'];
+
+                let isInvalid = false;
+                let sDate = safeDateStr(sDateRaw, null);
+                let eDate = safeDateStr(eDateRaw, null);
+
+                if (!sDate) {
+                    isInvalid = true;
+                    sDate = todayStr;
+                }
                 
-                s = isInvalid ? todayStr : new Date(s).toISOString().split('T')[0];
-                e = isInvalid ? todayStr : new Date(e).toISOString().split('T')[0];
+                if (!eDate) {
+                    isInvalid = true;
+                    let tmp = new Date(sDate);
+                    tmp.setDate(tmp.getDate() + 7);
+                    eDate = safeDateStr(tmp, null);
+                }
 
-                if(new Date(s) > new Date(e)) e = s;
-                if(s === e) { let tmp = new Date(e); tmp.setDate(tmp.getDate()+1); e = tmp.toISOString().split('T')[0]; }
+                if (new Date(sDate) > new Date(eDate)) {
+                    isInvalid = true;
+                    let tmp = new Date(sDate);
+                    tmp.setDate(tmp.getDate() + 1);
+                    eDate = safeDateStr(tmp, null);
+                } else if (sDate === eDate) {
+                    let tmp = new Date(eDate);
+                    tmp.setDate(tmp.getDate() + 1);
+                    eDate = safeDateStr(tmp, null);
+                }
+
+                let customClass = isInvalid ? 'status-errorData' : 'status-' + (item['진행단계'] || '').replace(/\s/g, '');
+                let taskName = isInvalid ? `[날짜확인] [${item['출처시트']}] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`;
+
+                // DOM 파싱 오류 방지 무결성 ID 발급
+                const safeHtmlId = 'gantt_task_' + index;
 
                 return {
-                    id: 'task_' + idx, // DOM 파싱 에러 완전 차단 고유 ID
-                    name: isInvalid ? `[날짜확인] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`,
-                    start: s, end: e, progress: 100,
-                    custom_class: isInvalid ? 'status-errorData' : 'status-' + (item['진행단계']||'').replace(/\s/g, ''),
+                    id: safeHtmlId,
+                    name: taskName,
+                    start: sDate, 
+                    end: eDate, 
+                    progress: 100,
+                    custom_class: customClass,
                     extendedProps: item
                 };
             });
 
-            document.getElementById('gantt').innerHTML = '';
+            ganttContainer.innerHTML = '';
+            
             try {
-                gantt = new Gantt("#gantt", tasks, { language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day', on_click: (task) => openModal(task.extendedProps) });
+                gantt = new Gantt("#gantt", tasks, { 
+                    language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day', 
+                    on_click: (task) => openModal(task.extendedProps) 
+                });
+
                 if (!document.getElementById('ganttStyles')) {
                     let css = `.gantt .bar-label { font-size: 11px; fill: #fff; } .gantt .grid-header { fill: #f4fbf7; }\n`;
-                    for (const [k, v] of Object.entries(STATUS_CONFIG)) css += `.gantt .bar.status-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.color}; }\n`;
+                    for (const [k, v] of Object.entries(STATUS_CONFIG)) {
+                        if(k === '전체') continue;
+                        css += `.gantt .bar.status-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.color}; }\n`;
+                    }
                     css += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
                     const st = document.createElement('style'); st.id = 'ganttStyles'; st.innerHTML = css; document.head.appendChild(st);
                 }
-            } catch(e) { document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트 렌더링 실패</p>'; }
+            } catch(e) { 
+                console.error("Gantt Error:", e);
+                ganttContainer.innerHTML = '<p class="text-center mt-4 text-danger">데이터 예외 발생으로 차트를 그릴 수 없습니다.</p>'; 
+            }
         }
 
         /* ── 3. MONTHLY STATS ── */
         function renderMonthly() {
             const data = getFilteredData().filter(item => item['진행단계'] === '적용 완료' && item['운영이관(예정)일']);
             
-            // Group by Month
             let monthMap = {};
             data.forEach(item => {
                 const d = new Date(item['운영이관(예정)일']);
@@ -476,18 +537,17 @@
                 
                 const scale = item['규모'] || '소';
                 if(monthMap[ym][scale] !== undefined) monthMap[ym][scale]++;
-                else monthMap[ym]['소']++; // fallback
+                else monthMap[ym]['소']++; 
                 
                 monthMap[ym].items.push(item);
             });
 
-            const sortedMonths = Object.keys(monthMap).sort().slice(-12); // 최근 12개월
+            const sortedMonths = Object.keys(monthMap).sort().slice(-12); 
             const labels = sortedMonths;
             const dataLarge = labels.map(m => monthMap[m]['대']);
             const dataMedium = labels.map(m => monthMap[m]['중']);
             const dataSmall = labels.map(m => monthMap[m]['소']);
 
-            // Draw Chart
             const ctx = document.getElementById('monthlyChart').getContext('2d');
             if(chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, {
@@ -503,7 +563,6 @@
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }, plugins: { legend: { position: 'bottom' } } }
             });
 
-            // Draw Accordion
             let accHtml = '';
             sortedMonths.reverse().forEach((ym, idx) => {
                 const items = monthMap[ym].items;
@@ -536,7 +595,7 @@
             const roleFilter = document.querySelector('.role-btn.active').dataset.role;
             const activeTasks = getFilteredData().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
             
-            let userMap = {}; // { '김민지': [task1, task2] }
+            let userMap = {}; 
             activeTasks.forEach(task => {
                 ['기획', '디자인', '퍼블'].forEach(role => {
                     if (roleFilter !== 'all' && roleFilter !== role) return;
@@ -545,7 +604,6 @@
                         const names = val.split(/[,/]/).map(n => n.trim());
                         names.forEach(n => {
                             if(!userMap[n]) userMap[n] = [];
-                            // Avoid duplicates if person does 2 roles
                             if(!userMap[n].find(t => t['요구사항 ID'] === task['요구사항 ID'])) userMap[n].push(task);
                         });
                     }
