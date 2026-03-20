@@ -117,35 +117,44 @@
             margin-right: auto;
         }
 
-        /* ── STATS ROW ─────────────────────────── */
+        /* ── HORIZONTAL SCROLL STATS ─────────────────────────── */
+        .stats-scroll-wrap {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .stats-scroll-wrap::-webkit-scrollbar { display: none; }
+
         .stat-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 18px 20px;
+            padding: 16px 20px;
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             transition: transform .2s, box-shadow .2s;
             cursor: pointer;
             user-select: none;
+            min-width: 170px;
+            flex: 0 0 auto;
         }
         .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
         .stat-card:active { transform: translateY(0); }
         .stat-icon {
-            width: 44px; height: 44px;
+            width: 40px; height: 40px;
             border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             flex-shrink: 0;
         }
-        .stat-icon.green  { background: #ecfdf5; }
-        .stat-icon.blue   { background: #eff6ff; }
-        .stat-icon.yellow { background: #fffbeb; }
-        .stat-icon.gray   { background: #f9fafb; }
-        .stat-num { font-size: 22px; font-weight: 700; line-height: 1; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+        .stat-num { font-size: 20px; font-weight: 700; line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
 
         /* ── PANEL CARD ─────────────────────────── */
         .panel {
@@ -375,7 +384,8 @@
             height: 100%;
             background: var(--surface);
             box-shadow: -8px 0 40px rgba(0,0,0,.15);
-            z-index: 1050;
+            /* 모달(1055)보다 낮게 배치하여 충돌 방지 */
+            z-index: 1045;
             display: flex;
             flex-direction: column;
             transition: right .3s cubic-bezier(.4,0,.2,1);
@@ -457,15 +467,6 @@
             font-size: 14px;
         }
 
-        /* ── STATUS BADGE ─────────────────────── */
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
         /* ── RESPONSIVE ──────────────────────── */
         @media (max-width: 640px) {
             .app-header { padding: 20px 16px 70px; }
@@ -492,44 +493,8 @@
 
     <div class="main-wrap">
 
-        <div class="row g-3 mb-4" id="statsRow">
-            <div class="col-6 col-md-3">
-                <div class="stat-card" onclick="showStatusDetail('적용 완료')">
-                    <div class="stat-icon green">✅</div>
-                    <div>
-                        <div class="stat-num" id="statDone">—</div>
-                        <div class="stat-label">적용 완료</div>
-                    </div>
-                </div>
+        <div class="stats-scroll-wrap" id="statsContainer">
             </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card" onclick="showStatusDetail('진행중')">
-                    <div class="stat-icon blue">🔵</div>
-                    <div>
-                        <div class="stat-num" id="statInProgress">—</div>
-                        <div class="stat-label">진행중</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card" onclick="showStatusDetail('개발 대기')">
-                    <div class="stat-icon yellow">🟡</div>
-                    <div>
-                        <div class="stat-num" id="statWaiting">—</div>
-                        <div class="stat-label">개발 대기</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-card" onclick="showStatusDetail('all')">
-                    <div class="stat-icon gray">⚫</div>
-                    <div>
-                        <div class="stat-num" id="statTotal">—</div>
-                        <div class="stat-label">전체 건수</div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="panel">
             <div class="panel-toolbar">
@@ -597,9 +562,12 @@
                             <div class="col-md-6">
                                 <label class="form-label">진행단계</label>
                                 <select class="form-select" id="formStatus" name="진행단계">
-                                    <option>적용 완료</option>
+                                    <option>작업 대기</option>
                                     <option>진행중</option>
+                                    <option>검증 반영</option>
                                     <option>개발 대기</option>
+                                    <option>개발중</option>
+                                    <option>적용 완료</option>
                                     <option>취소</option>
                                 </select>
                             </div>
@@ -638,11 +606,43 @@
         let activeTabTarget = 'calendar-view';
         const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
 
+        // ── 중앙 상태(Status) 관리 설정 ──
+        const STATUS_CONFIG = {
+            '전체':      { color: '#4b5563', icon: '📋', bg: '#f3f4f6' },
+            '작업 대기': { color: '#8b5cf6', icon: '⏳', bg: '#f3e8ff' },
+            '진행중':    { color: '#005BAC', icon: '🔵', bg: '#eff6ff' },
+            '검증 반영': { color: '#14b8a6', icon: '🧪', bg: '#ccfbf1' },
+            '개발 대기': { color: '#f59e0b', icon: '🟡', bg: '#fef3c7' },
+            '개발중':    { color: '#f97316', icon: '💻', bg: '#ffedd5' },
+            '적용 완료': { color: '#009A44', icon: '✅', bg: '#dcfce7' },
+            '취소':      { color: '#9ca3af', icon: '⚪', bg: '#f3f4f6' }
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             if (GAS_WEB_APP_URL.includes('YOUR_GAS')) return alert('GAS 웹 앱 URL 입력 필요');
+            initStatsUI();
             setupEventListeners();
             fetchData();
         });
+
+        // 상태값 기반 통계 현황판 동적 생성
+        function initStatsUI() {
+            const container = document.getElementById('statsContainer');
+            let html = '';
+            for (const [status, config] of Object.entries(STATUS_CONFIG)) {
+                const idName = status === '전체' ? 'all' : status;
+                html += `
+                    <div class="stat-card" onclick="showStatusDetail('${idName}')">
+                        <div class="stat-icon" style="background-color: ${config.bg}; color: ${config.color}">${config.icon}</div>
+                        <div>
+                            <div class="stat-num" id="stat-${idName.replace(/\s/g, '')}">—</div>
+                            <div class="stat-label">${status}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
 
         function setupEventListeners() {
             document.querySelectorAll('input[name="sheetFilter"]').forEach(radio => {
@@ -670,7 +670,6 @@
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(activeTabTarget).classList.add('active');
             
-            // 패널이 완전히 나타난 후 간트차트 렌더링 (크기 오류 방지)
             if (activeTabTarget === 'gantt-view') {
                 setTimeout(renderGantt, 150);
             } else {
@@ -698,7 +697,6 @@
                 });
         }
 
-        // 안전한 날짜 변환 함수 (간트차트 에러 방지용)
         function safeDateStr(dateVal, fallbackDateStr) {
             if (!dateVal) return fallbackDateStr;
             const d = new Date(dateVal);
@@ -715,20 +713,22 @@
 
         function updateStats() {
             const d = getFilteredData();
-            document.getElementById('statDone').textContent = d.filter(i => i['진행단계'] === '적용 완료').length;
-            document.getElementById('statInProgress').textContent = d.filter(i => i['진행단계'] === '진행중').length;
-            document.getElementById('statWaiting').textContent = d.filter(i => i['진행단계'] === '개발 대기').length;
-            document.getElementById('statTotal').textContent = d.length;
+            // 전체 갯수
+            const allEl = document.getElementById('stat-all');
+            if(allEl) allEl.textContent = d.length;
+
+            // 각 상태별 갯수
+            for (const status of Object.keys(STATUS_CONFIG)) {
+                if (status === '전체') continue;
+                const el = document.getElementById('stat-' + status.replace(/\s/g, ''));
+                if (el) {
+                    el.textContent = d.filter(i => i['진행단계'] === status).length;
+                }
+            }
         }
 
         function getColor(status) {
-            switch (status) {
-                case '적용 완료': return '#009A44';
-                case '진행중':    return '#005BAC';
-                case '개발 대기': return '#f59e0b';
-                case '취소':      return '#9ca3af';
-                default:          return '#6b7280';
-            }
+            return STATUS_CONFIG[status] ? STATUS_CONFIG[status].color : '#6b7280';
         }
 
         function renderCalendar() {
@@ -736,7 +736,7 @@
             let events = [];
             filteredData.forEach(item => {
                 const color = getColor(item['진행단계']);
-                const txtColor = item['진행단계'] === '개발 대기' ? '#000' : '#fff';
+                const txtColor = ['개발 대기', '검증 반영', '개발중', '작업 대기'].includes(item['진행단계']) ? '#000' : '#fff';
                 const prefix = item['출처시트'] === '인터넷' ? '[인]' : '[스]';
 
                 if (item['접수일자'] && !isNaN(Date.parse(item['접수일자']))) {
@@ -755,9 +755,7 @@
                 events: events,
                 eventClick: (info) => openModal(info.event.extendedProps),
                 windowResize: () => calendar.changeView(window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth'),
-                eventDidMount: (info) => {
-                    info.el.title = info.event.extendedProps['요건명'] || '';
-                }
+                eventDidMount: (info) => { info.el.title = info.event.extendedProps['요건명'] || ''; }
             });
             calendar.render();
         }
@@ -773,34 +771,38 @@
             const todayStr = safeDateStr(new Date());
 
             const tasks = validData.map(item => {
-                let sDate = safeDateStr(item['접수일자'], todayStr);
-                let eDate = safeDateStr(item['운영이관(예정)일'], null);
+                let sDateRaw = item['접수일자'];
+                let eDateRaw = item['운영이관(예정)일'];
 
-                // 종료일이 없거나 형식 오류 시, 시작일 + 7일로 강제 설정
-                if (!eDate) {
+                let isInvalid = false;
+                let sDate = safeDateStr(sDateRaw, null);
+                let eDate = safeDateStr(eDateRaw, null);
+
+                // 유효하지 않은 날짜 처리 로직 (최소 1일 생성 및 에러 상태 부여)
+                if (!sDate || !eDate) {
+                    isInvalid = true;
+                    sDate = todayStr;
                     let tmp = new Date(sDate); 
-                    tmp.setDate(tmp.getDate() + 7);
+                    tmp.setDate(tmp.getDate() + 1);
                     eDate = safeDateStr(tmp);
-                }
-
-                // 시작일이 종료일보다 늦으면 데이터 보정
-                if (new Date(sDate) > new Date(eDate)) {
+                } else if (new Date(sDate) > new Date(eDate)) {
+                    isInvalid = true;
                     eDate = sDate;
-                }
-
-                // Frappe Gantt 에러 방지: 시작일과 종료일이 같으면 종료일에 1일 추가
-                if (sDate === eDate) {
+                } else if (sDate === eDate) {
                     let tmp = new Date(eDate); 
                     tmp.setDate(tmp.getDate() + 1);
                     eDate = safeDateStr(tmp);
                 }
 
+                let customClass = isInvalid ? 'status-errorData' : 'status-' + (item['진행단계'] || '').replace(/\s/g, '');
+                let taskName = isInvalid ? `[날짜확인] [${item['출처시트']}] ${item['요건명']}` : `[${item['출처시트']}] ${item['요건명']}`;
+
                 return {
                     id: String(item['요구사항 ID']),
-                    name: `[${item['출처시트']}] ${item['요건명']}`,
+                    name: taskName,
                     start: sDate, end: eDate,
                     progress: 100,
-                    custom_class: 'status-' + item['진행단계'].replace(/\s/g, ''),
+                    custom_class: customClass,
                     extendedProps: item
                 };
             });
@@ -813,19 +815,36 @@
                     on_click: (task) => openModal(task.extendedProps)
                 });
 
+                // 상태별 동적 CSS 및 에러(날짜확인) CSS 주입
                 if (!document.getElementById('ganttStyles')) {
                     const style = document.createElement('style');
                     style.id = 'ganttStyles';
-                    style.innerHTML = `
-                        .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
-                        .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
-                        .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
-                        .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
-                        .gantt .bar-label { font-size: 11px; fill: #fff; }
-                        .gantt .grid-header { fill: #f4fbf7; }
-                    `;
+                    let cssRules = `.gantt .bar-label { font-size: 11px; fill: #fff; } .gantt .grid-header { fill: #f4fbf7; }\n`;
+                    for (const [status, config] of Object.entries(STATUS_CONFIG)) {
+                        if(status === '전체') continue;
+                        const safeClass = 'status-' + status.replace(/\s/g, '');
+                        cssRules += `.gantt .bar.${safeClass} .bar-progress { fill: ${config.color}; }\n`;
+                    }
+                    // 날짜 미상 에러 바 전용 스타일
+                    cssRules += `.gantt .bar.status-errorData .bar-progress { fill: #ef4444; opacity: 0.8; }\n`;
+                    cssRules += `.gantt .bar.status-errorData .bar-label { fill: #fff; font-weight: bold; }\n`;
+
+                    style.innerHTML = cssRules;
                     document.head.appendChild(style);
                 }
+
+                // 에러 데이터 바 내부 텍스트 수정
+                setTimeout(() => {
+                    tasks.forEach(task => {
+                        if(task.custom_class === 'status-errorData') {
+                            const labelElement = document.querySelector(`.bar-wrapper[data-id="${task.id}"] .bar-label`);
+                            if(labelElement) {
+                                labelElement.innerHTML = '데이터 확인';
+                            }
+                        }
+                    });
+                }, 100);
+
             } catch(e) {
                 console.error("간트차트 렌더링 에러:", e);
                 document.getElementById('gantt').innerHTML = '<p class="text-center mt-4 text-danger">간트차트를 그릴 수 없는 데이터가 포함되어 있습니다.</p>';
@@ -856,14 +875,10 @@
                 statusFilter === 'all' || item['진행단계'] === statusFilter
             );
 
-            const labelMap = {
-                '적용 완료': '✅ 적용 완료',
-                '진행중':    '🔵 진행중',
-                '개발 대기': '🟡 개발 대기',
-                'all':       '⚫ 전체 요구사항'
-            };
-            document.getElementById('drawerTitle').textContent =
-                `${labelMap[statusFilter] || statusFilter} (${filtered.length}건)`;
+            const displayTitle = statusFilter === 'all' ? '전체' : statusFilter;
+            const icon = STATUS_CONFIG[displayTitle] ? STATUS_CONFIG[displayTitle].icon : '⚫';
+            
+            document.getElementById('drawerTitle').textContent = `${icon} ${displayTitle} (${filtered.length}건)`;
 
             const body = document.getElementById('drawerBody');
             if (filtered.length === 0) {
@@ -879,15 +894,9 @@
                         return new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
                     };
 
-                    const statusColors = {
-                        '적용 완료': '#009A44', '진행중': '#005BAC',
-                        '개발 대기': '#f59e0b', '취소': '#9ca3af'
-                    };
-                    const badgeColor = statusColors[item['진행단계']] || '#6b7280';
-                    const badgeBg   = item['진행단계'] === '개발 대기' ? '#fffbeb' :
-                                      item['진행단계'] === '취소'      ? '#f9fafb' : '#fff';
+                    const statusVal = item['진행단계'] || '';
+                    const cfg = STATUS_CONFIG[statusVal] || { color: '#6b7280', bg: '#f3f4f6' };
 
-                    // 요구사항 ID만 안전하게 매개변수로 전달
                     const safeId = String(item['요구사항 ID']).replace(/'/g, "\\'");
 
                     return `
@@ -898,7 +907,7 @@
                                 <span class="meta-chip ${chipClass}">${chipLabel}</span>
                                 <span class="meta-chip date">접수 ${fmtDate(item['접수일자'])}</span>
                                 <span class="meta-chip date">이관 ${fmtDate(item['운영이관(예정)일'])}</span>
-                                <span style="font-size:11px;font-weight:600;color:${badgeColor};background:${badgeBg};border:1px solid ${badgeColor}33;padding:2px 8px;border-radius:10px;">${item['진행단계'] || ''}</span>
+                                <span style="font-size:11px;font-weight:600;color:${cfg.color};background:${cfg.bg};border:1px solid ${cfg.color}40;padding:2px 8px;border-radius:10px;">${statusVal}</span>
                             </div>
                         </div>`;
                 }).join('');
@@ -908,13 +917,11 @@
             requestAnimationFrame(() => document.getElementById('statusDrawer').classList.add('open'));
         }
 
-        // 서랍 항목 클릭 시 실행되는 안전한 함수
+        // 서랍 항목 클릭 시 서랍을 닫지 않고 즉시 모달만 오픈
         function handleDrawerItemClick(id) {
-            closeDrawer();
             const targetItem = rawData.find(item => String(item['요구사항 ID']) === id);
             if (targetItem) {
-                // 서랍이 닫히는 애니메이션 시간을 고려하여 0.3초 후 모달 오픈
-                setTimeout(() => openModal(targetItem), 300);
+                openModal(targetItem);
             }
         }
 
