@@ -111,7 +111,6 @@
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
-            margin-top: -52px;
         }
 
         /* ── STATS ROW ─────────────────────────── */
@@ -475,13 +474,11 @@
 
 <body>
 
-    <!-- LOADING -->
     <div id="loading" style="display:none;">
         <div class="loader-ring"></div>
         <div class="loader-text">데이터를 불러오는 중...</div>
     </div>
 
-    <!-- HEADER -->
     <div class="app-header">
         <div class="header-badge">📋 WORK MANAGEMENT</div>
         <h1 class="header-title">업무 현황 관리</h1>
@@ -491,7 +488,6 @@
 
     <div class="main-wrap">
 
-        <!-- STAT CARDS -->
         <div class="row g-3 mb-4" id="statsRow">
             <div class="col-6 col-md-3">
                 <div class="stat-card" onclick="showStatusDetail('적용 완료')">
@@ -531,10 +527,8 @@
             </div>
         </div>
 
-        <!-- MAIN PANEL -->
         <div class="panel">
             <div class="panel-toolbar">
-                <!-- Filter chips -->
                 <div class="filter-group" role="group">
                     <div class="filter-chip">
                         <input type="radio" name="sheetFilter" id="filterAll" value="all" checked>
@@ -549,7 +543,6 @@
                         <label for="filterSmart">스마트</label>
                     </div>
                 </div>
-                <!-- View tabs -->
                 <div class="view-tabs" role="tablist">
                     <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
                     <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
@@ -557,11 +550,9 @@
             </div>
 
             <div class="view-body">
-                <!-- Calendar -->
                 <div id="calendar-view" class="tab-panel active">
                     <div id="calendar"></div>
                 </div>
-                <!-- Gantt -->
                 <div id="gantt-view" class="tab-panel">
                     <div class="gantt-controls">
                         <button class="gantt-view-btn active" data-view="Day">일별</button>
@@ -575,7 +566,6 @@
 
     </div>
 
-    <!-- STATUS DRAWER -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
     <div class="drawer" id="statusDrawer">
         <div class="drawer-header">
@@ -585,7 +575,6 @@
         <div class="drawer-body" id="drawerBody"></div>
     </div>
 
-    <!-- MODAL -->
     <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -759,13 +748,15 @@
         }
 
         function renderGantt() {
-            const filteredData = getFilteredData();
-            if (filteredData.length === 0) {
+            // 1. 구글 시트에서 넘어온 빈 행(요구사항 ID가 없는 데이터) 필터링
+            const validData = getFilteredData().filter(item => item['요구사항 ID'] && String(item['요구사항 ID']).trim() !== '');
+
+            if (validData.length === 0) {
                 document.getElementById('gantt').innerHTML = '<p class="text-center mt-4" style="color:var(--text-secondary)">데이터 없음</p>';
                 return;
             }
 
-            const tasks = filteredData.map(item => {
+            const tasks = validData.map(item => {
                 let sDate = item['접수일자'];
                 sDate = (!sDate || isNaN(Date.parse(sDate))) ? toDateStr(new Date()) : toDateStr(sDate);
 
@@ -782,7 +773,7 @@
                 }
 
                 return {
-                    id: item['요구사항 ID'],
+                    id: String(item['요구사항 ID']), // 안전한 문자열 처리
                     name: `[${item['출처시트']}] ${item['요건명']}`,
                     start: sDate, end: eDate,
                     progress: 100,
@@ -792,24 +783,32 @@
             });
 
             document.getElementById('gantt').innerHTML = '';
-            gantt = new Gantt("#gantt", tasks, {
-                language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
-                on_click: (task) => openModal(task.extendedProps)
-            });
+            
+            // 2. 탭 전환 애니메이션이 끝난 후 차트를 그려 크기 인식 오류 방지 (setTimeout 적용)
+            setTimeout(() => {
+                try {
+                    gantt = new Gantt("#gantt", tasks, {
+                        language: 'ko', header_height: 50, column_width: 30, step: 24, bar_height: 22, bar_corner_radius: 4, view_mode: 'Day',
+                        on_click: (task) => openModal(task.extendedProps)
+                    });
 
-            if (!document.getElementById('ganttStyles')) {
-                const style = document.createElement('style');
-                style.id = 'ganttStyles';
-                style.innerHTML = `
-                    .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
-                    .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
-                    .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
-                    .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
-                    .gantt .bar-label { font-size: 11px; fill: #fff; }
-                    .gantt .grid-header { fill: #f4fbf7; }
-                `;
-                document.head.appendChild(style);
-            }
+                    if (!document.getElementById('ganttStyles')) {
+                        const style = document.createElement('style');
+                        style.id = 'ganttStyles';
+                        style.innerHTML = `
+                            .gantt .bar.status-적용완료 .bar-progress { fill: #009A44; }
+                            .gantt .bar.status-진행중 .bar-progress    { fill: #005BAC; }
+                            .gantt .bar.status-개발대기 .bar-progress  { fill: #f59e0b; }
+                            .gantt .bar.status-취소 .bar-progress      { fill: #9ca3af; }
+                            .gantt .bar-label { font-size: 11px; fill: #fff; }
+                            .gantt .grid-header { fill: #f4fbf7; }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                } catch(e) {
+                    console.error("간트차트 렌더링 에러:", e);
+                }
+            }, 100);
         }
 
         function openModal(data) {
