@@ -656,9 +656,7 @@
                                     <input type="text" class="form-control" name="bizMutual" list="bizList" autocomplete="off">
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 기획</label>
                                     <input type="text" class="form-control" name="담당_기획">
                                 </div>
@@ -676,9 +674,7 @@
                                     </select>
                                 </div>
 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold text-primary">계획 기획</label>
                                     <input type="date" class="form-control" name="계획_기획">
                                 </div>
@@ -722,9 +718,7 @@
                                     </select>
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">접수일자</label>
                                     <input type="date" class="form-control" name="접수일자">
                                 </div>
@@ -762,7 +756,7 @@
                     <div class="modal-body p-4">
                         <form id="createForm">
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label small fw-bold">출처시트</label>
                                     <select class="form-select" name="출처시트">
                                         <option value="인터넷" selected>인터넷</option>
@@ -770,31 +764,13 @@
                                         <option value="둘다">인터넷, 스마트 둘 다</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label small fw-bold">구분</label>
                                     <select class="form-select" name="구분" id="createGubun">
                                         <option value="은행" selected>은행</option>
                                         <option value="상호">상호</option>
                                         <option value="공통">공통</option>
                                     </select>
-                                </div>
-                                
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-                                
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold">요건명</label>
-                                    <textarea class="form-control" name="요건명" rows="2" placeholder="요건명 입력"></textarea>
-                                </div>
-                                
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-                                
-                                <div class="col-md-4" id="bizBankWrapper">
-                                    <label class="form-label small fw-bold">은행 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="bizBank" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
-                                </div>
-                                <div class="col-md-4" id="bizMutualWrapper" style="display:none;">
-                                    <label class="form-label small fw-bold">상호 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">규모</label>
@@ -803,19 +779,31 @@
                                     </select>
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">요건명</label>
+                                    <textarea class="form-control" name="요건명" rows="2" placeholder="요건명 입력"></textarea>
+                                </div>
                                 
-                                <div class="col-md-4" id="createPlannerWrapper">
+                                <div class="col-md-6" id="bizBankWrapper">
+                                    <label class="form-label small fw-bold">은행 사업부서 담당자</label>
+                                    <input type="text" class="form-control" name="bizBank" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                </div>
+                                <div class="col-md-6" id="bizMutualWrapper" style="display:none;">
+                                    <label class="form-label small fw-bold">상호 사업부서 담당자</label>
+                                    <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                </div>
+                                
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 기획 <span class="recommend-badge" id="recommendBadge" style="display:none;">추천 반영</span></label>
                                     <select class="form-select" id="createPlanner" name="담당_기획"></select>
                                 </div>
-                                <div class="col-md-4" id="createDesignerWrapper">
+                                <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 디자인</label>
                                     <select class="form-select" name="담당_디자인">
                                         <option value="">-</option><option value="X" selected>X</option><option value="김명진">김명진</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4" id="createPublisherWrapper">
+                                <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 퍼블</label>
                                     <select class="form-select" name="담당_퍼블">
                                         <option value="">-</option><option value="X" selected>X</option>
@@ -823,9 +811,7 @@
                                     </select>
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-                                
-                                <div class="col-md-6">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-6">
                                     <label class="form-label small fw-bold">접수일자</label>
                                     <input type="date" class="form-control" name="접수일자">
                                 </div>
@@ -894,29 +880,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
-    /* ===================================================
-       CONSTANTS & STATE
-       =================================================== */
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
 
     const AppState = {
-        rawData: [],
-        currentUser: null,
-        isStatsCollapsed: false,
-        activeTab: 'calendar-view',
-        currentGanttMode: 'Month',
-        isShortcutPanelVisible: false,
-        pendingChanges: new Map(), // 낙관적 업데이트용
+        rawData: [], currentUser: null, isStatsCollapsed: false,
+        activeTab: 'calendar-view', currentGanttMode: 'Month'
     };
 
     let calendar, gantt, chart;
-
     const modal = new bootstrap.Modal(document.getElementById('eventModal'));
     const createModal = new bootstrap.Modal(document.getElementById('createModal'));
     const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
-
-    /* 진행단계 → 순서 정의 */
-    const STEPS = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료'];
 
     const MAP = {
         '전체':    { c: '#4b5563', i: '📋', b: '#f3f4f6' },
@@ -929,9 +903,6 @@
         '취소':    { c: '#9ca3af', i: '⚪', b: '#f3f4f6' },
     };
 
-    /* ===================================================
-       TOAST
-       =================================================== */
     function showToast(msg, type = 'success') {
         const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const container = document.getElementById('toastContainer');
@@ -940,12 +911,9 @@
         toast.innerHTML = `<span class="toast-icon">${icons[type] || '📌'}</span><span style="flex:1">${msg}</span><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
         container.appendChild(toast);
         setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
-    /* ===================================================
-       SECURITY — 세션 평문 저장 방지
-       =================================================== */
     function storeSession(user, persistent) {
         const json = JSON.stringify(user);
         const encoded = btoa(encodeURIComponent(json));
@@ -959,22 +927,14 @@
         try {
             const decoded = decodeURIComponent(atob(raw));
             return JSON.parse(decoded);
-        } catch { 
-            clearSession(); 
-            return null; 
-        }
+        } catch { clearSession(); return null; }
     }
 
     function clearSession() {
-        sessionStorage.removeItem('_pms_sess');
-        localStorage.removeItem('_pms_sess');
-        sessionStorage.removeItem('currentUser');
-        localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('_pms_sess'); localStorage.removeItem('_pms_sess');
+        sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
     }
 
-    /* ===================================================
-       LOGIN
-       =================================================== */
     function togglePassword() {
         const el = document.getElementById('loginPw');
         const btn = document.getElementById('pwToggleBtn');
@@ -989,9 +949,7 @@
             applyUserRoleUI();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
-            initUI();
-            restoreFilterFromURL();
-            fetchData();
+            initUI(); fetchData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
@@ -1024,145 +982,31 @@
             .catch(() => { showToast('통신 에러 발생', 'error'); btn.innerText = '로그인'; btn.disabled = false; });
     }
 
-    function logout() {
-        clearSession();
-        location.reload();
-    }
+    function logout() { clearSession(); location.reload(); }
 
     function applyUserRoleUI() {
         if (!AppState.currentUser) return;
-        document.getElementById('userInfoDisplay').innerText = `👤 ${AppState.currentUser.name}`;
+        document.getElementById('userInfoDisplay').innerText = `👤 접속자: ${AppState.currentUser.name}`;
         const isAdmin = AppState.currentUser.role === 'admin';
         document.querySelectorAll('.admin-only').forEach(el => {
             el.style.setProperty('display', isAdmin ? 'flex' : 'none', 'important');
         });
     }
 
-    /* ===================================================
-       DEBOUNCE 유틸
-       =================================================== */
-    function debounce(fn, delay) {
-        let timer;
-        return function (...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), delay);
-        };
-    }
-
-    const debouncedFilterFromSearch = debounce(() => applyFilter(true), 300);
-
-    /* ===================================================
-       XSS 방어 — escapeHTML 유틸
-       =================================================== */
-    const _ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;' };
-    function esc(str) {
-        if (str === null || str === undefined) return '';
-        return String(str).replace(/[&<>"'`]/g, c => _ESC[c]);
-    }
-
-    /* ===================================================
-       URL 필터 상태 관리
-       =================================================== */
-    function saveFilterToURL() {
-        const sheet = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
-        const status = document.getElementById('globalStatusFilter')?.value || 'active';
-        const keyword = document.getElementById('searchInput')?.value || '';
-        const tab = AppState.activeTab;
-
-        const params = new URLSearchParams();
-        if (sheet !== 'all') params.set('sheet', sheet);
-        if (status !== 'active') params.set('status', status);
-        if (keyword) params.set('q', keyword);
-        if (tab !== 'calendar-view') params.set('tab', tab);
-
-        const url = params.toString() ? `${location.pathname}?${params}` : location.pathname;
-        history.replaceState(null, '', url);
-
-        const permalink = document.getElementById('filterPermalink');
-        if (permalink) {
-            const hasFilter = params.toString().length > 0;
-            permalink.textContent = hasFilter ? '🔗 필터 공유' : '🔗 공유';
-            permalink.style.color = hasFilter ? '#009A44' : '';
+    function toggleStats() {
+        AppState.isStatsCollapsed = !AppState.isStatsCollapsed;
+        const wrap = document.getElementById('statsCollapseWrap');
+        const btn = document.getElementById('statsToggleBtn');
+        
+        if (AppState.isStatsCollapsed) {
+            wrap.style.display = 'none';
+            btn.innerText = '펼치기 ▼';
+        } else {
+            wrap.style.display = 'block';
+            btn.innerText = '접기 ▲';
         }
     }
 
-    function restoreFilterFromURL() {
-        const params = new URLSearchParams(location.search);
-        const sheet = params.get('sheet');
-        const status = params.get('status');
-        const keyword = params.get('q');
-        const tab = params.get('tab');
-
-        if (sheet) {
-            const radio = document.querySelector(`input[name="sheetFilter"][value="${sheet}"]`);
-            if (radio) radio.checked = true;
-        }
-        if (status) {
-            const sel = document.getElementById('globalStatusFilter');
-            if (sel) sel.value = status;
-        }
-        if (keyword) {
-            const inp = document.getElementById('searchInput');
-            if (inp) inp.value = keyword;
-        }
-        if (tab) {
-            const btn = document.querySelector(`.view-tab-btn[data-target="${tab}"]`);
-            if (btn) switchTab(btn);
-        }
-    }
-
-    function copyFilterLink() {
-        saveFilterToURL();
-        navigator.clipboard.writeText(location.href)
-            .then(() => showToast('필터 링크가 클립보드에 복사되었습니다.', 'success'))
-            .catch(() => showToast('링크 복사 실패. 브라우저 주소창에서 직접 복사해 주세요.', 'info'));
-    }
-
-    /* ===================================================
-       KEYBOARD SHORTCUTS
-       =================================================== */
-    function toggleShortcutPanel() {
-        AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
-        document.getElementById('shortcutPanel').classList.toggle('visible', AppState.isShortcutPanelVisible);
-    }
-
-    document.addEventListener('keydown', (e) => {
-        const tag = document.activeElement?.tagName.toLowerCase();
-        const isInput = ['input', 'textarea', 'select'].includes(tag);
-        const modalOpen = document.querySelector('.modal.show');
-
-        if (e.key === 'Escape') {
-            if (AppState.isShortcutPanelVisible) { toggleShortcutPanel(); return; }
-            closeDrawer();
-            return;
-        }
-        if (e.key === '?') { toggleShortcutPanel(); return; }
-
-        if (isInput || modalOpen) return;
-
-        if (e.key === 'n' || e.key === 'N') {
-            if (AppState.currentUser?.role === 'admin') openCreatePop();
-        }
-        if (e.key === 'f' || e.key === 'F') {
-            e.preventDefault();
-            document.getElementById('searchInput')?.focus();
-        }
-        if (e.key === 'r' || e.key === 'R') {
-            if (!e.metaKey && !e.ctrlKey) resetFilters();
-        }
-    });
-
-    function resetFilters() {
-        document.querySelector('#fAll').checked = true;
-        document.getElementById('globalStatusFilter').value = 'active';
-        document.getElementById('searchInput').value = '';
-        applyFilter(true);
-        showToast('필터가 초기화되었습니다.', 'info');
-    }
-
-    /* ===================================================
-       INIT UI
-       =================================================== */
     function initUI() {
         let h = '';
         Object.entries(MAP).forEach(([k, v]) => {
@@ -1202,97 +1046,15 @@
 
         document.getElementById('createGubun').addEventListener('change', function () {
             const val = this.value;
+            // 1. 사업부서 담당자 노출/숨김
             document.getElementById('bizBankWrapper').style.display = val !== '상호' ? 'block' : 'none';
             document.getElementById('bizMutualWrapper').style.display = val !== '은행' ? 'block' : 'none';
-            
-            const pWrap = document.getElementById('createPlannerWrapper');
-            const dWrap = document.getElementById('createDesignerWrapper');
-            const pubWrap = document.getElementById('createPublisherWrapper');
-
-            if (val === '공통') {
-                pWrap.className = 'col-md-12';
-                dWrap.className = 'col-md-12';
-                pubWrap.className = 'col-md-12';
-            } else {
-                pWrap.className = 'col-md-4';
-                dWrap.className = 'col-md-4';
-                pubWrap.className = 'col-md-4';
-            }
+            // 자바스크립트로 강제로 폭을 늘리던 코드 완벽 삭제! (항상 HTML의 col-md-4에 의해 3등분으로 유지됨)
         });
     }
 
-    /* ===================================================
-       SKELETON UI 렌더러
-       =================================================== */
-    function showSkeletonStats() {
-        const container = document.getElementById('statsContainer');
-        if (!container) return;
-        container.innerHTML = Array(8).fill(0).map(() => `
-            <div class="stat-card-skeleton">
-                <div class="skeleton sk-icon"></div>
-                <div class="sk-lines">
-                    <div class="skeleton sk-line-lg"></div>
-                    <div class="skeleton sk-line-sm"></div>
-                </div>
-            </div>`).join('');
-    }
-
-    function showSkeletonList() {
-        const tbody = document.querySelector('#listTable tbody');
-        if (!tbody) return;
-        tbody.innerHTML = Array(8).fill(0).map(() => `
-            <tr class="sk-table-row">
-                <td><div class="skeleton sk-cell sk-cell-xs"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-xs"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-lg"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-xs"></div></td>
-                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
-            </tr>`).join('');
-    }
-
-    function showSkeletonCalendar() {
-        const el = document.getElementById('calendar');
-        if (!el) return;
-
-        if (calendar) {
-            try { calendar.destroy(); } catch (_) {}
-            calendar = null;
-        }
-
-        el.innerHTML = `
-            <div class="skeleton-calendar">
-                <div class="sk-cal-header">
-                    <div class="skeleton sk-cal-title"></div>
-                    <div class="sk-cal-btns">
-                        <div class="skeleton sk-cal-btn"></div>
-                        <div class="skeleton sk-cal-btn"></div>
-                    </div>
-                </div>
-                <div class="sk-cal-grid">
-                    ${Array(7).fill(0).map(() => `<div class="skeleton sk-cal-day-header"></div>`).join('')}
-                    ${Array(35).fill(0).map(() => `<div class="skeleton sk-cal-cell"></div>`).join('')}
-                </div>
-            </div>`;
-    }
-
-    /* ===================================================
-       FETCH DATA
-       =================================================== */
-    function fetchData(isSilent = false) {
-        if (!isSilent) {
-            if (calendar) {
-                try { calendar.destroy(); } catch (_) {}
-                calendar = null;
-            }
-            showSkeletonStats();
-            if (AppState.activeTab === 'calendar-view') showSkeletonCalendar();
-            if (AppState.activeTab === 'list-view') showSkeletonList();
-        }
-
+    function fetchData() {
+        document.getElementById('loading').style.display = 'flex';
         fetch(GAS_URL)
             .then(r => r.json())
             .then(res => {
@@ -1300,48 +1062,13 @@
                 document.getElementById('lastUpdateTime').innerText = '⏱ ' + res.updateTime;
                 updateDropdowns();
                 applyFilter();
+                document.getElementById('loading').style.display = 'none';
             })
             .catch(err => {
-                console.error('fetchData error:', err);
-                if (!isSilent) {
-                    initUI();
-                    showFetchErrorState();
-                }
-                showToast('데이터 로드에 실패했습니다. 새로고침을 눌러 다시 시도해 주세요.', 'error');
+                console.error(err);
+                document.getElementById('loading').style.display = 'none';
+                showToast('데이터 로드 실패', 'error');
             });
-    }
-
-    function showFetchErrorState() {
-        const errorHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">⚠️</div>
-                <div class="empty-title">데이터를 불러오지 못했습니다</div>
-                <div class="empty-sub">
-                    서버와의 연결에 실패했습니다.<br>
-                    네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요.
-                </div>
-                <button class="btn-reset-filter" onclick="fetchData()" style="background:#005BAC;">
-                    ↺ 다시 시도
-                </button>
-            </div>`;
-
-        const tab = AppState.activeTab;
-        if (tab === 'calendar-view') {
-            const el = document.getElementById('calendar');
-            if (el) el.innerHTML = errorHTML;
-        } else if (tab === 'list-view') {
-            const tbody = document.querySelector('#listTable tbody');
-            if (tbody) tbody.innerHTML = `<tr><td colspan="9">${errorHTML}</td></tr>`;
-        } else if (tab === 'gantt-view') {
-            const el = document.getElementById('gantt');
-            if (el) el.innerHTML = errorHTML;
-        } else if (tab === 'monthly-view') {
-            const el = document.getElementById('monthlyAccordion');
-            if (el) el.innerHTML = errorHTML;
-        } else if (tab === 'assignee-view') {
-            const el = document.getElementById('assigneeGrid');
-            if (el) el.innerHTML = errorHTML;
-        }
     }
 
     function updateDropdowns() {
@@ -1371,13 +1098,9 @@
         window.globalPlanners = planners;
     }
 
-    /* ===================================================
-       FILTER
-       =================================================== */
-    function applyFilter(updateURL = false) {
+    function applyFilter() {
         updateStats();
         render();
-        if (updateURL) saveFilterToURL();
     }
 
     function getFiltered() {
@@ -1398,23 +1121,6 @@
     }
 
     function updateStats() {
-        const container = document.getElementById('statsContainer');
-        // 스켈레톤 상태라면 실제 카드 HTML로 복구
-        if (container && container.querySelector('.stat-card-skeleton')) {
-            let h = '';
-            Object.entries(MAP).forEach(([k, v]) => {
-                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
-                h += `<div class="stat-card" onclick="showDrawer('${k}')">
-                        <div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div>
-                        <div>
-                            <div class="stat-num" id="st-${id}">-</div>
-                            <div class="stat-label">${k}</div>
-                        </div>
-                      </div>`;
-            });
-            container.innerHTML = h;
-        }
-
         const d = getFiltered();
         const allEl = document.getElementById('st-all');
         if (allEl) allEl.innerText = d.length;
@@ -1425,9 +1131,6 @@
         });
     }
 
-    /* ===================================================
-       RENDER DISPATCHER
-       =================================================== */
     function render() {
         const tab = AppState.activeTab;
         if (tab === 'calendar-view') renderCalendar();
@@ -1437,9 +1140,6 @@
         else if (tab === 'assignee-view') renderAssignee();
     }
 
-    /* ===================================================
-       DATE HELPERS
-       =================================================== */
     function getSafeDateStr(raw) {
         if (!raw || raw === '미정') return null;
         const d = new Date(raw);
@@ -1447,26 +1147,6 @@
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    function getDday(date) {
-        const dStr = getSafeDateStr(date);
-        if (!dStr) return null;
-        const today = getSafeDateStr(new Date());
-        const diff = Math.ceil((new Date(dStr) - new Date(today)) / 86400000);
-        return diff;
-    }
-
-    function renderDdayBadge(date) {
-        const diff = getDday(date);
-        if (diff === null) return '<span class="text-muted" style="font-size:11px;">-</span>';
-        if (diff === 0) return `<span class="dday-badge dday-day">D-Day</span>`;
-        if (diff < 0) return `<span class="dday-badge dday-overdue">D+${Math.abs(diff)}</span>`;
-        if (diff <= 3) return `<span class="dday-badge dday-soon">D-${diff}</span>`;
-        return `<span class="dday-badge dday-ok">D-${diff}</span>`;
-    }
-
-    /* ===================================================
-       CALENDAR
-       =================================================== */
     function renderCalendar() {
         const evs = getFiltered().flatMap(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
@@ -1492,10 +1172,7 @@
         if (!calendar) {
             calendar = new FullCalendar.Calendar(calEl, {
                 initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth',
-                locale: 'ko',
-                events: evs,
-                displayEventTime: false,
-                height: 'auto',
+                locale: 'ko', events: evs, displayEventTime: false, height: 'auto',
                 eventClick: (info) => openPop(info.event.extendedProps),
             });
             calendar.render();
@@ -1505,9 +1182,6 @@
         }
     }
 
-    /* ===================================================
-       GANTT
-       =================================================== */
     function renderGantt() {
         const el = document.getElementById('gantt');
         if (!el || el.offsetWidth === 0) return;
@@ -1515,8 +1189,7 @@
 
         if (d.length === 0) {
             if (gantt) { el.innerHTML = ''; gantt = null; }
-            el.innerHTML = renderEmptyState('간트차트에 표시할 항목이 없습니다.', '필터를 조정해 보세요.');
-            document.getElementById('gantt-top-scroll-inner').style.width = '100%';
+            el.innerHTML = '<div class="py-5 text-center text-muted">표시할 항목이 없습니다.</div>';
             return;
         }
 
@@ -1535,8 +1208,7 @@
             const displayName = err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`;
 
             return {
-                id: 'GT_' + idx,
-                name: displayName,
+                id: 'GT_' + idx, name: displayName,
                 start: s, end: e, progress: 100,
                 custom_class: err ? 'g-err' : 'g-' + status.replace(/\s/g, ''),
                 extendedProps: i,
@@ -1547,67 +1219,40 @@
             if (!gantt) {
                 el.innerHTML = '';
                 gantt = new Gantt('#gantt', tasks, {
-                    language: 'en', bar_height: 26,
-                    view_mode: AppState.currentGanttMode,
+                    language: 'en', bar_height: 26, view_mode: AppState.currentGanttMode,
                     on_click: (t) => openPop(t.extendedProps),
                 });
             } else {
                 gantt.refresh(tasks);
                 gantt.change_view_mode(AppState.currentGanttMode);
             }
-            injectGanttCSS();
-            syncGanttScroll();
+            const id = 'gantt-css';
+            if (document.getElementById(id)) document.getElementById(id).remove();
+            let css = `.gantt .bar-label { fill: #fff !important; font-size: 11px; font-weight: 600; stroke: rgba(0,0,0,0.35); stroke-width: 2px; paint-order: stroke fill; }\n`;
+            Object.entries(MAP).forEach(([k, v]) => {
+                if (k === '전체') return;
+                const sc = k.replace(/\s/g, '');
+                css += `.gantt .bar-wrapper.g-${sc} .bar { fill: ${v.c} !important; }\n.gantt .bar-wrapper.g-${sc} .bar-progress { fill: ${v.c} !important; }\n`;
+            });
+            const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
+            
+            setTimeout(() => {
+                const gc = document.querySelector('.gantt-container');
+                const svg = document.querySelector('.gantt-container svg');
+                const top = document.getElementById('gantt-top-scroll');
+                const inner = document.getElementById('gantt-top-scroll-inner');
+                if (gc && svg && top && inner) {
+                    inner.style.width = svg.getBoundingClientRect().width + 'px';
+                    top.onscroll = null; gc.onscroll = null;
+                    let sT = false, sB = false;
+                    top.onscroll = () => { if (!sT) { sB = true; gc.scrollLeft = top.scrollLeft; } sT = false; };
+                    gc.onscroll = () => { if (!sB) { sT = true; top.scrollLeft = gc.scrollLeft; } sB = false; };
+                }
+            }, 200);
+
         } catch (e) {
-            el.innerHTML = '';
-            gantt = null;
-            try {
-                gantt = new Gantt('#gantt', tasks, {
-                    language: 'en', bar_height: 26,
-                    view_mode: AppState.currentGanttMode,
-                    on_click: (t) => openPop(t.extendedProps),
-                });
-                injectGanttCSS();
-                syncGanttScroll();
-            } catch (e2) {
-                el.innerHTML = `<div class="text-center py-5 text-danger small">렌더링 오류: ${esc(e2.message)}</div>`;
-            }
+            el.innerHTML = ''; gantt = null;
         }
-    }
-
-    function injectGanttCSS() {
-        const id = 'gantt-css';
-        if (document.getElementById(id)) document.getElementById(id).remove();
-        let css = `.gantt .bar-label { fill: #fff !important; font-size: 11px; font-weight: 600; stroke: rgba(0,0,0,0.35); stroke-width: 2px; paint-order: stroke fill; }
-.gantt .grid-header { fill: #f4fbf7; }
-`;
-        Object.entries(MAP).forEach(([k, v]) => {
-            if (k === '전체') return;
-            const sc = k.replace(/\s/g, '');
-            css += `.gantt .bar-wrapper.g-${sc} .bar { fill: ${v.c} !important; }
-.gantt .bar-wrapper.g-${sc} .bar-progress { fill: ${v.c} !important; }
-`;
-        });
-        css += `.gantt .bar-wrapper.g-err .bar { fill: #e74c3c !important; }
-`;
-        const s = document.createElement('style');
-        s.id = id; s.innerHTML = css;
-        document.head.appendChild(s);
-    }
-
-    function syncGanttScroll() {
-        setTimeout(() => {
-            const gc = document.querySelector('.gantt-container');
-            const svg = document.querySelector('.gantt-container svg');
-            const top = document.getElementById('gantt-top-scroll');
-            const inner = document.getElementById('gantt-top-scroll-inner');
-            if (gc && svg && top && inner) {
-                inner.style.width = svg.getBoundingClientRect().width + 'px';
-                top.onscroll = null; gc.onscroll = null;
-                let sT = false, sB = false;
-                top.onscroll = () => { if (!sT) { sB = true; gc.scrollLeft = top.scrollLeft; } sT = false; };
-                gc.onscroll = () => { if (!sB) { sT = true; top.scrollLeft = gc.scrollLeft; } sB = false; };
-            }
-        }, 200);
     }
 
     function setGanttMode(m, btn) {
@@ -1615,40 +1260,30 @@
         document.querySelectorAll('.g-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         if (gantt) gantt.change_view_mode(m);
-        syncGanttScroll();
     }
 
-    /* ===================================================
-        LIST VIEW
-        =================================================== */
     function renderList() {
         const tbody = document.querySelector('#listTable tbody');
         const d = getFiltered();
-
         if (d.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9">${renderEmptyState('검색 결과가 없습니다.', '다른 검색어나 필터를 사용해 보세요.')}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-muted">검색 결과가 없습니다.</td></tr>`;
             return;
         }
-
         tbody.innerHTML = d.map(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
-            return `<tr onclick="openPopById('${esc(i['요구사항 ID'])}')">
-                <td style="font-size:11px; color:#888;">${esc(i['요구사항 ID']) || '-'}</td>
-                <td><span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || '-'}</span></td>
-                <td style="font-size:11px;">${esc(i['구분']) || '-'}</td>
-                <td class="fw-bold" style="font-size:12px;">${esc(i['요건명']) || '-'}</td>
-                <td><span class="badge" style="background:${esc(c)}; font-size:10px;">${esc(i['진행단계']) || '-'}</span></td>
-                <td style="font-size:11px; color:#666;">${esc(getSafeDateStr(i['접수일자'])) || '-'}</td>
-                <td style="font-size:11px; color:#666;">${esc(getSafeDateStr(i['운영이관(예정)일'])) || '-'}</td>
-                <td>${renderDdayBadge(i['운영이관(예정)일'])}</td>
-                <td style="font-size:11px;">${esc(i['담당_기획']) || '-'}</td>
+            return `<tr onclick="openPopById('${i['요구사항 ID']}')">
+                <td style="font-size:11px; color:#888;">${i['요구사항 ID'] || '-'}</td>
+                <td><span class="badge bg-light text-dark border" style="font-size:10px;">${i['출처시트'] || '-'}</span></td>
+                <td style="font-size:11px;">${i['구분'] || '-'}</td>
+                <td class="fw-bold" style="font-size:12px;">${i['요건명'] || '-'}</td>
+                <td><span class="badge" style="background:${c}; font-size:10px;">${i['진행단계'] || '-'}</span></td>
+                <td style="font-size:11px; color:#666;">${getSafeDateStr(i['접수일자']) || '-'}</td>
+                <td style="font-size:11px; color:#666;">${getSafeDateStr(i['운영이관(예정)일']) || '-'}</td>
+                <td style="font-size:11px;">${i['담당_기획'] || '-'}</td>
             </tr>`;
         }).join('');
     }
 
-    /* ===================================================
-        MONTHLY VIEW
-        =================================================== */
     function renderMonthly() {
         const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
         const mData = {};
@@ -1674,24 +1309,21 @@
                     { label: '소', data: sorted.map(m => mData[m].소), backgroundColor: '#76c893' },
                 ],
             },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { x: { stacked: true }, y: { stacked: true } },
-            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } },
         });
 
         let acc = '';
         [...sorted].reverse().forEach((m, idx) => {
             const items = mData[m].list.map(i =>
-                `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${esc(i['요구사항 ID'])}')" style="cursor:pointer">
-                    <span>[${esc(i['규모'] || '소')}] ${esc(i['요건명'] || '')}</span>
+                `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer">
+                    <span>[${i['규모'] || '소'}] ${i['요건명'] || ''}</span>
                     <span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span>
                 </div>`
             ).join('');
             acc += `<div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">
-                        ${esc(m)} 완료내역 (${mData[m].list.length}건)
+                        ${m} 완료내역 (${mData[m].list.length}건)
                     </button>
                 </h2>
                 <div id="m${idx}" class="accordion-collapse collapse">
@@ -1699,12 +1331,9 @@
                 </div>
             </div>`;
         });
-        document.getElementById('monthlyAccordion').innerHTML = acc || renderEmptyState('완료된 업무가 없습니다.', '');
+        document.getElementById('monthlyAccordion').innerHTML = acc || '<div class="text-center py-4 text-muted small">완료된 업무가 없습니다.</div>';
     }
 
-    /* ===================================================
-        ASSIGNEE VIEW
-        =================================================== */
     function renderAssignee() {
         const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const uMap = {};
@@ -1723,32 +1352,23 @@
         });
 
         if (Object.keys(uMap).length === 0) {
-            document.getElementById('assigneeGrid').innerHTML = renderEmptyState('진행 중인 업무가 없습니다.', '');
+            document.getElementById('assigneeGrid').innerHTML = '<div class="text-center py-4 text-muted small">진행 중인 업무가 없습니다.</div>';
             return;
         }
 
         let h = '';
         Object.keys(uMap).sort().forEach(u => {
             const tasks = uMap[u].map(t => {
-                const diff = getDday(t['운영이관(예정)일']);
-                let ddayHtml = '';
-                if (diff !== null) {
-                    if (diff === 0) ddayHtml = `<span class="dday-badge dday-day">D-Day</span>`;
-                    else if (diff < 0) ddayHtml = `<span class="dday-badge dday-overdue">D+${Math.abs(diff)}</span>`;
-                    else if (diff <= 3) ddayHtml = `<span class="dday-badge dday-soon">D-${diff}</span>`;
-                    else ddayHtml = `<span class="dday-badge dday-ok">D-${diff}</span>`;
-                }
-                return `<div class="task-item" onclick="openPopById('${esc(t['요구사항 ID'])}')">
-                    <div style="font-size:12px; margin-bottom:6px;">${esc(t['요건명']) || ''}</div>
+                return `<div class="task-item" onclick="openPopById('${t['요구사항 ID']}')">
+                    <div style="font-size:12px; margin-bottom:6px;">${t['요건명'] || ''}</div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-light text-dark border" style="font-size:10px;">${esc(t['진행단계']) || ''}</span>
-                        ${ddayHtml}
+                        <span class="badge bg-light text-dark border" style="font-size:10px;">${t['진행단계'] || ''}</span>
                     </div>
                 </div>`;
             }).join('');
             h += `<div class="assignee-card">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="assignee-name">👤 ${esc(u)}</span>
+                    <span class="assignee-name">👤 ${u}</span>
                     <span class="badge bg-white text-primary border">${uMap[u].length}건</span>
                 </div>
                 ${tasks}
@@ -1757,71 +1377,15 @@
         document.getElementById('assigneeGrid').innerHTML = h;
     }
 
-    /* ===================================================
-        EMPTY STATE
-        =================================================== */
-    function renderEmptyState(title, sub) {
-        return `<div class="empty-state">
-            <div class="empty-icon">🔍</div>
-            <div class="empty-title">${title}</div>
-            ${sub ? `<div class="empty-sub">${sub}</div>` : ''}
-            <button class="btn-reset-filter" onclick="resetFilters()">필터 초기화</button>
-        </div>`;
-    }
-
-    /* ===================================================
-        STEP PROGRESS BAR
-        =================================================== */
-    function updateStepProgress(currentStatus) {
-        const bar = document.getElementById('stepProgressBar');
-        if (!bar) return;
-
-        const currentIdx = STEPS.indexOf(currentStatus);
-        const isCancelled = currentStatus === '취소';
-
-        bar.innerHTML = STEPS.map((step, idx) => {
-            let cls = 'pending';
-            let label = '';
-            if (isCancelled) { cls = 'pending'; }
-            else if (idx < currentIdx) { cls = 'done'; label = 'done'; }
-            else if (idx === currentIdx) { cls = 'current'; label = 'current'; }
-
-            const itemDone = !isCancelled && idx < currentIdx;
-            return `<div class="step-item ${itemDone ? 'done' : ''}">
-                <div class="step-circle ${cls}">${cls === 'done' ? '✓' : idx + 1}</div>
-                <div class="step-label ${label}">${step}</div>
-            </div>`;
-        }).join('');
-
-        if (isCancelled) {
-            bar.innerHTML = `<div style="text-align:center; padding:6px 0; font-size:12px; color:#9ca3af; width:100%;">⚪ 이 요건은 취소 상태입니다.</div>`;
-        }
-    }
-
-    /* ===================================================
-        MODAL OPEN / SAVE
-        =================================================== */
     function openPop(data) {
+        // 타이틀을 '요구사항 상세'로 항상 덮어쓰기!
         document.getElementById('modalTaskTitle').innerText = '요구사항 상세';
-
-        const ddayEl = document.getElementById('modalDdayDisplay');
-        const diff = getDday(data['운영이관(예정)일']);
-        if (diff !== null) {
-            if (diff < 0) ddayEl.innerText = `⚠️ ${Math.abs(diff)}일 지연`;
-            else if (diff === 0) ddayEl.innerText = '🔴 오늘이 마감일';
-            else if (diff <= 3) ddayEl.innerText = `🟡 마감 ${diff}일 전`;
-            else ddayEl.innerText = `📅 마감 D-${diff}`;
-        } else ddayEl.innerText = '';
-
-        updateStepProgress(data['진행단계'] || '');
 
         const f = document.getElementById('taskForm');
         f.reset();
         Object.keys(data).forEach(k => {
             if (f.elements[k]) {
-                f.elements[k].value = f.elements[k].type === 'date'
-                    ? (getSafeDateStr(data[k]) || '')
-                    : (data[k] || '');
+                f.elements[k].value = f.elements[k].type === 'date' ? (getSafeDateStr(data[k]) || '') : (data[k] || '');
             }
         });
 
@@ -1861,56 +1425,29 @@
         });
     }
 
-    function handleApiError(res) {
-        if (!res) return '알 수 없는 오류';
-        if (res.code === 'PERMISSION_DENIED') return '권한이 없습니다.';
-        if (res.code === 'NOT_FOUND') return '해당 항목을 찾을 수 없습니다.';
-        if (res.code === 'VALIDATION_ERROR') return `입력값 오류: ${res.message}`;
-        if (res.code === 'NETWORK_ERROR') return '서버 연결에 실패했습니다.';
-        return res.message || '오류가 발생했습니다.';
-    }
-
     function saveChanges() {
         const f = document.getElementById('taskForm');
         Array.from(f.elements).forEach(el => el.disabled = false);
         const payload = Object.fromEntries(new FormData(f).entries());
-        const taskId = payload['요구사항 ID'];
         payload.action = 'update_task';
 
-        const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(taskId));
-        let originalData = null;
-        if (idx !== -1) {
-            originalData = { ...AppState.rawData[idx] };
-            AppState.rawData[idx] = { ...AppState.rawData[idx], ...payload };
-        }
-
         modal.hide();
-        updateStats();
-        render();
-        showToast('저장 중...', 'info');
-
-        const spinner = document.getElementById('saveSpinner');
-        if (spinner) spinner.style.display = 'inline-block';
+        document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
             .then(r => r.json())
             .then(res => {
-                if (spinner) spinner.style.display = 'none';
+                document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') {
                     showToast('성공적으로 저장되었습니다.', 'success');
                     fetchData(true);
                 } else {
-                    if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
-                    updateStats(); render();
-                    const errMsg = handleApiError(res);
-                    showToast('저장 실패: ' + errMsg, 'error');
+                    showToast('저장 실패', 'error');
                 }
             })
             .catch(err => {
-                if (spinner) spinner.style.display = 'none';
-                if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
-                updateStats(); render();
-                showToast('통신 오류가 발생했습니다. 네트워크를 확인해 주세요.', 'error');
+                document.getElementById('loading').style.display = 'none';
+                showToast('통신 오류', 'error');
             });
     }
 
@@ -1920,43 +1457,20 @@
         if (!id) return showToast('삭제할 대상이 없습니다.', 'error');
         if (!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
 
-        const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(id));
-        const removed = idx !== -1 ? AppState.rawData.splice(idx, 1)[0] : null;
         modal.hide();
-        updateStats(); render();
-        showToast('삭제 중...', 'info');
+        document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet }) })
             .then(r => r.json())
             .then(res => {
+                document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') { showToast('삭제가 완료되었습니다.', 'success'); fetchData(true); }
-                else {
-                    if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
-                    updateStats(); render();
-                    showToast('삭제 실패: ' + handleApiError(res), 'error');
-                }
+                else { showToast('삭제 실패', 'error'); }
             })
             .catch(() => {
-                if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
-                updateStats(); render();
+                document.getElementById('loading').style.display = 'none';
                 showToast('통신 오류: 삭제에 실패했습니다.', 'error');
             });
-    }
-
-    /* ===================================================
-        PLANNER RECOMMENDATION
-        =================================================== */
-    function recommendPlanner(planners) {
-        if (!planners || planners.size === 0) return '';
-        const active = AppState.rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
-        const scores = {};
-        planners.forEach(p => scores[p] = 0);
-        active.forEach(t => {
-            const pList = String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
-            const score = t['규모'] === '대' ? 3 : t['규모'] === '소' ? 1 : 2;
-            pList.forEach(p => { if (scores[p] !== undefined) scores[p] += score; });
-        });
-        return Object.keys(scores).reduce((a, b) => scores[a] <= scores[b] ? a : b);
     }
 
     function openCreatePop() {
@@ -1965,15 +1479,6 @@
         document.getElementById('createGubun').value = '은행';
         document.getElementById('bizBankWrapper').style.display = 'block';
         document.getElementById('bizMutualWrapper').style.display = 'none';
-
-        const rec = recommendPlanner(window.globalPlanners);
-        const plannerSel = document.getElementById('createPlanner');
-        if (rec && window.globalPlanners?.has(rec)) {
-            plannerSel.value = rec;
-            document.getElementById('recommendBadge').style.display = 'inline-block';
-        } else {
-            document.getElementById('recommendBadge').style.display = 'none';
-        }
         createModal.show();
     }
 
@@ -1984,28 +1489,24 @@
         else if (formData['구분'] === '상호') formData['bizBank'] = '';
         formData.action = 'create_task';
 
-        const btn = document.querySelector('#createModal .btn-primary');
-        if (btn) { btn.disabled = true; btn.innerText = '등록 중...'; }
+        document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => {
-                if (btn) { btn.disabled = false; btn.innerText = '등록'; }
+                document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') {
                     createModal.hide();
                     showToast('성공적으로 등록되었습니다.', 'success');
                     fetchData(true);
-                } else showToast('생성 실패: ' + handleApiError(res), 'error');
+                } else showToast('생성 실패', 'error');
             })
             .catch(() => {
-                if (btn) { btn.disabled = false; btn.innerText = '등록'; }
+                document.getElementById('loading').style.display = 'none';
                 showToast('통신 오류', 'error');
             });
     }
 
-    /* ===================================================
-        REPORT
-        =================================================== */
     function openReportModal() {
         document.getElementById('reportStartDate').value = '';
         document.getElementById('reportEndDate').value = getSafeDateStr(new Date());
@@ -2065,19 +1566,15 @@
         showToast('엑셀 다운로드 완료', 'success');
     }
 
-    /* ===================================================
-        DRAWER
-        =================================================== */
     function showDrawer(st) {
         const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
         document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
         document.getElementById('drawerBody').innerHTML = d.length
-            ? d.map(i => `<div class="drawer-item" onclick="openPopById('${esc(i['요구사항 ID'])}')">
-                <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${esc(i['요건명']) || ''}</div>
+            ? d.map(i => `<div class="drawer-item" onclick="openPopById('${i['요구사항 ID']}')">
+                <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${i['요건명'] || ''}</div>
                 <div class="d-flex gap-2 align-items-center">
-                    <span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || ''}</span>
-                    <span class="badge" style="background:${esc(MAP[i['진행단계']]?.c || '#999')}; font-size:10px;">${esc(i['진행단계']) || ''}</span>
-                    ${renderDdayBadge(i['운영이관(예정)일'])}
+                    <span class="badge bg-light text-dark border" style="font-size:10px;">${i['출처시트'] || ''}</span>
+                    <span class="badge" style="background:${MAP[i['진행단계']]?.c || '#999'}; font-size:10px;">${i['진행단계'] || ''}</span>
                 </div>
             </div>`).join('')
             : '<div class="text-center py-5 text-muted small">데이터 없음</div>';
@@ -2090,9 +1587,6 @@
         setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
     }
 
-    /* ===================================================
-        TAB SWITCH
-        =================================================== */
     function switchTab(btn) {
         document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -2100,15 +1594,6 @@
         AppState.activeTab = btn.dataset.target;
         document.getElementById(AppState.activeTab).classList.add('active');
         render();
-        saveFilterToURL();
-    }
-
-    /* ===================================================
-        MISC
-        =================================================== */
-    function toggleLoad(show, msg = '처리 중...') {
-        document.getElementById('loadingText').innerText = msg;
-        document.getElementById('loading').style.display = show ? 'flex' : 'none';
     }
 
     function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
@@ -2116,61 +1601,34 @@
     function handleExcelUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
-        toggleLoad(true, '엑셀 처리 중...');
+        document.getElementById('loading').style.display = 'flex';
         const reader = new FileReader();
         reader.onload = function (e) {
             const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
             const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false });
 
-            const REQUIRED_COLS = ['요구사항 ID', '요건명', '진행단계'];
-            const VALID_STAGES = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료', '취소'];
-            const VALID_SIZES = ['대', '중', '소'];
-
-            const errors = [];
-            json.forEach((row, i) => {
-                REQUIRED_COLS.forEach(col => { if (!row[col]) errors.push(`행 ${i + 2}: '${col}' 필수값 누락`); });
-                if (row['진행단계'] && !VALID_STAGES.includes(row['진행단계'])) errors.push(`행 ${i + 2}: 잘못된 진행단계 값 '${row['진행단계']}'`);
-                if (row['규모'] && !VALID_SIZES.includes(row['규모'])) errors.push(`행 ${i + 2}: 잘못된 규모 값 '${row['규모']}'`);
-            });
-
-            if (errors.length > 0) {
-                showToast(`업로드 오류 (${errors.length}건): ${errors[0]}`, 'error');
-                toggleLoad(false);
-                event.target.value = '';
-                return;
-            }
-
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'bulk_upload', data: json }) })
                 .then(r => r.json())
                 .then(res => {
+                    document.getElementById('loading').style.display = 'none';
                     if (res.result === 'success') { showToast('업로드 성공', 'success'); fetchData(true); }
-                    else { showToast('업로드 실패: ' + handleApiError(res), 'error'); }
+                    else { showToast('업로드 실패', 'error'); }
                 })
-                .catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
+                .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
             event.target.value = '';
         };
         reader.readAsArrayBuffer(file);
     }
 
-    /* ===================================================
-        DOM READY
-        =================================================== */
     document.addEventListener('DOMContentLoaded', () => {
         checkLoginStatus();
-
-        let prevIsMobile = window.innerWidth < 640;
-        const onResize = debounce(() => {
-            const isMobile = window.innerWidth < 640;
-            if (isMobile === prevIsMobile) return;
-            prevIsMobile = isMobile;
-
-            if (AppState.activeTab === 'calendar-view' && calendar) {
-                const targetView = isMobile ? 'listMonth' : 'dayGridMonth';
-                calendar.changeView(targetView);
+        window.addEventListener('resize', debounce(() => {
+            if (window.innerWidth < 640 && AppState.activeTab === 'calendar-view' && calendar) {
+                calendar.changeView('listMonth');
+            } else if (window.innerWidth >= 640 && AppState.activeTab === 'calendar-view' && calendar) {
+                calendar.changeView('dayGridMonth');
             }
-        }, 250);
-
-        window.addEventListener('resize', onResize);
+        }, 250));
     });
     </script>
 </body>
