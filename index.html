@@ -25,7 +25,6 @@
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
 
-        /* 로그인 화면 */
         #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
@@ -39,7 +38,6 @@
         .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: #007a36; }
 
-        /* 메인 레이아웃 */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 30px 24px 70px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .header-sub { font-size: 13px; color: rgba(255,255,255,.8); margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -47,8 +45,15 @@
         .header-controls { position: absolute; top: 30px; right: 24px; display: flex; gap: 8px; }
         .header-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all .2s; }
         .header-btn:hover { background: rgba(255,255,255,.3); }
-        .btn-primary-custom { background: #005BAC; border-color: #005BAC; }
-        .btn-primary-custom:hover { background: #004a8e; }
+
+        /* 신규 등록 플로팅 버튼 */
+        .fab-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background-color: #005BAC; color: #fff; border: none; border-radius: 50%;
+            font-size: 32px; font-weight: 300; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 91, 172, 0.4); cursor: pointer; z-index: 1030; transition: transform 0.2s;
+        }
+        .fab-btn:hover { transform: scale(1.05); background-color: #004a8e; }
 
         .main-wrap { padding: 0 16px 40px; margin-top: -45px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
@@ -77,7 +82,6 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* GANTT */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -89,7 +93,6 @@
         .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
 
-        /* DRAWER & MODAL */
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 10005; flex-direction: column; align-items: center; justify-content: center; }
         .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1040; cursor: pointer; backdrop-filter: blur(2px); }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
@@ -125,9 +128,9 @@
             .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
             .modal-body .form-label { font-size: 11px; margin-bottom: 2px; }
             .modal-body .form-control, .modal-body .form-select { font-size: 12px; padding: 6px 10px; min-height: 32px; }
-            .modal-body textarea.form-control { height: 44px; min-height: 44px; }
             .modal-footer { padding: 12px !important; }
             .modal-footer .btn { font-size: 12px; padding: 6px 16px; }
+            .fab-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 28px; }
         }
     </style>
 </head>
@@ -139,7 +142,7 @@
             <input type="text" id="loginId" class="login-input" placeholder="아이디">
             <div class="password-wrap">
                 <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
-                <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePassword()" tabindex="-1">보기</button>
+                <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePassword()">보기</button>
             </div>
             <div class="login-options">
                 <label><input type="checkbox" id="rememberId"> 아이디 저장</label>
@@ -150,6 +153,8 @@
     </div>
 
     <datalist id="bizList"></datalist>
+
+    <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()">+</button>
 
     <div id="app-container" style="display: none;">
         <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 동기화 중...</div></div>
@@ -162,7 +167,6 @@
                 <span class="update-time" id="userInfoDisplay" style="background: rgba(255,255,255,0.2);">접속자: -</span>
             </div>
             <div class="header-controls">
-                <button class="header-btn btn-primary-custom admin-only" onclick="openCreatePop()">➕ 신규 등록</button>
                 <button class="header-btn admin-only" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
                 <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
                 <button class="header-btn" onclick="logout()" style="background: rgba(0,0,0,0.2); border:none;">로그아웃</button>
@@ -277,7 +281,11 @@
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button><button type="button" class="btn btn-success px-4" onclick="saveChanges()">저장</button></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger admin-only me-auto" onclick="deleteTask()">삭제</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-success px-4" onclick="saveChanges()">저장</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -662,7 +670,7 @@
             return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
 
-        // ── 팝업 데이터 바인딩 및 권한별 잠금 처리 ──
+        // ── 권한 연동 모달 & 데이터 수정/삭제 ──
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
@@ -675,7 +683,6 @@
                 }
             });
 
-            // 일반 사용자는 계획/진척 항목만 활성화, 나머지는 비활성화
             const isUser = currentUser && currentUser.role !== 'admin';
             const allowedKeys = ['계획_기획', '계획_디자인', '계획_퍼블', '진척_기획', '진척_디자인', '진척_퍼블'];
             
@@ -695,7 +702,6 @@
 
         function saveChanges() {
             const f = document.getElementById('taskForm');
-            // FormData 수집 전 disabled 강제 해제 (값 누락 방지)
             Array.from(f.elements).forEach(el => el.disabled = false);
             
             const payload = Object.fromEntries(new FormData(f).entries());
@@ -708,6 +714,24 @@
                 if(res.result === 'success') { modal.hide(); fetchData(); } 
                 else alert('저장 실패'); 
             });
+        }
+
+        function deleteTask() {
+            const id = document.querySelector('#taskForm input[name="요구사항 ID"]').value;
+            const sheet = document.querySelector('#taskForm input[name="출처시트"]').value;
+            if(!id) return alert('삭제할 대상이 없습니다.');
+            if(!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
+
+            toggleLoad(true, "삭제 중...");
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.result === 'success') { modal.hide(); fetchData(); }
+                else alert('삭제 실패: ' + res.message);
+            }).catch(() => { alert('통신 오류'); toggleLoad(false); });
         }
 
         function recommendPlanner(plannersSet) {
@@ -765,7 +789,7 @@
             
             formData.action = 'create_task';
 
-            toggleLoad(true, "신규 요구사항 생성 중...");
+            toggleLoad(true, "신규 생성 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => { 
