@@ -20,13 +20,20 @@
             --surface: #ffffff; --surface-2: #f4fbf7; --border: #d6eee3;
             --text-primary: #0d2318; --text-secondary: #527060;
             --radius-lg: 16px; --radius-md: 10px;
-            --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
-            --shadow-md: 0 8px 32px rgba(0,154,68,.12);
         }
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
 
+        /* ── 로그인 화면 전용 스타일 ── */
+        #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
+        .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
+        .login-input { width: 100%; padding: 12px 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--surface-2); }
+        .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .login-btn:hover { background: #007a36; }
+
+        /* ── 본문 레이아웃 ── */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 30px 24px 70px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .header-sub { font-size: 13px; color: rgba(255,255,255,.8); margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -68,6 +75,7 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
+        /* GANTT */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -82,7 +90,8 @@
         .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
 
-        #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        /* DRAWER & MODAL */
+        #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 10005; flex-direction: column; align-items: center; justify-content: center; }
         .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1040; cursor: pointer; backdrop-filter: blur(2px); }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
         .drawer.open { right: 0; }
@@ -91,9 +100,11 @@
         .drawer-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
         .drawer-item:hover { border-color: #009A44; background: #fafffc; }
         
-        /* 모달 테마 맞춤 */
         .theme-modal-header { background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); color: #fff; border-bottom: none; }
         
+        /* admin-only 기본적으로 숨김 처리 */
+        .admin-only { display: none !important; }
+
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
             .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
@@ -117,7 +128,6 @@
             .fc-list-day-text, .fc-list-day-side-text { font-size: 13px !important; }
             .fc-list-event-title { font-size: 12px !important; padding: 8px 12px !important; }
 
-            /* 모바일 모달 콤팩트 최적화 */
             .modal-dialog { margin: 10px; }
             .modal-body { padding: 15px !important; }
             .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
@@ -131,122 +141,135 @@
 </head>
 
 <body>
-    <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText">데이터 동기화 중...</div></div>
-
-    <div class="app-header">
-        <h1 class="header-title">업무 현황 관리</h1>
-        <div class="header-sub">
-            <span>2026 기업뱅킹 상시운영 프로젝트 대시보드</span>
-            <span class="update-time" id="lastUpdateTime">⏱ 최종 동기화: -</span>
-        </div>
-        <div class="header-controls">
-            <button class="header-btn" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
-            <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelUpload(event)">
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="login-title">업무 현황 관리 접속</div>
+            <input type="text" id="loginId" class="login-input" placeholder="아이디">
+            <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
+            <button class="login-btn" onclick="handleLogin()">로그인</button>
         </div>
     </div>
 
-    <div class="main-wrap">
-        <div class="stats-header">
-            <span class="small fw-bold text-muted">📊 요약 현황</span>
-            <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
-        </div>
-        <div class="stats-wrap" id="statsContainer"></div>
+    <div id="app-container" style="display: none;">
+        <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 동기화 중...</div></div>
 
-        <div class="panel">
-            <div class="panel-toolbar">
-                <div class="filter-group">
-                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="fAll" value="all" checked><label for="fAll">전체</label></div>
-                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="fInt" value="인터넷"><label for="fInt">인터넷</label></div>
-                    <div class="filter-chip"><input type="radio" name="sheetFilter" id="fSmt" value="스마트"><label for="fSmt">스마트</label></div>
-                </div>
-                <div class="view-tabs">
-                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
-                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
-                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
-                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
-                </div>
+        <div class="app-header">
+            <h1 class="header-title">업무 현황 관리</h1>
+            <div class="header-sub">
+                <span>2026 기업뱅킹 상시운영 프로젝트 대시보드</span>
+                <span class="update-time" id="lastUpdateTime">⏱ 최종 동기화: -</span>
+                <span class="update-time" id="userInfoDisplay" style="background: rgba(255,255,255,0.2);">접속자: -</span>
             </div>
+            <div class="header-controls">
+                <button class="header-btn admin-only" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
+                <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
+                <button class="header-btn" onclick="logout()" style="background: rgba(0,0,0,0.2); border:none;">로그아웃</button>
+                <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelUpload(event)">
+            </div>
+        </div>
 
-            <div class="view-body">
-                <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
-                <div id="gantt-view" class="tab-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-3 gantt-controls-wrap">
-                        <select id="ganttFilter" class="form-select form-select-sm w-auto shadow-sm" onchange="renderGantt()">
-                            <option value="active" selected>진행 업무 (완료/취소 제외)</option>
-                            <option value="all">전체 내역</option>
-                            <option value="작업 대기">작업 대기</option>
-                            <option value="진행중">진행중</option>
-                            <option value="검증 반영">검증 반영</option>
-                            <option value="개발 대기">개발 대기</option>
-                            <option value="개발중">개발중</option>
-                            <option value="적용 완료">적용 완료</option>
-                            <option value="취소">취소</option>
-                        </select>
-                        <div class="btn-group gap-1">
-                            <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Day', this)">일</button>
-                            <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
-                            <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Month', this)">월</button>
-                        </div>
+        <div class="main-wrap">
+            <div class="stats-header">
+                <span class="small fw-bold text-muted">📊 요약 현황</span>
+                <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
+            </div>
+            <div class="stats-wrap" id="statsContainer"></div>
+
+            <div class="panel">
+                <div class="panel-toolbar">
+                    <div class="filter-group">
+                        <div class="filter-chip"><input type="radio" name="sheetFilter" id="fAll" value="all" checked><label for="fAll">전체</label></div>
+                        <div class="filter-chip"><input type="radio" name="sheetFilter" id="fInt" value="인터넷"><label for="fInt">인터넷</label></div>
+                        <div class="filter-chip"><input type="radio" name="sheetFilter" id="fSmt" value="스마트"><label for="fSmt">스마트</label></div>
                     </div>
-                    <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
-                    <div id="gantt"></div>
+                    <div class="view-tabs">
+                        <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
+                        <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                        <button class="view-tab-btn admin-only" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
+                        <button class="view-tab-btn admin-only" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
+                    </div>
                 </div>
-                <div id="monthly-view" class="tab-panel">
-                    <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
-                    <div class="accordion" id="monthlyAccordion"></div>
-                </div>
-                <div id="assignee-view" class="tab-panel"><div class="assignee-grid" id="assigneeGrid"></div></div>
-            </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header theme-modal-header">
-                    <h6 class="modal-title" id="modalTaskTitle">상세 수정</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="taskForm">
-                        <input type="hidden" name="출처시트">
-                        <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label small fw-bold">ID</label><input type="text" class="form-control bg-light" name="요구사항 ID" readonly></div>
-                            <div class="col-md-6"><label class="form-label small fw-bold">진행단계</label>
-                                <select class="form-select" name="진행단계">
-                                    <option>작업 대기</option><option>진행중</option><option>검증 반영</option><option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
-                                </select>
+                <div class="view-body">
+                    <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
+                    <div id="gantt-view" class="tab-panel">
+                        <div class="d-flex justify-content-between align-items-center mb-3 gantt-controls-wrap">
+                            <select id="ganttFilter" class="form-select form-select-sm w-auto shadow-sm" onchange="renderGantt()">
+                                <option value="active" selected>진행 업무 (완료/취소 제외)</option>
+                                <option value="all">전체 내역</option>
+                                <option value="작업 대기">작업 대기</option>
+                                <option value="진행중">진행중</option>
+                                <option value="검증 반영">검증 반영</option>
+                                <option value="개발 대기">개발 대기</option>
+                                <option value="개발중">개발중</option>
+                                <option value="적용 완료">적용 완료</option>
+                                <option value="취소">취소</option>
+                            </select>
+                            <div class="btn-group gap-1">
+                                <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Day', this)">일</button>
+                                <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
+                                <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Month', this)">월</button>
                             </div>
-                            <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" name="요건명" rows="2"></textarea></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">담당 기획</label><input type="text" class="form-control" name="담당_기획"></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">담당 디자인</label><input type="text" class="form-control" name="담당_디자인"></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">담당 퍼블</label><input type="text" class="form-control" name="담당_퍼블"></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">접수일자</label><input type="date" class="form-control" name="접수일자"></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">운영이관일</label><input type="date" class="form-control" name="운영이관(예정)일"></div>
-                            <div class="col-md-4"><label class="form-label small fw-bold">정산여부</label><select class="form-select" name="정산완료"><option value="">-</option><option value="여">여</option><option value="부">부</option></select></div>
                         </div>
-                    </form>
+                        <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
+                        <div id="gantt"></div>
+                    </div>
+                    <div id="monthly-view" class="tab-panel">
+                        <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+                        <div class="accordion" id="monthlyAccordion"></div>
+                    </div>
+                    <div id="assignee-view" class="tab-panel"><div class="assignee-grid" id="assigneeGrid"></div></div>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button><button type="button" class="btn btn-success px-4" onclick="saveChanges()">저장</button></div>
             </div>
         </div>
-    </div>
 
-    <div class="drawer" id="statusDrawer">
-        <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="btn-close btn-close-white" onclick="closeDrawer()"></button></div>
-        <div class="drawer-body" id="drawerBody"></div>
-    </div>
-    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header theme-modal-header">
+                        <h6 class="modal-title" id="modalTaskTitle">상세 수정</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <form id="taskForm">
+                            <input type="hidden" name="출처시트">
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="form-label small fw-bold">ID</label><input type="text" class="form-control bg-light" name="요구사항 ID" readonly></div>
+                                <div class="col-md-6"><label class="form-label small fw-bold">진행단계</label>
+                                    <select class="form-select" name="진행단계">
+                                        <option>작업 대기</option><option>진행중</option><option>검증 반영</option><option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
+                                    </select>
+                                </div>
+                                <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" name="요건명" rows="2"></textarea></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">담당 기획</label><input type="text" class="form-control" name="담당_기획"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">담당 디자인</label><input type="text" class="form-control" name="담당_디자인"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">담당 퍼블</label><input type="text" class="form-control" name="담당_퍼블"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">접수일자</label><input type="date" class="form-control" name="접수일자"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">운영이관일</label><input type="date" class="form-control" name="운영이관(예정)일"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">정산여부</label><select class="form-select" name="정산완료"><option value="">-</option><option value="여">여</option><option value="부">부</option></select></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button><button type="button" class="btn btn-success px-4" onclick="saveChanges()">저장</button></div>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="drawer" id="statusDrawer">
+            <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="btn-close btn-close-white" onclick="closeDrawer()"></button></div>
+            <div class="drawer-body" id="drawerBody"></div>
+        </div>
+        <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
+        // 🚨 새로 발급받은 URL 유지 필수
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
         let rawData = [], filter = 'all', calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
         let currentGanttMode = 'Month';
+        let currentUser = null;
         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
 
         const MAP = {
@@ -260,7 +283,76 @@
             '취소': { c: '#9ca3af', i: '⚪', b: '#f3f4f6' }
         };
 
-        document.addEventListener('DOMContentLoaded', () => { initUI(); fetchData(); });
+        // ── 시스템 진입 로직 (로그인 체크) ──
+        document.addEventListener('DOMContentLoaded', () => { 
+            checkLoginStatus();
+        });
+
+        function checkLoginStatus() {
+            const storedUser = sessionStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                applyUserRoleUI();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                initUI(); 
+                fetchData();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+            }
+        }
+
+        function handleLogin() {
+            const id = document.getElementById('loginId').value.trim();
+            const pw = document.getElementById('loginPw').value.trim();
+            
+            if(!id || !pw) return alert('아이디와 비밀번호를 입력하세요.');
+            
+            const btn = document.querySelector('.login-btn');
+            btn.innerText = '인증 중...';
+            btn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', id: id, password: pw })
+            })
+            .then(r => r.json())
+            .then(res => {
+                btn.innerText = '로그인';
+                btn.disabled = false;
+
+                if (res.result === 'success') {
+                    sessionStorage.setItem('currentUser', JSON.stringify(res.user));
+                    checkLoginStatus();
+                } else {
+                    alert('로그인 실패: ' + res.message);
+                }
+            })
+            .catch(err => {
+                alert('통신 에러 발생');
+                btn.innerText = '로그인';
+                btn.disabled = false;
+            });
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        function applyUserRoleUI() {
+            if(!currentUser) return;
+            document.getElementById('userInfoDisplay').innerText = `접속자: ${currentUser.name}`;
+            
+            // 권한 제어: admin일 경우에만 요소 노출
+            const adminEls = document.querySelectorAll('.admin-only');
+            if (currentUser.role === 'admin') {
+                adminEls.forEach(el => el.style.setProperty('display', 'inline-block', 'important'));
+            } else {
+                adminEls.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            }
+        }
 
         function initUI() {
             let h = '';
@@ -292,14 +384,14 @@
         }
 
         function fetchData() {
-            toggleLoad(true, "데이터 동기화 중...");
+            toggleLoad(true, "데이터 가져오는 중...");
             fetch(GAS_URL).then(r => r.json()).then(res => { 
                 rawData = res.data; 
                 document.getElementById('lastUpdateTime').innerText = '⏱ 최종 동기화: ' + res.updateTime;
                 toggleLoad(false); 
                 updateStats(); 
                 render(); 
-            }).catch(() => { alert('로드 실패'); toggleLoad(false); });
+            }).catch(() => { alert('데이터 로드 실패'); toggleLoad(false); });
         }
 
         function updateStats() {
@@ -346,7 +438,6 @@
                     let statusPrefix = '[예정]';
                     if (i['진행단계'] === '적용 완료') statusPrefix = '[완료]';
                     else if (i['진행단계'] === '취소') statusPrefix = '[취소]';
-                    
                     r.push({ title: `[${sheet}] ${statusPrefix} ${i['요건명']||''}`, start: e, color: c, allDay: true, extendedProps: i });
                 }
                 return r;
@@ -405,7 +496,6 @@
                 let sheetPrefix = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
                 let reqName = i['요건명'] ? String(i['요건명']).replace(/['"]/g, '') : '제목없음';
                 let statusName = i['진행단계'] || '기타';
-
                 let displayName = err ? '⚠️ ' + reqName : `[${sheetPrefix}] [${statusName}] ${reqName}`;
 
                 return {
@@ -423,7 +513,6 @@
                 injectGanttCSS();
                 syncGanttScroll();
             } catch(e) { 
-                console.error("Gantt Error:", e);
                 el.innerHTML = `<div class="gantt-error-box small">렌더링 오류: ${e.message}</div>`; 
             }
         }
@@ -442,7 +531,6 @@
                 css += `.gantt .bar-wrapper.g-${safeClass} .bar-progress { fill: ${v.c} !important; }\n`;
             });
             css += `.gantt .bar-wrapper.g-err .bar { fill: #ff4d4f !important; }\n.gantt .bar-wrapper.g-err .bar-progress { fill: #ff4d4f !important; }\n`;
-            
             css += `@media(max-width: 640px) { .gantt .bar-label { font-size: 10px; } }\n`;
 
             const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
@@ -457,26 +545,16 @@
 
                 if (ganttContainer && svg && topScroll && topScrollInner) {
                     topScrollInner.style.width = svg.getBoundingClientRect().width + 'px';
-                    
-                    topScroll.onscroll = null;
-                    ganttContainer.onscroll = null;
+                    topScroll.onscroll = null; ganttContainer.onscroll = null;
 
-                    let isSyncingTop = false;
-                    let isSyncingBottom = false;
+                    let isSyncingTop = false, isSyncingBottom = false;
 
                     topScroll.onscroll = () => {
-                        if (!isSyncingTop) {
-                            isSyncingBottom = true;
-                            ganttContainer.scrollLeft = topScroll.scrollLeft;
-                        }
+                        if (!isSyncingTop) { isSyncingBottom = true; ganttContainer.scrollLeft = topScroll.scrollLeft; }
                         isSyncingTop = false;
                     };
-
                     ganttContainer.onscroll = () => {
-                        if (!isSyncingBottom) {
-                            isSyncingTop = true;
-                            topScroll.scrollLeft = ganttContainer.scrollLeft;
-                        }
+                        if (!isSyncingBottom) { isSyncingTop = true; topScroll.scrollLeft = ganttContainer.scrollLeft; }
                         isSyncingBottom = false;
                     };
                 }
@@ -549,14 +627,10 @@
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
-            
             Object.keys(data).forEach(k => {
                 if(f.elements[k]) {
-                    if (f.elements[k].type === 'date') {
-                        f.elements[k].value = getSafeDateStr(data[k]) || '';
-                    } else {
-                        f.elements[k].value = data[k] || '';
-                    }
+                    if (f.elements[k].type === 'date') f.elements[k].value = getSafeDateStr(data[k]) || '';
+                    else f.elements[k].value = data[k] || '';
                 }
             });
             modal.show();
@@ -566,7 +640,7 @@
 
         function saveChanges() {
             const payload = Object.fromEntries(new FormData(document.getElementById('taskForm')).entries());
-            toggleLoad(true, "데이터 저장 중...");
+            toggleLoad(true, "저장 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json()).then(res => { if(res.result === 'success') { modal.hide(); fetchData(); } else alert('저장 실패'); });
         }
 
@@ -585,16 +659,12 @@
             document.getElementById('loading').style.display = show ? 'flex' : 'none'; 
         }
 
-        // 엑셀 업로드 관련 로직
-        function triggerExcelUpload() {
-            document.getElementById('excelFileInput').click();
-        }
-
+        function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            toggleLoad(true, "엑셀 파일 처리 중...");
+            toggleLoad(true, "엑셀 처리 중...");
             const reader = new FileReader();
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
@@ -606,21 +676,10 @@
                 fetch(GAS_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'bulk_upload', data: json })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if(res.result === 'success') {
-                        alert('엑셀 데이터 업로드 성공');
-                        fetchData(); 
-                    } else {
-                        alert('업로드 실패: ' + res.message);
-                        toggleLoad(false);
-                    }
-                }).catch(err => {
-                    alert('네트워크 오류');
-                    toggleLoad(false);
-                });
-                
+                }).then(r => r.json()).then(res => {
+                    if(res.result === 'success') { alert('업로드 성공'); fetchData(); } 
+                    else { alert('업로드 실패: ' + res.message); toggleLoad(false); }
+                }).catch(err => { alert('통신 오류'); toggleLoad(false); });
                 event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
