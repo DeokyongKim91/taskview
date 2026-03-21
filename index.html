@@ -30,7 +30,12 @@
         .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
         .login-input { width: 100%; padding: 12px 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--surface-2); }
-        .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .password-wrap { position: relative; width: 100%; margin-bottom: 12px; }
+        .password-wrap .login-input { margin-bottom: 0; padding-right: 40px; }
+        .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; padding: 5px; font-size: 16px; }
+        .login-options { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 20px; padding: 0 4px; }
+        .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: #007a36; }
 
         /* ── 본문 레이아웃 ── */
@@ -145,7 +150,17 @@
         <div class="login-box">
             <div class="login-title">업무 현황 관리 접속</div>
             <input type="text" id="loginId" class="login-input" placeholder="아이디">
-            <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
+            
+            <div class="password-wrap">
+                <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
+                <button type="button" class="pw-toggle" onclick="togglePassword()" tabindex="-1">👁️</button>
+            </div>
+            
+            <div class="login-options">
+                <label><input type="checkbox" id="rememberId"> 아이디 저장</label>
+                <label><input type="checkbox" id="keepLoggedIn"> 로그인 유지</label>
+            </div>
+
             <button class="login-btn" onclick="handleLogin()">로그인</button>
         </div>
     </div>
@@ -265,7 +280,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
-        // 🚨 새로 발급받은 URL 유지 필수
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
         let rawData = [], filter = 'all', calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
         let currentGanttMode = 'Month';
@@ -283,13 +297,28 @@
             '취소': { c: '#9ca3af', i: '⚪', b: '#f3f4f6' }
         };
 
-        // ── 시스템 진입 로직 (로그인 체크) ──
         document.addEventListener('DOMContentLoaded', () => { 
+            // 아이디 기억하기 로드
+            const savedId = localStorage.getItem('savedId');
+            if (savedId) {
+                document.getElementById('loginId').value = savedId;
+                document.getElementById('rememberId').checked = true;
+            }
             checkLoginStatus();
         });
 
+        // ── 로그인 UI 제어 함수 ──
+        function togglePassword() {
+            const pwInput = document.getElementById('loginPw');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+            } else {
+                pwInput.type = 'password';
+            }
+        }
+
         function checkLoginStatus() {
-            const storedUser = sessionStorage.getItem('currentUser');
+            let storedUser = sessionStorage.getItem('currentUser') || localStorage.getItem('currentUser');
             if (storedUser) {
                 currentUser = JSON.parse(storedUser);
                 applyUserRoleUI();
@@ -306,6 +335,8 @@
         function handleLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
+            const rememberId = document.getElementById('rememberId').checked;
+            const keepLoggedIn = document.getElementById('keepLoggedIn').checked;
             
             if(!id || !pw) return alert('아이디와 비밀번호를 입력하세요.');
             
@@ -323,7 +354,20 @@
                 btn.disabled = false;
 
                 if (res.result === 'success') {
-                    sessionStorage.setItem('currentUser', JSON.stringify(res.user));
+                    // 아이디 기억 처리
+                    if (rememberId) {
+                        localStorage.setItem('savedId', id);
+                    } else {
+                        localStorage.removeItem('savedId');
+                    }
+
+                    // 로그인 상태 유지 처리
+                    if (keepLoggedIn) {
+                        localStorage.setItem('currentUser', JSON.stringify(res.user));
+                    } else {
+                        sessionStorage.setItem('currentUser', JSON.stringify(res.user));
+                    }
+                    
                     checkLoginStatus();
                 } else {
                     alert('로그인 실패: ' + res.message);
@@ -338,6 +382,7 @@
 
         function logout() {
             sessionStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUser');
             location.reload();
         }
 
@@ -345,7 +390,6 @@
             if(!currentUser) return;
             document.getElementById('userInfoDisplay').innerText = `접속자: ${currentUser.name}`;
             
-            // 권한 제어: admin일 경우에만 요소 노출
             const adminEls = document.querySelectorAll('.admin-only');
             if (currentUser.role === 'admin') {
                 adminEls.forEach(el => el.style.setProperty('display', 'inline-block', 'important'));
@@ -354,6 +398,7 @@
             }
         }
 
+        // ── 기존 메인 기능 로직 ──
         function initUI() {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
