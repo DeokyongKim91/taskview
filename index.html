@@ -57,6 +57,11 @@
         .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        .stats-wrap.collapsed { gap: 6px; }
+        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 6px 12px; border-radius: 30px; flex-direction: row; }
+        .stats-wrap.collapsed .stat-icon { width: 22px; height: 22px; font-size: 11px; }
+        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 6px; }
+        .stats-wrap.collapsed .stat-label { margin: 0; white-space: nowrap; font-size: 11px; }
 
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px; border-bottom: 1px solid #f0f0f0; }
@@ -64,27 +69,27 @@
         .filter-chip input { display: none; }
         .filter-chip label { display: block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: #666; transition: 0.2s; }
         .filter-chip input:checked + label { background: #009A44; color: #fff; box-shadow: 0 2px 5px rgba(0,154,68,0.3); }
-
         .view-tabs { display: flex; gap: 4px; background: #f0f5f2; border-radius: 10px; padding: 4px; }
         .view-tab-btn { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; transition: 0.2s; }
         .view-tab-btn.active { background: #fff; color: #009A44; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-
         .view-body { padding: 20px; min-height: 450px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
+        /* GANTT */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
         #gantt-top-scroll::-webkit-scrollbar-track { background: #fcfcfc; }
         #gantt-top-scroll-inner { height: 1px; }
         #gantt { overflow-x: hidden; min-height: 400px; border: 1px solid #eee; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top: none; }
-
+        
         .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .assignee-card { background: #f9fbf9; border: 1px solid #e0ede5; border-radius: 12px; padding: 15px; }
         .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
 
+        /* DRAWER & MODAL */
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 10005; flex-direction: column; align-items: center; justify-content: center; }
         .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1040; cursor: pointer; backdrop-filter: blur(2px); }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
@@ -311,10 +316,10 @@
                                 <div class="col-md-4"></div>
                                 
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 디자인</label>
-                                    <select class="form-select" name="담당_디자인"><option value="">-</option><option value="X">X</option><option value="김명진">김명진</option></select>
+                                    <select class="form-select" name="담당_디자인"><option value="">-</option><option value="X" selected>X</option><option value="김명진">김명진</option></select>
                                 </div>
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 퍼블</label>
-                                    <select class="form-select" name="담당_퍼블"><option value="">-</option><option value="X">X</option><option value="오영주">오영주</option><option value="김범석">김범석</option></select>
+                                    <select class="form-select" name="담당_퍼블"><option value="">-</option><option value="X" selected>X</option><option value="오영주">오영주</option><option value="김범석">김범석</option></select>
                                 </div>
                                 <div class="col-md-4"></div>
                                 
@@ -356,6 +361,21 @@
             '취소': { c: '#9ca3af', i: '⚪', b: '#f3f4f6' }
         };
 
+        // ── 핵심 동적 헤더 맵핑 함수 (시트 구조와 폼 매핑 동기화) ──
+        function getDynamicHeaders() {
+            if (!rawData || rawData.length === 0) return {};
+            const keys = Object.keys(rawData[0]).filter(k => k !== '출처시트');
+            return {
+                bank: keys[2] || '은행 사업부서 담당자',
+                mutual: keys[3] || '상호 사업부서 담당자',
+                gubun: keys[4] || '구분',
+                scale: keys[7] || '규모',
+                planner: keys.find(h => h.includes('기획')) || '담당 기획',
+                design: keys.find(h => h.includes('디자인')) || '담당 디자인',
+                publ: keys.find(h => h.includes('퍼블')) || '담당 퍼블'
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => { 
             const savedId = localStorage.getItem('savedId');
             if (savedId) {
@@ -377,13 +397,8 @@
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
             const pwBtn = document.getElementById('pwToggleBtn');
-            if (pwInput.type === 'password') {
-                pwInput.type = 'text';
-                pwBtn.innerText = '숨김';
-            } else {
-                pwInput.type = 'password';
-                pwBtn.innerText = '보기';
-            }
+            if (pwInput.type === 'password') { pwInput.type = 'text'; pwBtn.innerText = '숨김'; } 
+            else { pwInput.type = 'password'; pwBtn.innerText = '보기'; }
         }
 
         function checkLoginStatus() {
@@ -393,8 +408,7 @@
                 applyUserRoleUI();
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
-                initUI(); 
-                fetchData();
+                initUI(); fetchData();
             } else {
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('app-container').style.display = 'none';
@@ -402,23 +416,18 @@
         }
 
         function handleLogin() {
-            const id = document.getElementById('loginId').value.trim();
-            const pw = document.getElementById('loginPw').value.trim();
-            const rememberId = document.getElementById('rememberId').checked;
-            const keepLoggedIn = document.getElementById('keepLoggedIn').checked;
-            
+            const id = document.getElementById('loginId').value.trim(), pw = document.getElementById('loginPw').value.trim();
+            const rememberId = document.getElementById('rememberId').checked, keepLoggedIn = document.getElementById('keepLoggedIn').checked;
             if(!id || !pw) return alert('아이디와 비밀번호를 입력하세요.');
             
             const btn = document.querySelector('.login-btn');
             btn.innerText = '인증 중...'; btn.disabled = true;
 
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id: id, password: pw }) })
-            .then(r => r.json())
-            .then(res => {
+            .then(r => r.json()).then(res => {
                 btn.innerText = '로그인'; btn.disabled = false;
                 if (res.result === 'success') {
-                    if (rememberId) localStorage.setItem('savedId', id);
-                    else localStorage.removeItem('savedId');
+                    if (rememberId) localStorage.setItem('savedId', id); else localStorage.removeItem('savedId');
                     if (keepLoggedIn) localStorage.setItem('currentUser', JSON.stringify(res.user));
                     else sessionStorage.setItem('currentUser', JSON.stringify(res.user));
                     checkLoginStatus();
@@ -426,10 +435,7 @@
             }).catch(err => { alert('통신 에러 발생'); btn.innerText = '로그인'; btn.disabled = false; });
         }
 
-        function logout() {
-            sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
-            location.reload();
-        }
+        function logout() { sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser'); location.reload(); }
 
         function applyUserRoleUI() {
             if(!currentUser) return;
@@ -472,26 +478,15 @@
             }).catch(() => { alert('데이터 로드 실패'); toggleLoad(false); });
         }
 
-        // 전체 필드 광범위 스캔 로직
         function updateDropdowns() {
             const bizManagers = new Set();
             const planners = new Set(['김민경']);
+            const dh = getDynamicHeaders();
             
             rawData.forEach(item => {
-                Object.keys(item).forEach(k => {
-                    if (k.includes('은행') || k.includes('상호') || k.includes('사업부서')) {
-                        String(item[k]).split(/[,/]/).forEach(n => {
-                            let clean = n.replace(/은행:|상호:/g, '').trim();
-                            if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
-                        });
-                    }
-                });
-                if (item['담당_기획']) {
-                    String(item['담당_기획']).split(/[,/]/).forEach(n => {
-                        let clean = n.trim();
-                        if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정') planners.add(clean);
-                    });
-                }
+                if (item[dh.bank]) String(item[dh.bank]).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
+                if (item[dh.mutual]) String(item[dh.mutual]).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
+                if (item[dh.planner]) String(item[dh.planner]).split(/[,/]/).forEach(n => { let clean = n.trim(); if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정') planners.add(clean); });
             });
 
             const bizDataList = document.getElementById('bizList');
@@ -613,6 +608,7 @@
         function setGanttMode(m, btn) { currentGanttMode = m; document.querySelectorAll('.g-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if(gantt) gantt.change_view_mode(m); syncGanttScroll(); }
 
         function renderMonthly() {
+            const dh = getDynamicHeaders();
             const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
             const mData = {};
             d.forEach(i => {
@@ -620,7 +616,7 @@
                 if (!dateStr) return; 
                 const ym = dateStr.substring(0, 7);
                 if (!mData[ym]) mData[ym] = { 대: 0, 중: 0, 소: 0, list: [] };
-                const scale = i['규모'] || '소';
+                const scale = i[dh.scale] || '소';
                 if (mData[ym][scale] !== undefined) mData[ym][scale]++;
                 mData[ym].list.push(i);
             });
@@ -631,18 +627,19 @@
             
             let acc = '';
             sorted.reverse().forEach((m, idx) => {
-                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모'] || '소'}] ${i['요건명']||''}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span></div>`).join('');
+                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i[dh.scale] || '소'}] ${i['요건명']||''}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span></div>`).join('');
                 acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${m} 완료내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body p-2">${items}</div></div></div>`;
             });
             document.getElementById('monthlyAccordion').innerHTML = acc || '<p class="text-center py-4 text-muted small">완료 건 없음</p>';
         }
 
         function renderAssignee() {
+            const dh = getDynamicHeaders();
             const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
             const uMap = {};
             active.forEach(i => {
-                ['기획', '디자인', '퍼블'].forEach(role => {
-                    const val = String(i['담당_' + role] || '');
+                [dh.planner, dh.design, dh.publ].forEach(roleKey => {
+                    const val = String(i[roleKey] || '');
                     if (val && val !== '-' && val !== 'X') {
                         val.split(/[,/]/).forEach(n => {
                             const name = n.trim();
@@ -670,31 +667,61 @@
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
-            Object.keys(data).forEach(k => {
-                if(f.elements[k]) {
-                    if (f.elements[k].type === 'date') f.elements[k].value = getSafeDateStr(data[k]) || '';
-                    else f.elements[k].value = data[k] || '';
-                }
-            });
+            const dh = getDynamicHeaders();
+            
+            f.reset();
+            f.elements['요구사항 ID'].value = data['요구사항 ID'] || '';
+            f.elements['진행단계'].value = data['진행단계'] || '작업 대기';
+            f.elements['요건명'].value = data['요건명'] || '';
+            f.elements['접수일자'].value = getSafeDateStr(data['접수일자']) || '';
+            f.elements['운영이관(예정)일'].value = getSafeDateStr(data['운영이관(예정)일']) || '';
+            if(f.elements['정산완료']) f.elements['정산완료'].value = data['정산완료'] || '';
+            
+            f.elements['은행 사업부서 담당자'].value = data[dh.bank] || '';
+            f.elements['상호 사업부서 담당자'].value = data[dh.mutual] || '';
+            f.elements['담당_기획'].value = data[dh.planner] || '';
+            f.elements['담당_디자인'].value = data[dh.design] || '';
+            f.elements['담당_퍼블'].value = data[dh.publ] || '';
+
             modal.show();
         }
         function openPopById(id) { const d = rawData.find(x => String(x['요구사항 ID']) === String(id)); if(d) openPop(d); }
 
         function saveChanges() {
-            const payload = Object.fromEntries(new FormData(document.getElementById('taskForm')).entries());
+            const formData = Object.fromEntries(new FormData(document.getElementById('taskForm')).entries());
+            const dh = getDynamicHeaders();
+            
+            let payload = { 
+                action: 'update_task', // 구 상세수정 호환
+                '요구사항 ID': formData['요구사항 ID'], 
+                '출처시트': formData['출처시트'], 
+                '진행단계': formData['진행단계'], 
+                '요건명': formData['요건명'], 
+                '접수일자': formData['접수일자'], 
+                '운영이관(예정)일': formData['운영이관(예정)일'], 
+                '정산완료': formData['정산완료'] 
+            };
+            
+            payload[dh.bank] = formData['은행 사업부서 담당자'];
+            payload[dh.mutual] = formData['상호 사업부서 담당자'];
+            payload[dh.planner] = formData['담당_기획'];
+            payload[dh.design] = formData['담당_디자인'];
+            payload[dh.publ] = formData['담당_퍼블'];
+
             toggleLoad(true, "저장 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) }).then(r => r.json()).then(res => { if(res.result === 'success') { modal.hide(); fetchData(); } else alert('저장 실패'); });
         }
 
         function recommendPlanner(plannersSet) {
             if(!plannersSet || plannersSet.size === 0) return '';
+            const dh = getDynamicHeaders();
             const activeTasks = rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
             const plannerScores = {};
             plannersSet.forEach(p => plannerScores[p] = 0);
 
             activeTasks.forEach(t => {
-                const pList = String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
-                const difficulty = t['난이도'] || t['규모'] || '중';
+                const pList = String(t[dh.planner] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
+                const difficulty = t[dh.scale] || '중';
                 let score = 2; 
                 if(difficulty === '대' || difficulty === '상') score = 3;
                 if(difficulty === '소' || difficulty === '하') score = 1;
@@ -730,16 +757,26 @@
         }
 
         function saveNewTask() {
-            const payload = Object.fromEntries(new FormData(document.getElementById('createForm')).entries());
-            if(!payload['요건명']) return alert('요건명을 입력하세요.');
+            const formData = Object.fromEntries(new FormData(document.getElementById('createForm')).entries());
+            if(!formData['요건명']) return alert('요건명을 입력하세요.');
             
-            if (payload['구분'] === '은행') {
-                payload['상호 사업부서 담당자'] = '';
-            } else if (payload['구분'] === '상호') {
-                payload['은행 사업부서 담당자'] = '';
-            }
+            const dh = getDynamicHeaders();
+            let payload = { 
+                action: 'create_task', 
+                '출처시트': formData['출처시트'], 
+                '요건명': formData['요건명'], 
+                '접수일자': formData['접수일자'], 
+                '운영이관(예정)일': formData['운영이관(예정)일'] 
+            };
             
-            payload.action = 'create_task';
+            payload[dh.gubun] = formData['구분'];
+            payload[dh.scale] = formData['난이도'];
+            payload[dh.planner] = formData['담당_기획'];
+            payload[dh.design] = formData['담당_디자인'];
+            payload[dh.publ] = formData['담당_퍼블'];
+            
+            payload[dh.bank] = formData['구분'] === '상호' ? '' : formData['은행 사업부서 담당자'];
+            payload[dh.mutual] = formData['구분'] === '은행' ? '' : formData['상호 사업부서 담당자'];
 
             toggleLoad(true, "신규 요구사항 생성 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
