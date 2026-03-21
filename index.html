@@ -91,6 +91,9 @@
         .drawer-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
         .drawer-item:hover { border-color: #009A44; background: #fafffc; }
         
+        /* 모달 테마 맞춤 */
+        .theme-modal-header { background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); color: #fff; border-bottom: none; }
+        
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
             .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
@@ -113,6 +116,16 @@
             .fc-list-day-cushion { padding: 8px 12px !important; }
             .fc-list-day-text, .fc-list-day-side-text { font-size: 13px !important; }
             .fc-list-event-title { font-size: 12px !important; padding: 8px 12px !important; }
+
+            /* 모바일 모달 콤팩트 최적화 */
+            .modal-dialog { margin: 10px; }
+            .modal-body { padding: 15px !important; }
+            .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
+            .modal-body .form-label { font-size: 11px; margin-bottom: 2px; }
+            .modal-body .form-control, .modal-body .form-select { font-size: 12px; padding: 6px 10px; min-height: 32px; }
+            .modal-body textarea.form-control { height: 44px; min-height: 44px; }
+            .modal-footer { padding: 12px !important; }
+            .modal-footer .btn { font-size: 12px; padding: 6px 16px; }
         }
     </style>
 </head>
@@ -191,7 +204,10 @@
     <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-dark text-white"><h6 class="modal-title" id="modalTaskTitle">상세 수정</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header theme-modal-header">
+                    <h6 class="modal-title" id="modalTaskTitle">상세 수정</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body p-4">
                     <form id="taskForm">
                         <input type="hidden" name="출처시트">
@@ -587,7 +603,6 @@
                 const worksheet = workbook.Sheets[firstSheetName];
                 const json = XLSX.utils.sheet_to_json(worksheet, {raw: false});
 
-                // JSON 데이터를 GAS로 전송
                 fetch(GAS_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'bulk_upload', data: json })
@@ -596,7 +611,7 @@
                 .then(res => {
                     if(res.result === 'success') {
                         alert('엑셀 데이터 업로드 성공');
-                        fetchData(); // 재로딩
+                        fetchData(); 
                     } else {
                         alert('업로드 실패: ' + res.message);
                         toggleLoad(false);
@@ -606,7 +621,6 @@
                     toggleLoad(false);
                 });
                 
-                // input 초기화 (동일 파일 재업로드 가능하게)
                 event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
