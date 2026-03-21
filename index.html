@@ -25,6 +25,7 @@
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
 
+        /* 로그인 화면 */
         #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
@@ -38,15 +39,16 @@
         .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: #007a36; }
 
+        /* 메인 레이아웃 */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 30px 24px 70px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .header-sub { font-size: 13px; color: rgba(255,255,255,.8); margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .update-time { font-size: 11px; background: rgba(0,0,0,0.15); padding: 2px 8px; border-radius: 12px; }
-        
         .header-controls { position: absolute; top: 30px; right: 24px; display: flex; gap: 8px; }
         .header-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all .2s; }
         .header-btn:hover { background: rgba(255,255,255,.3); }
         .btn-primary-custom { background: #005BAC; border-color: #005BAC; }
+        .btn-primary-custom:hover { background: #004a8e; }
 
         .main-wrap { padding: 0 16px 40px; margin-top: -45px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
@@ -56,6 +58,11 @@
         .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        .stats-wrap.collapsed { gap: 6px; }
+        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 6px 12px; border-radius: 30px; flex-direction: row; }
+        .stats-wrap.collapsed .stat-icon { width: 22px; height: 22px; font-size: 11px; }
+        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 6px; }
+        .stats-wrap.collapsed .stat-label { margin: 0; white-space: nowrap; font-size: 11px; }
 
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px; border-bottom: 1px solid #f0f0f0; }
@@ -70,6 +77,7 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
+        /* GANTT */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -81,6 +89,7 @@
         .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
 
+        /* DRAWER & MODAL */
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 10005; flex-direction: column; align-items: center; justify-content: center; }
         .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1040; cursor: pointer; backdrop-filter: blur(2px); }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
@@ -93,9 +102,11 @@
         .theme-modal-header { background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); color: #fff; border-bottom: none; }
         .admin-only { display: none !important; }
         .recommend-badge { font-size: 10px; background: #e0ede5; color: #009A44; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+        input[disabled], select[disabled], textarea[disabled] { background-color: #f8f9fa; opacity: 1; pointer-events: none; }
 
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
+            .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
             .header-controls { position: relative; top: auto; right: auto; margin-top: 15px; justify-content: flex-start; flex-wrap: wrap; }
             .panel-toolbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
             .filter-group { width: 100%; border-radius: 8px; padding: 4px; }
@@ -107,8 +118,16 @@
             .gantt-controls-wrap select { width: 100% !important; }
             .gantt-controls-wrap .btn-group { width: 100%; display: flex; }
             .gantt-controls-wrap .btn-group .btn { flex: 1; }
+            .fc .fc-toolbar-title { font-size: 18px !important; }
+            .fc .fc-button-primary { font-size: 11px !important; padding: 4px 8px !important; }
             .modal-dialog { margin: 10px; }
             .modal-body { padding: 15px !important; }
+            .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
+            .modal-body .form-label { font-size: 11px; margin-bottom: 2px; }
+            .modal-body .form-control, .modal-body .form-select { font-size: 12px; padding: 6px 10px; min-height: 32px; }
+            .modal-body textarea.form-control { height: 44px; min-height: 44px; }
+            .modal-footer { padding: 12px !important; }
+            .modal-footer .btn { font-size: 12px; padding: 6px 16px; }
         }
     </style>
 </head>
@@ -120,7 +139,7 @@
             <input type="text" id="loginId" class="login-input" placeholder="아이디">
             <div class="password-wrap">
                 <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
-                <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePassword()">보기</button>
+                <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePassword()" tabindex="-1">보기</button>
             </div>
             <div class="login-options">
                 <label><input type="checkbox" id="rememberId"> 아이디 저장</label>
@@ -143,7 +162,7 @@
                 <span class="update-time" id="userInfoDisplay" style="background: rgba(255,255,255,0.2);">접속자: -</span>
             </div>
             <div class="header-controls">
-                <button class="header-btn btn-primary-custom" onclick="openCreatePop()">➕ 신규 등록</button>
+                <button class="header-btn btn-primary-custom admin-only" onclick="openCreatePop()">➕ 신규 등록</button>
                 <button class="header-btn admin-only" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
                 <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
                 <button class="header-btn" onclick="logout()" style="background: rgba(0,0,0,0.2); border:none;">로그아웃</button>
@@ -154,6 +173,7 @@
         <div class="main-wrap">
             <div class="stats-header">
                 <span class="small fw-bold text-muted">📊 요약 현황</span>
+                <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
             </div>
             <div class="stats-wrap" id="statsContainer"></div>
 
@@ -216,20 +236,19 @@
                         <form id="taskForm">
                             <input type="hidden" name="출처시트">
                             <div class="row g-3">
-                                <div class="col-md-6"><label class="form-label small fw-bold">ID</label><input type="text" class="form-control bg-light" name="요구사항 ID" readonly></div>
-                                <div class="col-md-6"><label class="form-label small fw-bold">진행단계</label>
+                                <div class="col-md-4"><label class="form-label small fw-bold">ID</label><input type="text" class="form-control bg-light" name="요구사항 ID" readonly></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">진행단계</label>
                                     <select class="form-select" name="진행단계">
                                         <option>작업 대기</option><option>진행중</option><option>검증 반영</option><option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
                                     </select>
                                 </div>
+                                <div class="col-md-4"><label class="form-label small fw-bold">규모</label>
+                                    <select class="form-select" name="규모"><option value="대">대</option><option value="중">중</option><option value="소">소</option></select>
+                                </div>
                                 <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" name="요건명" rows="2"></textarea></div>
                                 
-                                <div class="col-md-6"><label class="form-label small fw-bold">은행 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="bizBank" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
-                                </div>
-                                <div class="col-md-6"><label class="form-label small fw-bold">상호 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
-                                </div>
+                                <div class="col-md-6"><label class="form-label small fw-bold">은행 사업부서 담당자</label><input type="text" class="form-control" name="bizBank" list="bizList" autocomplete="off"></div>
+                                <div class="col-md-6"><label class="form-label small fw-bold">상호 사업부서 담당자</label><input type="text" class="form-control" name="bizMutual" list="bizList" autocomplete="off"></div>
                                 
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 기획</label><input type="text" class="form-control" name="담당_기획"></div>
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 디자인</label>
@@ -238,10 +257,23 @@
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 퍼블</label>
                                     <select class="form-select" name="담당_퍼블"><option value="">-</option><option value="X">X</option><option value="오영주">오영주</option><option value="김범석">김범석</option></select>
                                 </div>
+
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">계획 기획</label><input type="date" class="form-control" name="계획_기획"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">계획 디자인</label><input type="date" class="form-control" name="계획_디자인"></div>
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">계획 퍼블</label><input type="date" class="form-control" name="계획_퍼블"></div>
+                                
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">진척 기획</label>
+                                    <select class="form-select" name="진척_기획"><option value="-">-</option><option value="X">X</option><option value="0%">0%</option><option value="10%">10%</option><option value="20%">20%</option><option value="30%">30%</option><option value="40%">40%</option><option value="50%">50%</option><option value="60%">60%</option><option value="70%">70%</option><option value="80%">80%</option><option value="90%">90%</option><option value="100%">100%</option></select>
+                                </div>
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">진척 디자인</label>
+                                    <select class="form-select" name="진척_디자인"><option value="-">-</option><option value="X">X</option><option value="0%">0%</option><option value="10%">10%</option><option value="20%">20%</option><option value="30%">30%</option><option value="40%">40%</option><option value="50%">50%</option><option value="60%">60%</option><option value="70%">70%</option><option value="80%">80%</option><option value="90%">90%</option><option value="100%">100%</option></select>
+                                </div>
+                                <div class="col-md-4"><label class="form-label small fw-bold text-primary">진척 퍼블</label>
+                                    <select class="form-select" name="진척_퍼블"><option value="-">-</option><option value="X">X</option><option value="0%">0%</option><option value="10%">10%</option><option value="20%">20%</option><option value="30%">30%</option><option value="40%">40%</option><option value="50%">50%</option><option value="60%">60%</option><option value="70%">70%</option><option value="80%">80%</option><option value="90%">90%</option><option value="100%">100%</option></select>
+                                </div>
                                 
                                 <div class="col-md-4"><label class="form-label small fw-bold">접수일자</label><input type="date" class="form-control" name="접수일자"></div>
                                 <div class="col-md-4"><label class="form-label small fw-bold">운영이관일</label><input type="date" class="form-control" name="운영이관(예정)일"></div>
-                                <div class="col-md-4"><label class="form-label small fw-bold">정산여부</label><select class="form-select" name="정산완료"><option value="">-</option><option value="여">여</option><option value="부">부</option></select></div>
                             </div>
                         </form>
                     </div>
@@ -261,18 +293,10 @@
                         <form id="createForm">
                             <div class="row g-3">
                                 <div class="col-md-6"><label class="form-label small fw-bold">출처시트</label>
-                                    <select class="form-select" name="출처시트">
-                                        <option value="인터넷" selected>인터넷</option>
-                                        <option value="스마트">스마트</option>
-                                        <option value="둘다">인터넷, 스마트 둘 다</option>
-                                    </select>
+                                    <select class="form-select" name="출처시트"><option value="인터넷" selected>인터넷</option><option value="스마트">스마트</option><option value="둘다">인터넷, 스마트 둘 다</option></select>
                                 </div>
                                 <div class="col-md-6"><label class="form-label small fw-bold">구분</label>
-                                    <select class="form-select" name="구분" id="createGubun">
-                                        <option value="은행" selected>은행</option>
-                                        <option value="상호">상호</option>
-                                        <option value="공통">공통</option>
-                                    </select>
+                                    <select class="form-select" name="구분" id="createGubun"><option value="은행" selected>은행</option><option value="상호">상호</option><option value="공통">공통</option></select>
                                 </div>
                                 <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" name="요건명" rows="2" placeholder="요건명 입력"></textarea></div>
                                 
@@ -285,12 +309,8 @@
                                     <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 
-                                <div class="col-md-4"><label class="form-label small fw-bold">난이도</label>
-                                    <select class="form-select" name="난이도">
-                                        <option value="대">대</option>
-                                        <option value="중">중</option>
-                                        <option value="소" selected>소</option>
-                                    </select>
+                                <div class="col-md-4"><label class="form-label small fw-bold">규모</label>
+                                    <select class="form-select" name="규모"><option value="대">대</option><option value="중">중</option><option value="소" selected>소</option></select>
                                 </div>
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 기획 <span class="recommend-badge" id="recommendBadge" style="display:none;">추천 반영</span></label>
                                     <select class="form-select" id="createPlanner" name="담당_기획"></select>
@@ -320,7 +340,9 @@
             <div class="drawer-body" id="drawerBody"></div>
         </div>
         <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-    </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div> 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
@@ -361,7 +383,6 @@
             });
         });
 
-        // ── 로그인 ──
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
             const pwBtn = document.getElementById('pwToggleBtn');
@@ -428,7 +449,6 @@
             else adminEls.forEach(el => el.style.setProperty('display', 'none', 'important'));
         }
 
-        // ── 초기화 및 데이터 연동 ──
         function initUI() {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
@@ -462,31 +482,14 @@
             }).catch(() => { alert('데이터 로드 실패'); toggleLoad(false); });
         }
 
-        // ── 담당자 옵션 추출 및 바인딩 ──
         function updateDropdowns() {
             const bizManagers = new Set();
             const planners = new Set(['김민경']);
             
             rawData.forEach(item => {
-                // 물리적 열 이름(bizBank, bizMutual)으로 확실하게 매핑
-                if (item['bizBank']) {
-                    String(item['bizBank']).split(/[,/]/).forEach(n => {
-                        let clean = n.trim();
-                        if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
-                    });
-                }
-                if (item['bizMutual']) {
-                    String(item['bizMutual']).split(/[,/]/).forEach(n => {
-                        let clean = n.trim();
-                        if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
-                    });
-                }
-                if (item['담당_기획']) {
-                    String(item['담당_기획']).split(/[,/]/).forEach(n => {
-                        let clean = n.trim();
-                        if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정') planners.add(clean);
-                    });
-                }
+                if (item['bizBank']) String(item['bizBank']).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
+                if (item['bizMutual']) String(item['bizMutual']).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
+                if (item['담당_기획']) String(item['담당_기획']).split(/[,/]/).forEach(n => { let clean = n.trim(); if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정') planners.add(clean); });
             });
 
             const bizDataList = document.getElementById('bizList');
@@ -659,27 +662,52 @@
             return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
 
-        // ── 모달 오픈 및 저장 로직 ──
+        // ── 팝업 데이터 바인딩 및 권한별 잠금 처리 ──
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
             f.reset();
+            
             Object.keys(data).forEach(k => {
                 if(f.elements[k]) {
                     if (f.elements[k].type === 'date') f.elements[k].value = getSafeDateStr(data[k]) || '';
                     else f.elements[k].value = data[k] || '';
                 }
             });
+
+            // 일반 사용자는 계획/진척 항목만 활성화, 나머지는 비활성화
+            const isUser = currentUser && currentUser.role !== 'admin';
+            const allowedKeys = ['계획_기획', '계획_디자인', '계획_퍼블', '진척_기획', '진척_디자인', '진척_퍼블'];
+            
+            Array.from(f.elements).forEach(el => {
+                if (!el.name) return;
+                if (isUser && !allowedKeys.includes(el.name)) {
+                    el.disabled = true;
+                } else {
+                    el.disabled = false;
+                }
+            });
+
             modal.show();
         }
 
         function openPopById(id) { const d = rawData.find(x => String(x['요구사항 ID']) === String(id)); if(d) openPop(d); }
 
         function saveChanges() {
-            const formData = Object.fromEntries(new FormData(document.getElementById('taskForm')).entries());
-            formData.action = 'update_task';
+            const f = document.getElementById('taskForm');
+            // FormData 수집 전 disabled 강제 해제 (값 누락 방지)
+            Array.from(f.elements).forEach(el => el.disabled = false);
+            
+            const payload = Object.fromEntries(new FormData(f).entries());
+            payload.action = 'update_task';
+            
             toggleLoad(true, "저장 중...");
-            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) }).then(r => r.json()).then(res => { if(res.result === 'success') { modal.hide(); fetchData(); } else alert('저장 실패'); });
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
+            .then(r => r.json())
+            .then(res => { 
+                if(res.result === 'success') { modal.hide(); fetchData(); } 
+                else alert('저장 실패'); 
+            });
         }
 
         function recommendPlanner(plannersSet) {
@@ -690,10 +718,10 @@
 
             activeTasks.forEach(t => {
                 const pList = String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
-                const difficulty = t['난이도'] || t['규모'] || '중';
+                const difficulty = t['규모'] || '중';
                 let score = 2; 
-                if(difficulty === '대' || difficulty === '상') score = 3;
-                if(difficulty === '소' || difficulty === '하') score = 1;
+                if(difficulty === '대') score = 3;
+                if(difficulty === '소') score = 1;
 
                 pList.forEach(p => {
                     if (plannerScores[p] !== undefined) plannerScores[p] += score;
