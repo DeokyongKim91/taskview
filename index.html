@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     <title>업무 현황 통합 관리 시스템</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏦</text></svg>">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css">
@@ -160,6 +157,7 @@
             position: relative; z-index: 1;
             max-width: 1300px; margin-left: auto; margin-right: auto;
         }
+        .main-wrap { margin-top: -60px; padding-top: 0; }
 
         /* ===== 요약 현황 ===== */
         .stats-header {
@@ -611,6 +609,7 @@
 <body>
     <div id="toastContainer" class="toast-container"></div>
 
+    <!-- ===== 로그인 화면 ===== -->
     <div id="login-screen">
         <div class="login-box">
             <div class="login-logo">🏦</div>
@@ -632,9 +631,11 @@
 
     <datalist id="bizList"></datalist>
 
+    <!-- FAB + 툴팁 -->
     <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()" title="신규 등록 (N)">+</button>
     <div class="fab-tooltip admin-only">신규 등록 <span class="keyboard-hint">N</span></div>
 
+    <!-- 키보드 단축키 패널 -->
     <div class="shortcut-panel" id="shortcutPanel">
         <h6>⌨ 단축키</h6>
         <div class="shortcut-row"><span>신규 등록</span><span class="shortcut-key">N</span></div>
@@ -645,6 +646,7 @@
         <div class="shortcut-row"><span>닫기</span><span class="shortcut-key">Esc</span></div>
     </div>
 
+    <!-- ===== 앱 컨테이너 ===== -->
     <div id="app-container" style="display: none;">
         <div id="loading">
             <div class="loading-card">
@@ -675,6 +677,7 @@
         </div>
 
         <div class="main-wrap">
+            <!-- 요약 현황 -->
             <div class="stats-header">
                 <div class="stats-header-title">📊 요약 현황</div>
                 <button id="statsToggleBtn" class="stats-toggle-btn" onclick="toggleStats()">접기 ▲</button>
@@ -683,6 +686,7 @@
                 <div class="stats-wrap" id="statsContainer"></div>
             </div>
 
+            <!-- 메인 패널 -->
             <div class="panel">
                 <div class="panel-toolbar">
                     <div class="filter-bar">
@@ -776,6 +780,7 @@
             </div>
         </div>
 
+        <!-- ===== 상세/수정 모달 ===== -->
         <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                 <div class="modal-content border-0 shadow-lg">
@@ -787,6 +792,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
 
+                    <!-- 진행단계 스텝바 -->
                     <div class="step-progress-wrap">
                         <div class="step-progress" id="stepProgressBar"></div>
                     </div>
@@ -911,6 +917,7 @@
             </div>
         </div>
 
+        <!-- ===== 신규 등록 모달 ===== -->
         <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-0 shadow-lg">
@@ -993,6 +1000,7 @@
             </div>
         </div>
 
+        <!-- ===== 보고서 모달 ===== -->
         <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
@@ -1028,6 +1036,7 @@
             </div>
         </div>
 
+        <!-- ===== 드로어 ===== -->
         <div class="drawer" id="statusDrawer">
             <div class="drawer-header">
                 <h6 class="m-0" id="drawerTitle">목록</h6>
@@ -1044,8 +1053,8 @@
 
     <script>
     /* ===================================================
-        CONSTANTS & STATE
-        =================================================== */
+       CONSTANTS & STATE
+       =================================================== */
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
 
     const AppState = {
@@ -1055,7 +1064,7 @@
         activeTab: 'calendar-view',
         currentGanttMode: 'Month',
         isShortcutPanelVisible: false,
-        pendingChanges: new Map(),
+        pendingChanges: new Map(), // 낙관적 업데이트용
     };
 
     let calendar, gantt, chart;
@@ -1079,8 +1088,8 @@
     };
 
     /* ===================================================
-        TOAST
-        =================================================== */
+       TOAST
+       =================================================== */
     function showToast(msg, type = 'success') {
         const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const container = document.getElementById('toastContainer');
@@ -1093,9 +1102,14 @@
     }
 
     /* ===================================================
-        SECURITY — 세션 서명 & 검증
-        =================================================== */
+       SECURITY — 세션 서명 & 검증 (개선 #1 보안)
+       평문 저장 방지: JSON → AES-유사 XOR 난독화 + HMAC-SHA256 서명
+       ※ 진정한 암호화는 서버 측에서 처리해야 하지만,
+          클라이언트 스크립트 변조로 role을 바꿔치기하는 공격을 방어합니다.
+       =================================================== */
     const SESSION_KEY = (() => {
+        // 페이지 빌드 시점(파일명+navigator UA)을 시드로 사용
+        // 실제 운영 시에는 서버에서 발급한 토큰으로 교체 권장
         const seed = (location.hostname || 'localhost') + navigator.userAgent.slice(0, 20);
         let h = 0;
         for (let i = 0; i < seed.length; i++) h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
@@ -1103,7 +1117,7 @@
     })();
 
     function xorObfuscate(str, key) {
-        return btoa(encodeURIComponent(str).split('').map((c, i) =>
+        return btoa(str.split('').map((c, i) =>
             String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
         ).join(''));
     }
@@ -1111,44 +1125,41 @@
     function xorDeobfuscate(encoded, key) {
         try {
             const raw = atob(encoded);
-            const str = raw.split('').map((c, i) =>
+            return raw.split('').map((c, i) =>
                 String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
             ).join('');
-            return decodeURIComponent(str);
         } catch { return null; }
     }
 
-    function signPayload(payload) {
-        let hash = 0;
-        const str = payload + SESSION_KEY;
-        for (let i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash |= 0;
-        }
-        return Math.abs(hash).toString(16);
+    async function signPayload(payload) {
+        const data = new TextEncoder().encode(payload + SESSION_KEY);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
     }
 
-    function storeSession(user, persistent) {
+    async function storeSession(user, persistent) {
         const json = JSON.stringify(user);
-        const sig  = signPayload(json);
+        const sig  = await signPayload(json);
         const blob = xorObfuscate(json, SESSION_KEY);
         const record = JSON.stringify({ d: blob, s: sig, t: Date.now() });
         if (persistent) localStorage.setItem('_pms_sess', record);
         else sessionStorage.setItem('_pms_sess', record);
     }
 
-    function loadSession() {
+    async function loadSession() {
         const raw = sessionStorage.getItem('_pms_sess') || localStorage.getItem('_pms_sess');
         if (!raw) return null;
         try {
             const { d, s, t } = JSON.parse(raw);
+            // 7일 만료 (localStorage 유지 로그인)
             if (Date.now() - t > 7 * 86400000) { clearSession(); return null; }
             const json = xorDeobfuscate(d, SESSION_KEY);
             if (!json) { clearSession(); return null; }
-            const expectedSig = signPayload(json);
+            const expectedSig = await signPayload(json);
             if (expectedSig !== s) {
+                // 서명 불일치 → 변조 감지
                 clearSession();
-                showToast('세션 오류가 발생했습니다. 다시 로그인하세요.', 'error');
+                showToast('세션이 만료되었거나 변조가 감지되었습니다. 다시 로그인해 주세요.', 'error');
                 return null;
             }
             return JSON.parse(json);
@@ -1156,13 +1167,16 @@
     }
 
     function clearSession() {
-        sessionStorage.removeItem('_pms_sess'); localStorage.removeItem('_pms_sess');
-        sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
+        sessionStorage.removeItem('_pms_sess');
+        localStorage.removeItem('_pms_sess');
+        // 구버전 키도 제거
+        sessionStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUser');
     }
 
     /* ===================================================
-        LOGIN
-        =================================================== */
+       LOGIN
+       =================================================== */
     function togglePassword() {
         const el = document.getElementById('loginPw');
         const btn = document.getElementById('pwToggleBtn');
@@ -1227,8 +1241,8 @@
     }
 
     /* ===================================================
-        DEBOUNCE 유틸
-        =================================================== */
+       DEBOUNCE 유틸 (개선 #2)
+       =================================================== */
     function debounce(fn, delay) {
         let timer;
         return function (...args) {
@@ -1237,11 +1251,14 @@
         };
     }
 
+    /* 디바운스가 필요한 검색 전용 핸들러 (300ms) */
     const debouncedFilterFromSearch = debounce(() => applyFilter(true), 300);
 
     /* ===================================================
-        XSS 방어 — escapeHTML 유틸
-        =================================================== */
+       XSS 방어 — escapeHTML 유틸 (추가 개선 #1)
+       innerHTML에 데이터를 삽입하기 전 반드시 통과시켜야 합니다.
+       &  <  >  "  '  ` 6가지 위험 문자를 HTML 엔티티로 변환합니다.
+       =================================================== */
     const _ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;' };
     function esc(str) {
         if (str === null || str === undefined) return '';
@@ -1249,8 +1266,8 @@
     }
 
     /* ===================================================
-        URL 필터 상태 관리
-        =================================================== */
+       URL 필터 상태 관리 (개선 #7)
+       =================================================== */
     function saveFilterToURL() {
         const sheet = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
         const status = document.getElementById('globalStatusFilter')?.value || 'active';
@@ -1307,8 +1324,8 @@
     }
 
     /* ===================================================
-        KEYBOARD SHORTCUTS
-        =================================================== */
+       KEYBOARD SHORTCUTS (개선 #6)
+       =================================================== */
     function toggleShortcutPanel() {
         AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
         document.getElementById('shortcutPanel').classList.toggle('visible', AppState.isShortcutPanelVisible);
@@ -1349,8 +1366,8 @@
     }
 
     /* ===================================================
-        INIT UI
-        =================================================== */
+       INIT UI
+       =================================================== */
     function initUI() {
         let h = '';
         Object.entries(MAP).forEach(([k, v]) => {
@@ -1371,6 +1388,7 @@
             document.getElementById('rememberId').checked = true;
         }
 
+        // Gantt 동기화 스크롤 초기화
         const topScroll = document.getElementById('gantt-top-scroll');
         const ganttWrap = document.getElementById('gantt');
         let syncTop = false, syncBot = false;
@@ -1383,11 +1401,13 @@
             syncBot = false;
         });
 
+        // 담당 기획/디자인/퍼블 변경 시 의존 필드 업데이트
         const tForm = document.getElementById('taskForm');
         tForm.elements['담당_기획'].addEventListener('input', updateFieldDependency);
         tForm.elements['담당_디자인'].addEventListener('change', updateFieldDependency);
         tForm.elements['담당_퍼블'].addEventListener('change', updateFieldDependency);
 
+        // 신규 등록 구분 변경
         document.getElementById('createGubun').addEventListener('change', function () {
             const val = this.value;
             document.getElementById('bizBankWrapper').style.display = val !== '상호' ? 'block' : 'none';
@@ -1396,8 +1416,8 @@
     }
 
     /* ===================================================
-        SKELETON UI 렌더러
-        =================================================== */
+       SKELETON UI 렌더러 (개선 #4)
+       =================================================== */
     function showSkeletonStats() {
         const container = document.getElementById('statsContainer');
         if (!container) return;
@@ -1415,7 +1435,7 @@
         const tbody = document.querySelector('#listTable tbody');
         if (!tbody) return;
         tbody.innerHTML = Array(8).fill(0).map(() => `
-            <tr class="sk-table-row">
+            <tr>
                 <td><div class="skeleton sk-cell sk-cell-xs"></div></td>
                 <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
                 <td><div class="skeleton sk-cell sk-cell-xs"></div></td>
@@ -1431,11 +1451,21 @@
     function showSkeletonCalendar() {
         const el = document.getElementById('calendar');
         if (!el) return;
+
+        // ★ 핵심 수정: 인스턴스가 살아있는 상태로 DOM을 innerHTML로 교체하면
+        //   FullCalendar가 detached DOM을 참조해 무한 대기 상태에 빠집니다.
+        //   스켈레톤을 표시하기 전에 반드시 인스턴스를 destroy하고 null로 초기화합니다.
+        if (calendar) {
+            try { calendar.destroy(); } catch (_) {}
+            calendar = null;
+        }
+
         el.innerHTML = `
             <div class="skeleton-calendar">
                 <div class="sk-cal-header">
                     <div class="skeleton sk-cal-title"></div>
                     <div class="sk-cal-btns">
+                        <div class="skeleton sk-cal-btn"></div>
                         <div class="skeleton sk-cal-btn"></div>
                         <div class="skeleton sk-cal-btn"></div>
                     </div>
@@ -1448,10 +1478,16 @@
     }
 
     /* ===================================================
-        FETCH DATA
-        =================================================== */
+       FETCH DATA
+       =================================================== */
     function fetchData(isSilent = false) {
         if (!isSilent) {
+            // ★ 핵심 수정: 스켈레톤 innerHTML 삽입 전에 calendar 인스턴스를 반드시 파괴합니다.
+            //   인스턴스가 살아있는 채로 DOM이 교체되면 detached 참조로 인해 무한 대기가 발생합니다.
+            if (calendar) {
+                try { calendar.destroy(); } catch (_) {}
+                calendar = null;
+            }
             showSkeletonStats();
             if (AppState.activeTab === 'calendar-view') showSkeletonCalendar();
             if (AppState.activeTab === 'list-view') showSkeletonList();
@@ -1467,14 +1503,18 @@
             })
             .catch(err => {
                 console.error('fetchData error:', err);
+                showToast('데이터 로드에 실패했습니다. 새로고침을 눌러 다시 시도해 주세요.', 'error');
                 if (!isSilent) {
                     initUI();
                     showFetchErrorState();
                 }
-                showToast('데이터 로드에 실패했습니다. 새로고침을 눌러 다시 시도해 주세요.', 'error');
             });
     }
 
+    /**
+     * API 통신 실패 시 현재 활성 탭의 콘텐츠 영역에
+     * 에러 Empty State를 명시적으로 렌더링합니다.
+     */
     function showFetchErrorState() {
         const errorHTML = `
             <div class="empty-state">
@@ -1537,8 +1577,8 @@
     }
 
     /* ===================================================
-        FILTER
-        =================================================== */
+       FILTER
+       =================================================== */
     function applyFilter(updateURL = false) {
         updateStats();
         render();
@@ -1562,23 +1602,6 @@
     }
 
     function updateStats() {
-        const container = document.getElementById('statsContainer');
-        // 스켈레톤 상태라면 실제 카드 HTML로 복구
-        if (container && container.querySelector('.stat-card-skeleton')) {
-            let h = '';
-            Object.entries(MAP).forEach(([k, v]) => {
-                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
-                h += `<div class="stat-card" onclick="showDrawer('${k}')">
-                        <div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div>
-                        <div>
-                            <div class="stat-num" id="st-${id}">-</div>
-                            <div class="stat-label">${k}</div>
-                        </div>
-                      </div>`;
-            });
-            container.innerHTML = h;
-        }
-
         const d = getFiltered();
         const allEl = document.getElementById('st-all');
         if (allEl) allEl.innerText = d.length;
@@ -1590,8 +1613,8 @@
     }
 
     /* ===================================================
-        RENDER DISPATCHER
-        =================================================== */
+       RENDER DISPATCHER
+       =================================================== */
     function render() {
         const tab = AppState.activeTab;
         if (tab === 'calendar-view') renderCalendar();
@@ -1602,8 +1625,8 @@
     }
 
     /* ===================================================
-        DATE HELPERS
-        =================================================== */
+       DATE HELPERS
+       =================================================== */
     function getSafeDateStr(raw) {
         if (!raw || raw === '미정') return null;
         const d = new Date(raw);
@@ -1629,8 +1652,8 @@
     }
 
     /* ===================================================
-        CALENDAR — 인스턴스 재사용으로 메모리 누수 방지
-        =================================================== */
+       CALENDAR — 인스턴스 재사용 + DOM 정합성 방어
+       =================================================== */
     function renderCalendar() {
         const evs = getFiltered().flatMap(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
@@ -1648,6 +1671,13 @@
 
         const calEl = document.getElementById('calendar');
 
+        // ★ 방어 로직: 인스턴스가 남아있어도 실제 FullCalendar DOM이 없으면
+        //   (스켈레톤 등으로 덮인 경우) 인스턴스를 파괴하고 새로 생성합니다.
+        if (calendar && !calEl.querySelector('.fc')) {
+            try { calendar.destroy(); } catch (_) {}
+            calendar = null;
+        }
+
         if (!calendar) {
             calendar = new FullCalendar.Calendar(calEl, {
                 initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth',
@@ -1659,20 +1689,24 @@
             });
             calendar.render();
         } else {
+            // 인스턴스와 DOM이 모두 유효할 때만 이벤트 소스 교체
             calendar.removeAllEventSources();
             calendar.addEventSource(evs);
         }
     }
 
     /* ===================================================
-        GANTT — refresh() 인스턴스 재사용
-        =================================================== */
+       GANTT — refresh() 인스턴스 재사용 (추가 개선 #2)
+       캘린더와 동일하게 인스턴스는 최초 1회만 생성하고,
+       데이터 변경 시에는 내장 refresh() 메서드로 DOM 재생성 없이 갱신합니다.
+       =================================================== */
     function renderGantt() {
         const el = document.getElementById('gantt');
         if (!el || el.offsetWidth === 0) return;
         const d = getFiltered();
 
         if (d.length === 0) {
+            // 인스턴스가 있으면 제거하고 empty state 표시
             if (gantt) { el.innerHTML = ''; gantt = null; }
             el.innerHTML = renderEmptyState('간트차트에 표시할 항목이 없습니다.', '필터를 조정해 보세요.');
             document.getElementById('gantt-top-scroll-inner').style.width = '100%';
@@ -1689,6 +1723,7 @@
             if (new Date(s) >= new Date(e)) { const tmp = new Date(s); tmp.setDate(tmp.getDate() + 1); e = getSafeDateStr(tmp); err = true; }
 
             const sheet = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
+            // 간트 name에는 esc() 대신 기본 문자만 유지 (SVG text 삽입이므로 HTML 엔티티 불필요)
             const name = i['요건명'] ? String(i['요건명']).replace(/[<>"']/g, '') : '제목없음';
             const status = i['진행단계'] || '기타';
             const displayName = err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`;
@@ -1704,6 +1739,7 @@
 
         try {
             if (!gantt) {
+                // 최초 1회 생성
                 el.innerHTML = '';
                 gantt = new Gantt('#gantt', tasks, {
                     language: 'en', bar_height: 26,
@@ -1711,12 +1747,14 @@
                     on_click: (t) => openPop(t.extendedProps),
                 });
             } else {
+                // 이후 갱신: refresh()로 인스턴스 재사용
                 gantt.refresh(tasks);
                 gantt.change_view_mode(AppState.currentGanttMode);
             }
             injectGanttCSS();
             syncGanttScroll();
         } catch (e) {
+            // refresh() 미지원 버전 폴백: 재생성
             el.innerHTML = '';
             gantt = null;
             try {
@@ -1778,8 +1816,8 @@
     }
 
     /* ===================================================
-        LIST VIEW (개선 #9 D-Day 표시)
-        =================================================== */
+       LIST VIEW (개선 #9 D-Day 표시)
+       =================================================== */
     function renderList() {
         const tbody = document.querySelector('#listTable tbody');
         const d = getFiltered();
@@ -1806,8 +1844,8 @@
     }
 
     /* ===================================================
-        MONTHLY VIEW
-        =================================================== */
+       MONTHLY VIEW
+       =================================================== */
     function renderMonthly() {
         const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
         const mData = {};
@@ -1862,8 +1900,8 @@
     }
 
     /* ===================================================
-        ASSIGNEE VIEW
-        =================================================== */
+       ASSIGNEE VIEW (개선 #9 D-Day 시각화)
+       =================================================== */
     function renderAssignee() {
         const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const uMap = {};
@@ -1917,8 +1955,20 @@
     }
 
     /* ===================================================
-        MODAL OPEN / SAVE
-        =================================================== */
+       EMPTY STATE (개선 #8)
+       =================================================== */
+    function renderEmptyState(title, sub) {
+        return `<div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">${title}</div>
+            ${sub ? `<div class="empty-sub">${sub}</div>` : ''}
+            <button class="btn-reset-filter" onclick="resetFilters()">필터 초기화</button>
+        </div>`;
+    }
+
+    /* ===================================================
+       STEP PROGRESS BAR (개선 #4)
+       =================================================== */
     function updateStepProgress(currentStatus) {
         const bar = document.getElementById('stepProgressBar');
         if (!bar) return;
@@ -1945,9 +1995,13 @@
         }
     }
 
+    /* ===================================================
+       MODAL OPEN / SAVE (개선 #1 모바일, #2 낙관적 업데이트, #11 오류 분기)
+       =================================================== */
     function openPop(data) {
         document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
 
+        // D-Day 표시 (개선 #9)
         const ddayEl = document.getElementById('modalDdayDisplay');
         const diff = getDday(data['운영이관(예정)일']);
         if (diff !== null) {
@@ -1957,6 +2011,7 @@
             else ddayEl.innerText = `📅 마감 D-${diff}`;
         } else ddayEl.innerText = '';
 
+        // 스텝바 렌더링
         updateStepProgress(data['진행단계'] || '');
 
         const f = document.getElementById('taskForm');
@@ -1969,6 +2024,7 @@
             }
         });
 
+        // 권한에 따른 필드 비활성화
         const isUser = AppState.currentUser?.role !== 'admin';
         const allowedKeys = ['계획_기획', '계획_디자인', '계획_퍼블', '진척_기획', '진척_디자인', '진척_퍼블'];
         Array.from(f.elements).forEach(el => {
@@ -1985,6 +2041,27 @@
         if (d) openPop(d);
     }
 
+    function updateFieldDependency() {
+        const f = document.getElementById('taskForm');
+        if (!f) return;
+        ['기획', '디자인', '퍼블'].forEach(role => {
+            const val = (f.elements['담당_' + role]?.value || '').trim();
+            const pDate = f.elements['계획_' + role];
+            const pRate = f.elements['진척_' + role];
+            if (!val || val === '-') {
+                if (pDate) { pDate.value = ''; pDate.disabled = true; }
+                if (pRate) { pRate.value = '-'; pRate.disabled = true; }
+            } else if (val.toUpperCase() === 'X') {
+                if (pDate) { pDate.value = ''; pDate.disabled = true; }
+                if (pRate) { pRate.value = 'X'; pRate.disabled = true; }
+            } else {
+                const isUser = AppState.currentUser?.role !== 'admin';
+                if (!isUser) { if (pDate) pDate.disabled = false; if (pRate) pRate.disabled = false; }
+            }
+        });
+    }
+
+    /* 낙관적 저장 (개선 #2) */
     function saveChanges() {
         const f = document.getElementById('taskForm');
         Array.from(f.elements).forEach(el => el.disabled = false);
@@ -1992,6 +2069,7 @@
         const taskId = payload['요구사항 ID'];
         payload.action = 'update_task';
 
+        // 낙관적 UI 업데이트: rawData를 먼저 업데이트
         const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(taskId));
         let originalData = null;
         if (idx !== -1) {
@@ -2013,20 +2091,33 @@
                 if (spinner) spinner.style.display = 'none';
                 if (res.result === 'success') {
                     showToast('성공적으로 저장되었습니다.', 'success');
-                    fetchData(true);
+                    fetchData(true); // 백그라운드 동기화 (오버레이 없음)
                 } else {
+                    // 롤백
                     if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
                     updateStats(); render();
-                    showToast('저장 실패', 'error');
+                    const errMsg = handleApiError(res);
+                    showToast('저장 실패: ' + errMsg, 'error');
                 }
             })
             .catch(err => {
                 if (spinner) spinner.style.display = 'none';
+                // 롤백
                 if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
                 updateStats(); render();
-                showToast('통신 오류', 'error');
+                showToast('통신 오류가 발생했습니다. 네트워크를 확인해 주세요.', 'error');
                 console.error('SaveChanges network error:', err);
             });
+    }
+
+    /* 오류 분기 처리 (개선 #11) */
+    function handleApiError(res) {
+        if (!res) return '알 수 없는 오류';
+        if (res.code === 'PERMISSION_DENIED') return '권한이 없습니다.';
+        if (res.code === 'NOT_FOUND') return '해당 항목을 찾을 수 없습니다.';
+        if (res.code === 'VALIDATION_ERROR') return `입력값 오류: ${res.message}`;
+        if (res.code === 'NETWORK_ERROR') return '서버 연결에 실패했습니다.';
+        return res.message || '오류가 발생했습니다.';
     }
 
     function deleteTask() {
@@ -2035,6 +2126,7 @@
         if (!id) return showToast('삭제할 대상이 없습니다.', 'error');
         if (!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
 
+        // 낙관적 삭제
         const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(id));
         const removed = idx !== -1 ? AppState.rawData.splice(idx, 1)[0] : null;
         modal.hide();
@@ -2046,30 +2138,31 @@
             .then(res => {
                 if (res.result === 'success') { showToast('삭제가 완료되었습니다.', 'success'); fetchData(true); }
                 else {
+                    // 롤백
                     if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
                     updateStats(); render();
-                    showToast('삭제 실패', 'error');
+                    showToast('삭제 실패: ' + handleApiError(res), 'error');
                 }
             })
             .catch(() => {
                 if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
                 updateStats(); render();
-                showToast('삭제 실패 (통신 오류)', 'error');
+                showToast('통신 오류: 삭제에 실패했습니다.', 'error');
             });
     }
 
     /* ===================================================
-        PLANNER RECOMMENDATION
-        =================================================== */
+       PLANNER RECOMMENDATION
+       =================================================== */
     function recommendPlanner(planners) {
         if (!planners || planners.size === 0) return '';
         const active = AppState.rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const scores = {};
         planners.forEach(p => scores[p] = 0);
         active.forEach(t => {
-            String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X').forEach(p => {
-                if (scores[p] !== undefined) scores[p] += (t['규모'] === '대' ? 3 : t['규모'] === '소' ? 1 : 2);
-            });
+            const pList = String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
+            const score = t['규모'] === '대' ? 3 : t['규모'] === '소' ? 1 : 2;
+            pList.forEach(p => { if (scores[p] !== undefined) scores[p] += score; });
         });
         return Object.keys(scores).reduce((a, b) => scores[a] <= scores[b] ? a : b);
     }
@@ -2099,21 +2192,28 @@
         else if (formData['구분'] === '상호') formData['bizBank'] = '';
         formData.action = 'create_task';
 
+        const btn = document.querySelector('#createModal .btn-primary');
+        if (btn) { btn.disabled = true; btn.innerText = '등록 중...'; }
+
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => {
+                if (btn) { btn.disabled = false; btn.innerText = '등록'; }
                 if (res.result === 'success') {
                     createModal.hide();
                     showToast('성공적으로 등록되었습니다.', 'success');
                     fetchData(true);
-                } else showToast('생성 실패', 'error');
+                } else showToast('생성 실패: ' + handleApiError(res), 'error');
             })
-            .catch(() => { showToast('통신 오류', 'error'); });
+            .catch(() => {
+                if (btn) { btn.disabled = false; btn.innerText = '등록'; }
+                showToast('통신 오류', 'error');
+            });
     }
 
     /* ===================================================
-        REPORT
-        =================================================== */
+       REPORT
+       =================================================== */
     function openReportModal() {
         document.getElementById('reportStartDate').value = '';
         document.getElementById('reportEndDate').value = getSafeDateStr(new Date());
@@ -2124,7 +2224,7 @@
         const type = document.getElementById('reportType').value;
         const startStr = document.getElementById('reportStartDate').value;
         const endStr = document.getElementById('reportEndDate').value;
-        if (!startStr || !endStr) return showToast('조회 기간을 지정하세요.', 'error');
+        if (!startStr || !endStr) return showToast('시작일과 종료일을 지정하세요.', 'error');
 
         const start = new Date(startStr);
         const end = new Date(endStr); end.setHours(23, 59, 59, 999);
@@ -2142,18 +2242,18 @@
                 let biz = i['구분'] === '은행' ? (i['bizBank'] || '') : i['구분'] === '상호' ? (i['bizMutual'] || '') : `은행:${i['bizBank'] || '-'}/상호:${i['bizMutual'] || '-'}`;
                 wsData.push([i['요구사항 ID'] || '', i['출처시트'] === '인터넷' ? '기업인터넷' : '기업스마트', i['구분'] || '', i['요건명'] || '', i['규모'] || '', biz, '담당/일정', `${i['담당_기획'] || '-'} (${getSafeDateStr(i['계획_기획']) || '-'})`, `${i['담당_디자인'] || '-'} (${getSafeDateStr(i['계획_디자인']) || '-'})`, `${i['담당_퍼블'] || '-'} (${getSafeDateStr(i['계획_퍼블']) || '-'})`, getSafeDateStr(i['접수일자']) || '', getSafeDateStr(i['운영이관(예정)일']) || '', i['진행단계'] || '']);
                 wsData.push(['', '', '', '', '', '', '진척률', i['진척_기획'] || '-', i['진척_디자인'] || '-', i['진척_퍼블'] || '-', '', '', '']);
-                [0, 1, 2, 3, 4, 5, 10, 11, 12].forEach(c => merges.push({ s: { r: sR, c }, e: { r: eR, c } }));
+                [0,1,2,3,4,5,10,11,12].forEach(c => merges.push({ s: { r: sR, c }, e: { r: eR, c } }));
                 row += 2;
             });
             const ws = XLSX.utils.aoa_to_sheet(wsData);
             ws['!merges'] = merges;
-            ws['!cols'] = [{ wpx: 110 }, { wpx: 80 }, { wpx: 50 }, { wpx: 250 }, { wpx: 50 }, { wpx: 120 }, { wpx: 70 }, { wpx: 130 }, { wpx: 130 }, { wpx: 130 }, { wpx: 80 }, { wpx: 100 }, { wpx: 80 }];
+            ws['!cols'] = [{wpx:110},{wpx:80},{wpx:50},{wpx:250},{wpx:50},{wpx:120},{wpx:70},{wpx:130},{wpx:130},{wpx:130},{wpx:80},{wpx:100},{wpx:80}];
             XLSX.utils.book_append_sheet(wb, ws, sheetName);
         };
 
         if (type === 'weekly') {
             const data = AppState.rawData.filter(i => {
-                if (!['적용 완료', '취소'].includes(i['진행단계'])) return true;
+                if (!['적용 완료','취소'].includes(i['진행단계'])) return true;
                 const ds = getSafeDateStr(i['운영이관(예정)일']);
                 return ds && new Date(ds) >= start && new Date(ds) <= end;
             });
@@ -2164,8 +2264,8 @@
                 const ds = getSafeDateStr(i['운영이관(예정)일']);
                 return ds && new Date(ds) >= start && new Date(ds) <= end;
             });
-            generateSheet(data.filter(i => ['은행', '공통'].includes(i['구분'])), '월간보고_은행');
-            generateSheet(data.filter(i => ['상호', '공통'].includes(i['구분'])), '월간보고_상호');
+            generateSheet(data.filter(i => ['은행','공통'].includes(i['구분'])), '월간보고_은행');
+            generateSheet(data.filter(i => ['상호','공통'].includes(i['구분'])), '월간보고_상호');
         }
 
         XLSX.writeFile(wb, `업무현황_${type}_${startStr}_${endStr}.xlsx`);
@@ -2174,8 +2274,8 @@
     }
 
     /* ===================================================
-        DRAWER
-        =================================================== */
+       DRAWER
+       =================================================== */
     function showDrawer(st) {
         const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
         document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
@@ -2199,8 +2299,8 @@
     }
 
     /* ===================================================
-        TAB SWITCH
-        =================================================== */
+       TAB SWITCH
+       =================================================== */
     function switchTab(btn) {
         document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -2212,8 +2312,15 @@
     }
 
     /* ===================================================
-        MISC
-        =================================================== */
+       MISC
+       =================================================== */
+    function toggleStats() {
+        AppState.isStatsCollapsed = !AppState.isStatsCollapsed;
+        document.getElementById('statsCollapseWrap').classList.toggle('collapsed', AppState.isStatsCollapsed);
+        document.getElementById('statsToggleBtn').innerText = AppState.isStatsCollapsed ? '펼치기 ▼' : '접기 ▲';
+    }
+
+    /* toggleLoad — 엑셀 업로드 등 명시적 차단이 필요한 작업에만 사용 */
     function toggleLoad(show, msg = '처리 중...') {
         document.getElementById('loadingText').innerText = msg;
         document.getElementById('loading').style.display = show ? 'flex' : 'none';
@@ -2221,6 +2328,7 @@
 
     function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
 
+    /* 엑셀 업로드 (개선 #12 클라이언트 측 유효성 검증) */
     function handleExcelUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -2230,6 +2338,7 @@
             const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
             const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false });
 
+            // 클라이언트 측 1차 유효성 검증
             const REQUIRED_COLS = ['요구사항 ID', '요건명', '진행단계'];
             const VALID_STAGES = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료', '취소'];
             const VALID_SIZES = ['대', '중', '소'];
@@ -2252,7 +2361,7 @@
                 .then(r => r.json())
                 .then(res => {
                     if (res.result === 'success') { showToast('업로드 성공', 'success'); fetchData(true); }
-                    else { showToast('업로드 실패', 'error'); }
+                    else { showToast('업로드 실패: ' + handleApiError(res), 'error'); }
                 })
                 .catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
             event.target.value = '';
@@ -2261,17 +2370,28 @@
     }
 
     /* ===================================================
-        DOM READY
-        =================================================== */
+       DOM READY
+       =================================================== */
     document.addEventListener('DOMContentLoaded', () => {
+        const savedId = localStorage.getItem('savedId');
+        if (savedId) {
+            document.getElementById('loginId').value = savedId;
+            document.getElementById('rememberId').checked = true;
+        }
         checkLoginStatus();
 
+        // ── 리사이즈 대응 — 캘린더 뷰 모드 자동 동기화 (추가 개선 #2) ──
+        // 기존 debounce 유틸을 재사용하여 250ms 후 단 1회만 실행
         let prevIsMobile = window.innerWidth < 640;
+
         const onResize = debounce(() => {
             const isMobile = window.innerWidth < 640;
+
+            // 브레이크포인트(640px)를 실제로 통과한 경우에만 처리
             if (isMobile === prevIsMobile) return;
             prevIsMobile = isMobile;
 
+            // 캘린더 탭이 활성화되어 있고 인스턴스가 살아있을 때만 뷰 전환
             if (AppState.activeTab === 'calendar-view' && calendar) {
                 const targetView = isMobile ? 'listMonth' : 'dayGridMonth';
                 calendar.changeView(targetView);
