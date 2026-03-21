@@ -19,92 +19,83 @@
             --surface: #ffffff; --surface-2: #f4fbf7; --border: #d6eee3;
             --text-primary: #0d2318; --text-secondary: #527060;
             --radius-lg: 16px; --radius-md: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
+            --shadow-md: 0 8px 32px rgba(0,154,68,.12);
         }
         *, *::before, *::after { box-sizing: border-box; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
+        body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 
-        /* ── HEADER ── */
-        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 30px 24px 70px; position: relative; overflow: hidden; }
+        /* HEADER */
+        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 24px 24px 60px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .header-sub { font-size: 13px; color: rgba(255,255,255,.8); }
-        .header-refresh { position: absolute; top: 30px; right: 24px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; }
+        .header-sub { font-size: 12px; color: rgba(255,255,255,.7); margin: 0; }
+        .header-refresh { position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all .2s; }
 
-        /* ── MAIN CONTENT ── */
-        .main-wrap { padding: 0 16px 40px; margin-top: -45px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
+        /* MAIN CONTENT */
+        .main-wrap { padding: 0 16px 40px; margin-top: -40px; position: relative; z-index: 1; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
-        /* ── STATS WRAP (개선된 레이아웃) ── */
-        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
-        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 140px; transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-3px); }
-        .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        /* STATS WRAP */
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; }
+        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; transition: all 0.3s ease; }
+        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 140px; }
+        .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
-        .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-        /* 접기(Collapsed) 모드: 잘림 방지를 위해 wrap 유지 및 크기 대폭 축소 */
+        /* 접기(Collapsed) 상태 UI - 잘림 방지 줄바꿈 적용 */
         .stats-wrap.collapsed { gap: 6px; }
-        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 6px 12px; border-radius: 30px; flex-direction: row; }
+        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 4px 12px; border-radius: 20px; flex-direction: row; gap: 6px; }
         .stats-wrap.collapsed .stat-icon { width: 22px; height: 22px; font-size: 11px; }
-        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 6px; }
+        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 4px; }
         .stats-wrap.collapsed .stat-label { margin: 0; white-space: nowrap; font-size: 11px; }
 
-        /* ── PANEL ── */
-        .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-        .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px; border-bottom: 1px solid #f0f0f0; }
-        
-        .filter-group { display: flex; gap: 4px; background: #f0f5f2; border-radius: 30px; padding: 4px; }
+        /* PANEL */
+        .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; }
+        .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 16px; border-bottom: 1px solid var(--border); }
+        .filter-group { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 30px; padding: 3px; }
         .filter-chip input { display: none; }
-        .filter-chip label { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: #666; transition: 0.2s; }
-        .filter-chip input:checked + label { background: #009A44; color: #fff; box-shadow: 0 2px 5px rgba(0,154,68,0.3); }
-
+        .filter-chip label { display: block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
+        .filter-chip input:checked + label { background: linear-gradient(135deg, #009A44, #007a36); color: #fff; }
+        
         .view-tabs { display: flex; gap: 4px; }
-        .view-tab-btn { border: none; background: #f8f9fa; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; }
+        .view-tab-btn { border: none; background: #f8f9fa; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; color: #777; cursor: pointer; }
         .view-tab-btn.active { background: #e7f3ed; color: #009A44; font-weight: 600; }
 
-        .view-body { padding: 20px; min-height: 450px; }
+        .view-body { padding: 16px; min-height: 500px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* ── GANTT CUSTOM ── */
-        #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-radius: 10px; }
-        .gantt-error-box { text-align: center; padding: 50px 20px; color: #dc3545; }
+        /* GANTT & CHARTS */
+        #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-radius: 8px; }
+        .chart-wrap { height: 260px; width: 100%; margin-bottom: 20px; }
+        .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .task-item { background: #fff; border: 1px solid #eee; padding: 8px; margin-bottom: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; }
 
-        /* ── ASSIGNEE & CHART ── */
-        .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .assignee-card { background: #f9fbf9; border: 1px solid #e0ede5; border-radius: 12px; padding: 15px; }
-        .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
-        .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
-
-        /* ── DRAWER & MODAL ── */
+        /* DRAWER & MODAL */
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
         .drawer.open { right: 0; }
-        .drawer-header { padding: 18px; background: #009A44; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-header { padding: 16px; background: #009A44; color: #fff; display: flex; justify-content: space-between; align-items: center; }
         .drawer-body { padding: 15px; overflow-y: auto; flex: 1; }
-        .drawer-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
-        .drawer-item:hover { border-color: #009A44; background: #fafffc; }
-        
-        @media (max-width: 640px) {
-            .stat-card { flex: 1 1 calc(50% - 10px); }
-            .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
-            .view-tabs { overflow-x: auto; width: 100%; }
-        }
+        .drawer-item { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
     </style>
 </head>
 
 <body>
-    <div id="loading"><div class="spinner-border text-success mb-2"></div><div>데이터를 동기화하고 있습니다...</div></div>
+    <div id="loading"><div class="spinner-border text-success mb-2"></div><div>데이터 동기화 중...</div></div>
 
     <div class="app-header">
         <h1 class="header-title">업무 현황 관리</h1>
-        <p class="header-sub">실시간 데이터 연동 프로젝트 대시보드</p>
+        <p class="header-sub">실시간 프로젝트 현황 시각화 대시보드</p>
         <button class="header-refresh" onclick="fetchData()">↺ 새로고침</button>
     </div>
 
     <div class="main-wrap">
         <div class="stats-header">
-            <span class="small fw-bold text-muted">📊 요약 현황</span>
+            <span class="small fw-bold text-muted">📊 현황 요약</span>
             <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
         </div>
         <div class="stats-wrap" id="statsContainer"></div>
@@ -117,10 +108,10 @@
                     <div class="filter-chip"><input type="radio" name="sheetFilter" id="fSmt" value="스마트"><label for="fSmt">스마트</label></div>
                 </div>
                 <div class="view-tabs">
-                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">캘린더</button>
-                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">간트차트</button>
-                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">통계</button>
-                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">담당자</button>
+                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
+                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
+                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
+                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
                 </div>
             </div>
 
@@ -128,9 +119,9 @@
                 <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
                 <div id="gantt-view" class="tab-panel">
                     <div class="d-flex justify-content-end mb-3 gap-1">
-                        <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Day', this)">일</button>
-                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
-                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Month', this)">월</button>
+                        <button class="btn btn-xs btn-outline-secondary g-btn active" onclick="setGanttMode('Day', this)">일</button>
+                        <button class="btn btn-xs btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
+                        <button class="btn btn-xs btn-outline-secondary g-btn" onclick="setGanttMode('Month', this)">월</button>
                     </div>
                     <div id="gantt"></div>
                 </div>
@@ -143,16 +134,10 @@
         </div>
     </div>
 
-    <div class="drawer" id="statusDrawer">
-        <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="btn-close btn-close-white" onclick="closeDrawer()"></button></div>
-        <div class="drawer-body" id="drawerBody"></div>
-    </div>
-    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-
     <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-dark text-white"><h6 class="modal-title" id="modalTaskTitle">상세 수정</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header bg-dark text-white"><h6 class="modal-title" id="modalTaskTitle">업무 상세</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body p-4">
                     <form id="taskForm">
                         <input type="hidden" name="출처시트">
@@ -177,6 +162,12 @@
             </div>
         </div>
     </div>
+
+    <div class="drawer" id="statusDrawer">
+        <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="btn-close btn-close-white" onclick="closeDrawer()"></button></div>
+        <div class="drawer-body" id="drawerBody"></div>
+    </div>
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -203,8 +194,7 @@
         function initUI() {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
-                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
-                h += `<div class="stat-card" onclick="showDrawer('${k}')"><div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div><div class="stat-text-box"><div class="stat-num" id="st-${id}">-</div><div class="stat-label">${k}</div></div></div>`;
+                h += `<div class="stat-card" onclick="showDrawer('${k}')"><div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div><div class="stat-text-box"><div class="stat-num" id="st-${k.replace(/\s/g, '')}">-</div><div class="stat-label">${k}</div></div></div>`;
             });
             document.getElementById('statsContainer').innerHTML = h;
             document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.onchange = (e) => { filter = e.target.value; updateStats(); render(); });
@@ -223,8 +213,7 @@
 
         function updateStats() {
             const d = getFiltered();
-            const allNum = document.getElementById('st-all');
-            if(allNum) allNum.innerText = d.length;
+            document.getElementById('st-전체').innerText = d.length;
             Object.keys(MAP).forEach(k => {
                 if(k === '전체') return;
                 const el = document.getElementById('st-' + k.replace(/\s/g, ''));
@@ -245,35 +234,44 @@
             const evs = getFiltered().flatMap(i => {
                 const c = MAP[i['진행단계']]?.c || '#666';
                 const r = [];
-                if(i['접수일자']) r.push({ title: `[${i['출처시트'][0]}] ${i['요건명']}`, start: i['접수일자'], color: c, extendedProps: i });
-                if(i['운영이관(예정)일'] && i['운영이관(예정)일'] !== '미정') r.push({ title: `[이관] ${i['요건명']}`, start: i['운영이관(예정)일'], color: c, extendedProps: i });
+                // 캘린더 시간 표기 제거를 위해 allDay: true 추가
+                if(i['접수일자']) r.push({ title: `[${i['출처시트'][0]}] ${i['요건명']}`, start: i['접수일자'], color: c, allDay: true, extendedProps: i });
+                if(i['운영이관(예정)일'] && i['운영이관(예정)일'] !== '미정') r.push({ title: `[이관] ${i['요건명']}`, start: i['운영이관(예정)일'], color: c, allDay: true, extendedProps: i });
                 return r;
             });
             if (calendar) calendar.destroy();
-            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth', locale: 'ko', events: evs, eventClick: (info) => openPop(info.event.extendedProps) });
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { 
+                initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth', 
+                locale: 'ko', 
+                events: evs, 
+                displayEventTime: false, // 시간 표기 강제 제거
+                eventClick: (info) => openPop(info.event.extendedProps) 
+            });
             calendar.render();
         }
 
-        /* ── GANTT (에러 방지 무결성 로직) ── */
         function renderGantt() {
             const el = document.getElementById('gantt');
             if (!el || el.offsetWidth === 0) return;
             const d = getFiltered();
-            if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">항목 없음</div>'; return; }
+            if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">데이터 없음</div>'; return; }
 
             const today = new Date().toISOString().split('T')[0];
             const tasks = d.map((i, idx) => {
-                let s = i['접수일자'], e = i['운영이관(예정)일'], err = false;
-                // 날짜 검증 및 보정
-                if(!s || isNaN(new Date(s))) { s = today; err = true; }
-                if(!e || isNaN(new Date(e))) { e = new Date(new Date(s).getTime() + 86400000).toISOString().split('T')[0]; err = true; }
+                // 날짜 무결성 보장 로직
+                let s = String(i['접수일자'] || '').trim();
+                let e = String(i['운영이관(예정)일'] || '').trim();
+                let err = false;
+
+                if(s.length < 10) { s = today; err = true; }
+                if(e.length < 10 || e === '미정') { e = new Date(new Date(s).getTime() + 86400000 * 7).toISOString().split('T')[0]; err = true; }
                 if(new Date(s) >= new Date(e)) { e = new Date(new Date(s).getTime() + 86400000).toISOString().split('T')[0]; err = true; }
 
                 return {
-                    id: 'G' + idx, // 숫자로 시작하지 않는 순수 가상 ID
-                    name: (err ? '[날짜확인] ' : '') + `[${i['출처시트'][0]}] ` + (i['요건명'] || '제목없음'),
+                    id: 'G' + idx,
+                    name: (err ? '[!] ' : '') + `[${i['출처시트'][0]}] ` + (i['요건명'] || '제목없음'),
                     start: s, end: e, progress: 100,
-                    custom_class: err ? 'g-err' : 'g-' + (i['진행단계'] || '기타').replace(/\s/g, ''),
+                    custom_class: err ? 'g-err' : 'g-' + (i['진행단계'] || '').replace(/\s/g, ''),
                     extendedProps: i
                 };
             });
@@ -281,13 +279,16 @@
             el.innerHTML = '';
             try {
                 gantt = new Gantt("#gantt", tasks, { language: 'ko', bar_height: 20, view_mode: 'Day', on_click: (t) => openPop(t.extendedProps) });
-                const styleId = 'gantt-css';
-                if (!document.getElementById(styleId)) {
-                    let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } .gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; } `;
-                    Object.entries(MAP).forEach(([k, v]) => { css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c}; } `; });
-                    const s = document.createElement('style'); s.id = styleId; s.innerHTML = css; document.head.appendChild(s);
-                }
-            } catch(e) { el.innerHTML = `<div class="gantt-error-box small">데이터 파싱 오류: ${e.message}<br>시트의 날짜 형식을 확인해주세요.</div>`; }
+                injectGanttCSS();
+            } catch(e) { el.innerHTML = `<div class="p-5 text-center text-danger small">차트 생성 중 오류가 발생했습니다.<br>시트의 날짜를 확인해 주세요.</div>`; }
+        }
+
+        function injectGanttCSS() {
+            const id = 'gantt-css';
+            if (document.getElementById(id)) return;
+            let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } .gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; } `;
+            Object.entries(MAP).forEach(([k, v]) => { css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c}; } `; });
+            const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
         }
 
         function setGanttMode(m, btn) {
@@ -296,12 +297,13 @@
             if(gantt) gantt.change_view_mode(m);
         }
 
-        /* ── STATS & KANBAN ── */
         function renderMonthly() {
             const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
             const mData = {};
             d.forEach(i => {
-                const ym = i['운영이관(예정)일'].substring(0, 7);
+                const rawDate = String(i['운영이관(예정)일'] || '');
+                if (rawDate.length < 7) return; // 유효하지 않은 날짜 패스
+                const ym = rawDate.substring(0, 7);
                 if (!mData[ym]) mData[ym] = { 대: 0, 중: 0, 소: 0, list: [] };
                 const scale = i['규모'] || '소';
                 if (mData[ym][scale] !== undefined) mData[ym][scale]++;
@@ -314,8 +316,8 @@
             
             let acc = '';
             sorted.reverse().forEach((m, idx) => {
-                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모'] || '소'}] ${i['요건명']}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산' : '확인'}</span></div>`).join('');
-                acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${m} 내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body p-2">${items}</div></div></div>`;
+                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모'] || '소'}] ${i['요건명']}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span></div>`).join('');
+                acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${m} 완료내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body p-2">${items}</div></div></div>`;
             });
             document.getElementById('monthlyAccordion').innerHTML = acc || '<p class="text-center py-4 text-muted small">완료 건 없음</p>';
         }
@@ -325,7 +327,7 @@
             const uMap = {};
             active.forEach(i => {
                 ['기획', '디자인', '퍼블'].forEach(role => {
-                    const val = i['담당_' + role];
+                    const val = String(i['담당_' + role] || '');
                     if (val && val !== '-' && val !== 'X') {
                         val.split(/[,/]/).forEach(n => {
                             const name = n.trim();
@@ -340,7 +342,7 @@
                 const tasks = uMap[u].map(t => `<div class="task-item" onclick="openPopById('${t['요구사항 ID']}')"><div>${t['요건명']}</div><div class="mt-2 d-flex justify-content-between align-items-center"><span class="badge bg-light text-dark border" style="font-size:10px">${t['진행단계']}</span><span class="text-danger fw-bold" style="font-size:10px">${getDday(t['운영이관(예정)일'])}</span></div></div>`).join('');
                 h += `<div class="assignee-card"><div class="d-flex justify-content-between align-items-center mb-2"><span class="assignee-name">${u}</span><span class="badge bg-white text-primary border">${uMap[u].length}</span></div>${tasks}</div>`;
             });
-            document.getElementById('assigneeGrid').innerHTML = h || '<div class="w-100 py-5 text-center text-muted">진행 중인 업무가 없습니다.</div>';
+            document.getElementById('assigneeGrid').innerHTML = h || '<div class="w-100 py-5 text-center text-muted">진행 중인 업무 없음</div>';
         }
 
         function getDday(date) {
@@ -349,7 +351,6 @@
             return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
 
-        /* ── MODAL & DRAWER ── */
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
