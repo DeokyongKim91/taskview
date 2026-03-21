@@ -69,7 +69,7 @@
         #gantt-top-scroll-inner { height: 1px; }
         
         #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top: none; }
-        #gantt::-webkit-scrollbar { display: none; } /* 하단 스크롤바 숨김 */
+        #gantt::-webkit-scrollbar { display: none; }
         #gantt { -ms-overflow-style: none; scrollbar-width: none; }
         .gantt-error-box { text-align: center; padding: 50px 20px; color: #dc3545; }
 
@@ -86,10 +86,16 @@
         .drawer-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
         .drawer-item:hover { border-color: #009A44; background: #fafffc; }
         
+        /* 모바일 최적화 */
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
             .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
             .view-tabs { overflow-x: auto; width: 100%; }
+            
+            /* 간트 컨트롤 레이아웃 개선 */
+            .gantt-controls-wrap { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .gantt-controls-wrap select { width: 100% !important; }
+            .gantt-controls-wrap .btn-group { width: 100%; justify-content: flex-end; }
         }
     </style>
 </head>
@@ -128,7 +134,7 @@
             <div class="view-body">
                 <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
                 <div id="gantt-view" class="tab-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 gantt-controls-wrap">
                         <select id="ganttFilter" class="form-select form-select-sm w-auto shadow-sm" onchange="renderGantt()">
                             <option value="active" selected>진행 업무 (완료/취소 제외)</option>
                             <option value="all">전체 내역</option>
@@ -140,7 +146,7 @@
                             <option value="적용 완료">적용 완료</option>
                             <option value="취소">취소</option>
                         </select>
-                        <div class="d-flex gap-1">
+                        <div class="d-flex gap-1 btn-group">
                             <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Day', this)">일</button>
                             <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
                             <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Month', this)">월</button>
@@ -225,7 +231,7 @@
             document.getElementById('statsContainer').innerHTML = h;
             document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.onchange = (e) => { filter = e.target.value; updateStats(); render(); });
 
-            // 간트 상단 스크롤 동기화 이벤트
+            // 간트 상단 스크롤 동기화
             const topScroll = document.getElementById('gantt-top-scroll');
             const ganttWrap = document.getElementById('gantt');
             let isSyncingTop = false, isSyncingBottom = false;
@@ -350,13 +356,15 @@
                     err = true;
                 }
 
-                let sheetPrefix = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
                 let reqName = i['요건명'] ? String(i['요건명']).replace(/['"]/g, '') : '제목없음';
                 let statusName = i['진행단계'] || '기타';
 
+                // 막대 텍스트 간소화 (색상이 상태를 대변하므로 요건명만 노출)
+                let displayName = err ? '⚠️ ' + reqName : reqName;
+
                 return {
                     id: 'GT_' + idx,
-                    name: (err ? '[확인요망] ' : '') + '[' + sheetPrefix + '] [' + statusName + '] ' + reqName,
+                    name: displayName,
                     start: s, end: e, progress: 100,
                     custom_class: err ? 'g-err' : 'g-' + statusName.replace(/\s/g, ''),
                     extendedProps: i
@@ -365,20 +373,30 @@
 
             el.innerHTML = '';
             try {
-                gantt = new Gantt("#gantt", tasks, { language: 'en', bar_height: 20, view_mode: currentGanttMode, on_click: (t) => openPop(t.extendedProps) });
+                gantt = new Gantt("#gantt", tasks, { language: 'en', bar_height: 24, view_mode: currentGanttMode, on_click: (t) => openPop(t.extendedProps) });
                 injectGanttCSS();
                 syncGanttScroll();
             } catch(e) { 
                 console.error("Gantt Error:", e);
-                el.innerHTML = `<div class="gantt-error-box small">렌더링 오류: ${e.message}<br>개발자 도구(F12) 콘솔창 확인 요망.</div>`; 
+                el.innerHTML = `<div class="gantt-error-box small">렌더링 오류: ${e.message}</div>`; 
             }
         }
 
         function injectGanttCSS() {
             const id = 'gantt-css';
             if (document.getElementById(id)) return;
-            let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } .gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; } `;
-            Object.entries(MAP).forEach(([k, v]) => { css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c}; } `; });
+            // 막대 색상을 !important로 강제 지정하고 글씨를 흰색으로 변경
+            let css = `.gantt .bar-label { fill: #ffffff !important; font-size: 11px; font-weight: 500; } .gantt .grid-header { fill: #f4fbf7; }\n`;
+            Object.entries(MAP).forEach(([k, v]) => { 
+                if(k === '전체') return;
+                css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar { fill: ${v.c} !important; opacity: 0.8; }\n`;
+                css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c} !important; }\n`;
+            });
+            css += `.gantt .bar.g-err .bar { fill: #ff4d4f !important; opacity: 0.8; }\n.gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; }\n`;
+            
+            // 모바일 최적화 미디어 쿼리
+            css += `@media(max-width: 640px) { .gantt .bar-label { font-size: 10px; } }\n`;
+
             const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
         }
 
