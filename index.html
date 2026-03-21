@@ -27,16 +27,13 @@
         a { text-decoration: none !important; color: inherit !important; }
         body.modal-open { padding-right: 0 !important; overflow-y: scroll !important; }
 
-        /* HEADER */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 24px 24px 60px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .header-sub { font-size: 12px; color: rgba(255,255,255,.7); margin: 0; }
         .header-refresh { position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: var(--radius-md); padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all .2s; }
 
-        /* MAIN CONTENT */
         .main-wrap { padding: 0 16px 40px; margin-top: -40px; position: relative; z-index: 1; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
-        /* STATS WRAP */
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px; }
         .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; transition: all 0.3s ease; }
         .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 12px 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 140px; }
@@ -44,14 +41,12 @@
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-        /* 접기(Collapsed) 상태 UI - 잘림 방지 줄바꿈 적용 */
         .stats-wrap.collapsed { gap: 6px; }
         .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 4px 12px; border-radius: 20px; flex-direction: row; gap: 6px; }
         .stats-wrap.collapsed .stat-icon { width: 22px; height: 22px; font-size: 11px; }
         .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 4px; }
         .stats-wrap.collapsed .stat-label { margin: 0; white-space: nowrap; font-size: 11px; }
 
-        /* PANEL */
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; }
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 16px; border-bottom: 1px solid var(--border); }
         .filter-group { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 30px; padding: 3px; }
@@ -67,20 +62,24 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* GANTT & CHARTS */
         #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-radius: 8px; }
         .chart-wrap { height: 260px; width: 100%; margin-bottom: 20px; }
         .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
         .assignee-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
         .task-item { background: #fff; border: 1px solid #eee; padding: 8px; margin-bottom: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; }
 
-        /* DRAWER & MODAL */
         #loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
         .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 90vw; height: 100%; background: #fff; box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; display: flex; flex-direction: column; }
         .drawer.open { right: 0; }
         .drawer-header { padding: 16px; background: #009A44; color: #fff; display: flex; justify-content: space-between; align-items: center; }
         .drawer-body { padding: 15px; overflow-y: auto; flex: 1; }
         .drawer-item { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
+        
+        @media (max-width: 640px) {
+            .stat-card { flex: 1 1 calc(50% - 10px); }
+            .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
+            .view-tabs { overflow-x: auto; width: 100%; }
+        }
     </style>
 </head>
 
@@ -119,9 +118,9 @@
                 <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
                 <div id="gantt-view" class="tab-panel">
                     <div class="d-flex justify-content-end mb-3 gap-1">
-                        <button class="btn btn-xs btn-outline-secondary g-btn active" onclick="setGanttMode('Day', this)">일</button>
-                        <button class="btn btn-xs btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
-                        <button class="btn btn-xs btn-outline-secondary g-btn" onclick="setGanttMode('Month', this)">월</button>
+                        <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Day', this)">일</button>
+                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
+                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Month', this)">월</button>
                     </div>
                     <div id="gantt"></div>
                 </div>
@@ -194,7 +193,8 @@
         function initUI() {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
-                h += `<div class="stat-card" onclick="showDrawer('${k}')"><div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div><div class="stat-text-box"><div class="stat-num" id="st-${k.replace(/\s/g, '')}">-</div><div class="stat-label">${k}</div></div></div>`;
+                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
+                h += `<div class="stat-card" onclick="showDrawer('${k}')"><div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div><div class="stat-text-box"><div class="stat-num" id="st-${id}">-</div><div class="stat-label">${k}</div></div></div>`;
             });
             document.getElementById('statsContainer').innerHTML = h;
             document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.onchange = (e) => { filter = e.target.value; updateStats(); render(); });
@@ -213,7 +213,8 @@
 
         function updateStats() {
             const d = getFiltered();
-            document.getElementById('st-전체').innerText = d.length;
+            const allNum = document.getElementById('st-all');
+            if(allNum) allNum.innerText = d.length;
             Object.keys(MAP).forEach(k => {
                 if(k === '전체') return;
                 const el = document.getElementById('st-' + k.replace(/\s/g, ''));
@@ -230,13 +231,26 @@
 
         function getFiltered() { return rawData.filter(i => filter === 'all' || i['출처시트'] === filter); }
 
+        function getSafeDateStr(raw) {
+            if (!raw || raw === '미정') return null;
+            let d = new Date(raw);
+            if (isNaN(d.getTime())) return null;
+            let y = d.getFullYear();
+            let m = String(d.getMonth() + 1).padStart(2, '0');
+            let day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
         function renderCalendar() {
             const evs = getFiltered().flatMap(i => {
                 const c = MAP[i['진행단계']]?.c || '#666';
                 const r = [];
-                // 캘린더 시간 표기 제거를 위해 allDay: true 추가
-                if(i['접수일자']) r.push({ title: `[${i['출처시트'][0]}] ${i['요건명']}`, start: i['접수일자'], color: c, allDay: true, extendedProps: i });
-                if(i['운영이관(예정)일'] && i['운영이관(예정)일'] !== '미정') r.push({ title: `[이관] ${i['요건명']}`, start: i['운영이관(예정)일'], color: c, allDay: true, extendedProps: i });
+                let s = getSafeDateStr(i['접수일자']);
+                let e = getSafeDateStr(i['운영이관(예정)일']);
+                let sheet = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
+                
+                if(s) r.push({ title: `[${sheet}] ${i['요건명']||''}`, start: s, color: c, allDay: true, extendedProps: i });
+                if(e) r.push({ title: `[이관] ${i['요건명']||''}`, start: e, color: c, allDay: true, extendedProps: i });
                 return r;
             });
             if (calendar) calendar.destroy();
@@ -244,7 +258,7 @@
                 initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth', 
                 locale: 'ko', 
                 events: evs, 
-                displayEventTime: false, // 시간 표기 강제 제거
+                displayEventTime: false, 
                 eventClick: (info) => openPop(info.event.extendedProps) 
             });
             calendar.render();
@@ -254,24 +268,36 @@
             const el = document.getElementById('gantt');
             if (!el || el.offsetWidth === 0) return;
             const d = getFiltered();
-            if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">데이터 없음</div>'; return; }
+            if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">항목 없음</div>'; return; }
 
-            const today = new Date().toISOString().split('T')[0];
+            const todayStr = getSafeDateStr(new Date());
             const tasks = d.map((i, idx) => {
-                // 날짜 무결성 보장 로직
-                let s = String(i['접수일자'] || '').trim();
-                let e = String(i['운영이관(예정)일'] || '').trim();
+                let s = getSafeDateStr(i['접수일자']);
+                let e = getSafeDateStr(i['운영이관(예정)일']);
                 let err = false;
 
-                if(s.length < 10) { s = today; err = true; }
-                if(e.length < 10 || e === '미정') { e = new Date(new Date(s).getTime() + 86400000 * 7).toISOString().split('T')[0]; err = true; }
-                if(new Date(s) >= new Date(e)) { e = new Date(new Date(s).getTime() + 86400000).toISOString().split('T')[0]; err = true; }
+                if(!s) { s = todayStr; err = true; }
+                if(!e) {
+                    let tmp = new Date(s);
+                    tmp.setDate(tmp.getDate() + 7);
+                    e = getSafeDateStr(tmp);
+                    err = true;
+                }
+                if(new Date(s) >= new Date(e)) {
+                    let tmp = new Date(s);
+                    tmp.setDate(tmp.getDate() + 1);
+                    e = getSafeDateStr(tmp);
+                    err = true;
+                }
+
+                let sheetPrefix = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
+                let reqName = i['요건명'] ? String(i['요건명']).replace(/['"]/g, '') : '제목없음';
 
                 return {
-                    id: 'G' + idx,
-                    name: (err ? '[!] ' : '') + `[${i['출처시트'][0]}] ` + (i['요건명'] || '제목없음'),
+                    id: 'GT_' + idx,
+                    name: (err ? '[확인요망] ' : '') + '[' + sheetPrefix + '] ' + reqName,
                     start: s, end: e, progress: 100,
-                    custom_class: err ? 'g-err' : 'g-' + (i['진행단계'] || '').replace(/\s/g, ''),
+                    custom_class: err ? 'g-err' : 'g-' + String(i['진행단계'] || '기타').replace(/\s/g, ''),
                     extendedProps: i
                 };
             });
@@ -279,16 +305,17 @@
             el.innerHTML = '';
             try {
                 gantt = new Gantt("#gantt", tasks, { language: 'ko', bar_height: 20, view_mode: 'Day', on_click: (t) => openPop(t.extendedProps) });
-                injectGanttCSS();
-            } catch(e) { el.innerHTML = `<div class="p-5 text-center text-danger small">차트 생성 중 오류가 발생했습니다.<br>시트의 날짜를 확인해 주세요.</div>`; }
-        }
-
-        function injectGanttCSS() {
-            const id = 'gantt-css';
-            if (document.getElementById(id)) return;
-            let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } .gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; } `;
-            Object.entries(MAP).forEach(([k, v]) => { css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c}; } `; });
-            const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
+                const styleId = 'gantt-css';
+                if (!document.getElementById(styleId)) {
+                    let css = `.gantt .bar-label { fill: #333; font-size: 11px; } .gantt .bar-progress { fill: #ccc; } .gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; } `;
+                    Object.entries(MAP).forEach(([k, v]) => { css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c}; } `; });
+                    const s = document.createElement('style'); s.id = styleId; s.innerHTML = css; document.head.appendChild(s);
+                }
+            } catch(e) { 
+                console.error("Gantt Data:", tasks);
+                console.error("Gantt Error:", e);
+                el.innerHTML = `<div class="gantt-error-box small">렌더링 오류: ${e.message}<br>개발자 도구(F12) 콘솔창 확인 요망.</div>`; 
+            }
         }
 
         function setGanttMode(m, btn) {
@@ -301,9 +328,9 @@
             const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
             const mData = {};
             d.forEach(i => {
-                const rawDate = String(i['운영이관(예정)일'] || '');
-                if (rawDate.length < 7) return; // 유효하지 않은 날짜 패스
-                const ym = rawDate.substring(0, 7);
+                const dateStr = getSafeDateStr(i['운영이관(예정)일']);
+                if (!dateStr) return; 
+                const ym = dateStr.substring(0, 7);
                 if (!mData[ym]) mData[ym] = { 대: 0, 중: 0, 소: 0, list: [] };
                 const scale = i['규모'] || '소';
                 if (mData[ym][scale] !== undefined) mData[ym][scale]++;
@@ -316,7 +343,7 @@
             
             let acc = '';
             sorted.reverse().forEach((m, idx) => {
-                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모'] || '소'}] ${i['요건명']}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span></div>`).join('');
+                const items = mData[m].list.map(i => `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer"><span>[${i['규모'] || '소'}] ${i['요건명']||''}</span><span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span></div>`).join('');
                 acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${m} 완료내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body p-2">${items}</div></div></div>`;
             });
             document.getElementById('monthlyAccordion').innerHTML = acc || '<p class="text-center py-4 text-muted small">완료 건 없음</p>';
@@ -339,15 +366,16 @@
             });
             let h = '';
             Object.keys(uMap).sort().forEach(u => {
-                const tasks = uMap[u].map(t => `<div class="task-item" onclick="openPopById('${t['요구사항 ID']}')"><div>${t['요건명']}</div><div class="mt-2 d-flex justify-content-between align-items-center"><span class="badge bg-light text-dark border" style="font-size:10px">${t['진행단계']}</span><span class="text-danger fw-bold" style="font-size:10px">${getDday(t['운영이관(예정)일'])}</span></div></div>`).join('');
+                const tasks = uMap[u].map(t => `<div class="task-item" onclick="openPopById('${t['요구사항 ID']}')"><div>${t['요건명']||''}</div><div class="mt-2 d-flex justify-content-between align-items-center"><span class="badge bg-light text-dark border" style="font-size:10px">${t['진행단계']||''}</span><span class="text-danger fw-bold" style="font-size:10px">${getDday(t['운영이관(예정)일'])}</span></div></div>`).join('');
                 h += `<div class="assignee-card"><div class="d-flex justify-content-between align-items-center mb-2"><span class="assignee-name">${u}</span><span class="badge bg-white text-primary border">${uMap[u].length}</span></div>${tasks}</div>`;
             });
             document.getElementById('assigneeGrid').innerHTML = h || '<div class="w-100 py-5 text-center text-muted">진행 중인 업무 없음</div>';
         }
 
         function getDday(date) {
-            if (!date || date === '미정') return '';
-            const diff = Math.ceil((new Date(date) - new Date()) / 86400000);
+            let dStr = getSafeDateStr(date);
+            if (!dStr) return '';
+            const diff = Math.ceil((new Date(dStr) - new Date(getSafeDateStr(new Date()))) / 86400000);
             return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
 
@@ -369,7 +397,7 @@
         function showDrawer(st) {
             const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
             document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
-            document.getElementById('drawerBody').innerHTML = d.map(i => `<div class="drawer-item" onclick="openPopById('${i['요구사항 ID']}')"><div class="drawer-item-name">${i['요건명']}</div><div class="d-flex gap-2"><span class="badge bg-light text-dark border" style="font-size:10px">${i['출처시트']}</span><span class="small text-muted" style="font-size:10px">${i['진행단계']}</span></div></div>`).join('') || '<div class="text-center py-5 text-muted">데이터 없음</div>';
+            document.getElementById('drawerBody').innerHTML = d.map(i => `<div class="drawer-item" onclick="openPopById('${i['요구사항 ID']}')"><div class="drawer-item-name">${i['요건명']||''}</div><div class="d-flex gap-2"><span class="badge bg-light text-dark border" style="font-size:10px">${i['출처시트']||''}</span><span class="small text-muted" style="font-size:10px">${i['진행단계']||''}</span></div></div>`).join('') || '<div class="text-center py-5 text-muted">데이터 없음</div>';
             document.getElementById('drawerOverlay').style.display = 'block';
             document.getElementById('statusDrawer').classList.add('open');
         }
