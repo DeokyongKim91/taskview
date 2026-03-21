@@ -25,6 +25,7 @@
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
 
+        /* 로그인 화면 */
         #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
@@ -38,56 +39,81 @@
         .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: #007a36; }
 
-        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 24px 20px 60px; color: #fff; }
-        .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-        .header-sub { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
+        /* 메인 헤더 */
+        .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 24px 20px 75px; color: #fff; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; }
+        .header-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .header-sub { font-size: 13px; opacity: 0.9; margin-bottom: 8px; display: block; }
         .header-badges { display: flex; gap: 8px; font-size: 11px; flex-wrap: wrap; }
         .badge-item { background: rgba(0,0,0,0.15); padding: 4px 10px; border-radius: 12px; }
-        .header-controls { position: absolute; top: 24px; right: 20px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .header-controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
         .header-btn { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; }
         .header-btn:hover { background: rgba(255,255,255,.3); }
 
+        /* 신규 등록 플로팅 버튼 */
         .fab-btn {
-            position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px;
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
             background-color: #005BAC; color: #fff; border: none; border-radius: 50%;
-            font-size: 28px; font-weight: 300; display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-weight: 300; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 12px rgba(0, 91, 172, 0.4); cursor: pointer; z-index: 1030; transition: transform 0.2s;
         }
         .fab-btn:hover { transform: scale(1.05); background-color: #004a8e; }
 
-        .main-wrap { padding: 0 16px 40px; margin-top: -30px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
+        .main-wrap { padding: 0 16px 40px; margin-top: -50px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
         
-        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
-        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; transition: max-height 0.4s ease, opacity 0.3s ease; max-height: 500px; overflow: hidden; opacity: 1; margin-bottom: 20px; }
-        .stats-wrap.collapsed { max-height: 0 !important; opacity: 0 !important; margin-bottom: 0 !important; }
-        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 130px; transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-2px); }
+        /* 요약 현황 (디자인 개선) */
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 5px; color: rgba(255,255,255,0.95); }
+        .stats-header-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .stats-toggle-btn { background: rgba(0,0,0,0.15); color: #fff; border: none; font-size: 11px; padding: 4px 12px; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+        .stats-toggle-btn:hover { background: rgba(0,0,0,0.25); }
+        
+        .stats-collapse-wrap { overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; max-height: 500px; opacity: 1; margin-bottom: 20px; }
+        .stats-collapse-wrap.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
+        
+        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+        .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 130px; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
         .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
 
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
         
-        .panel-toolbar { display: flex; flex-direction: column; gap: 12px; padding: 15px; border-bottom: 1px solid #f0f0f0; background: #fff; }
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; align-items: center; }
-        .search-box { display: flex; align-items: center; background: #f4fbf7; border: 1px solid var(--border); border-radius: 8px; padding: 0 10px; flex-grow: 1; min-width: 200px; }
+        /* 통합 필터 바 (기존 칩 형태 원복 및 컴팩트화) */
+        .panel-toolbar { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; align-items: center; }
+        
+        /* 칩 필터 디자인 */
+        .filter-group { display: flex; gap: 4px; background: #f0f5f2; border-radius: 30px; padding: 4px; border: 1px solid #e2f0e9; }
+        .filter-chip input { display: none; }
+        .filter-chip label { display: block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: #555; transition: 0.2s; margin:0; }
+        .filter-chip input:checked + label { background: #009A44; color: #fff; box-shadow: 0 2px 6px rgba(0,154,68,0.25); font-weight: 600; }
+        
+        .search-box { display: flex; align-items: center; background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 20px; padding: 0 12px; flex-grow: 1; min-width: 200px; }
         .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; padding: 8px 4px; }
         
-        .view-tabs { display: flex; gap: 4px; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; border-bottom: 2px solid #f0f5f2; }
+        /* 탭 영역 */
+        .view-tabs { display: flex; gap: 4px; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 2px; scrollbar-width: none; border-bottom: 2px solid #f0f5f2; margin-top: 4px; align-items: center; }
         .view-tabs::-webkit-scrollbar { display: none; }
-        .view-tab-btn { border: none; background: transparent; padding: 8px 16px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .view-tab-btn { border: none; background: transparent; padding: 8px 14px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; margin-bottom: -2px; }
         .view-tab-btn.active { color: #009A44; font-weight: 700; border-bottom-color: #009A44; }
-        .btn-excel-export { background: #eef8f2; color: #009A44; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 6px 12px; border: 1px solid #d6eee3; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; margin-left: auto; }
+        
+        /* 보고서 추출 버튼 */
+        .btn-excel-export { background: #f0f8f4; color: #009A44; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 6px 12px; border: 1px solid #d6eee3; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; margin-left: auto; }
         .btn-excel-export:hover { background: #d6eee3; }
 
-        .view-body { padding: 15px; min-height: 450px; }
+        .view-body { padding: 16px; min-height: 450px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 10px !important; padding: 0 5px; }
-        .fc .fc-toolbar-title { font-size: 16px !important; font-weight: 600; }
-        .fc .fc-button { padding: 4px 10px !important; font-size: 12px !important; height: auto !important; }
+        /* FullCalendar 모바일/PC 간격 최적화 */
+        .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 12px !important; padding: 0; }
+        .fc .fc-toolbar-title { font-size: 18px !important; font-weight: 700; color: #333; }
+        .fc .fc-button { padding: 4px 12px !important; font-size: 12px !important; height: 32px !important; box-shadow: none !important; }
+        .fc-theme-standard th { border-color: #eee; padding: 4px 0; background: #fafafa; font-weight: 500; font-size: 13px; color: #555; }
+        .fc-daygrid-day-number { font-size: 12px; color: #555; padding: 4px !important; }
 
+        /* GANTT */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -127,13 +153,15 @@
 
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
-            .header-controls { position: relative; top: auto; right: auto; justify-content: flex-start; }
+            .header-top { flex-direction: column; align-items: stretch; }
+            .header-controls { justify-content: flex-start; margin-top: 10px; }
             .filter-bar { flex-direction: column; align-items: stretch; }
             .search-box { width: 100%; max-width: none; }
-            .view-tabs { flex-wrap: wrap; border-bottom: none; }
-            .btn-excel-export { margin-left: 0; justify-content: center; width: 100%; margin-top: 5px; }
-            .fab-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 26px; }
-            .fc .fc-toolbar.fc-header-toolbar { flex-wrap: wrap; gap: 8px; }
+            .view-tabs { flex-wrap: nowrap; overflow-x: auto; } /* 가로 스크롤 허용 */
+            .btn-excel-export { margin-left: 0; white-space: nowrap; flex-shrink: 0; }
+            .fab-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 28px; }
+            .fc .fc-toolbar.fc-header-toolbar { flex-wrap: wrap; gap: 8px; justify-content: center; }
+            .fc .fc-toolbar-title { font-size: 15px !important; }
         }
     </style>
 </head>
@@ -162,13 +190,13 @@
     <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()">+</button>
 
     <div id="app-container" style="display: none;">
-        <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 동기화 중...</div></div>
+        <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 처리 중...</div></div>
 
         <div class="app-header">
             <div class="header-top">
                 <div>
                     <h1 class="header-title">업무 현황 관리</h1>
-                    <div class="header-sub">2026 기업뱅킹 상시운영 프로젝트 대시보드</div>
+                    <span class="header-sub">2026 기업뱅킹 상시운영 프로젝트 대시보드</span>
                     <div class="header-badges">
                         <span class="badge-item" id="lastUpdateTime">⏱ 최종 동기화: -</span>
                         <span class="badge-item" id="userInfoDisplay">👤 접속자: -</span>
@@ -185,21 +213,33 @@
 
         <div class="main-wrap">
             <div class="stats-header">
-                <span class="small fw-bold text-muted">📊 요약 현황</span>
-                <button id="statsToggleBtn" class="btn btn-sm text-muted p-0 border-0 bg-transparent" onclick="toggleStats()">접기 ▲</button>
+                <div class="stats-header-title">📊 요약 현황</div>
+                <button id="statsToggleBtn" class="stats-toggle-btn" onclick="toggleStats()">접기 ▲</button>
             </div>
-            <div class="stats-wrap" id="statsContainer"></div>
+            
+            <div class="stats-collapse-wrap" id="statsCollapseWrap">
+                <div class="stats-wrap" id="statsContainer"></div>
+            </div>
 
             <div class="panel">
                 <div class="panel-toolbar">
                     <div class="filter-bar">
-                        <select id="sheetFilterSelect" class="form-select form-select-sm w-auto rounded-pill shadow-sm" onchange="applyFilter()">
-                            <option value="all" selected>전체 채널</option>
-                            <option value="인터넷">인터넷</option>
-                            <option value="스마트">스마트</option>
-                        </select>
+                        <div class="filter-group">
+                            <div class="filter-chip">
+                                <input type="radio" name="sheetFilter" id="fAll" value="all" checked onchange="applyFilter()">
+                                <label for="fAll">전체</label>
+                            </div>
+                            <div class="filter-chip">
+                                <input type="radio" name="sheetFilter" id="fInt" value="인터넷" onchange="applyFilter()">
+                                <label for="fInt">인터넷</label>
+                            </div>
+                            <div class="filter-chip">
+                                <input type="radio" name="sheetFilter" id="fSmt" value="스마트" onchange="applyFilter()">
+                                <label for="fSmt">스마트</label>
+                            </div>
+                        </div>
                         
-                        <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill shadow-sm" onchange="applyFilter()">
+                        <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill border-1" style="background:#f9fbf9; color:#555; border-color:#e2f0e9;" onchange="applyFilter()">
                             <option value="active" selected>진행 업무 (완료/취소 제외)</option>
                             <option value="all">모든 단계</option>
                             <option value="작업 대기">작업 대기</option>
@@ -211,8 +251,8 @@
                             <option value="취소">취소</option>
                         </select>
 
-                        <div class="search-box shadow-sm">
-                            <span class="text-muted">🔍</span>
+                        <div class="search-box">
+                            <span class="text-muted" style="font-size:14px;">🔍</span>
                             <input type="text" id="searchInput" placeholder="요건명 또는 담당자 검색" onkeyup="applyFilter()">
                         </div>
                     </div>
@@ -223,7 +263,7 @@
                         <button class="view-tab-btn" data-target="list-view" onclick="switchTab(this)">📋 목록</button>
                         <button class="view-tab-btn admin-only" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
                         <button class="view-tab-btn admin-only" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
-                        <button class="btn-excel-export" onclick="openReportModal()">📥 보고서 추출</button>
+                        <button class="btn-excel-export admin-only" onclick="openReportModal()">📥 보고서 추출</button>
                     </div>
                 </div>
 
@@ -241,7 +281,7 @@
                         <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
                         <div id="gantt"></div>
                     </div>
-                    
+
                     <div id="list-view" class="tab-panel">
                         <div class="list-table-wrap">
                             <table class="list-table" id="listTable">
@@ -253,7 +293,7 @@
 
                     <div id="monthly-view" class="tab-panel">
                         <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
-                        <div class="accordion" id="monthlyAccordion"></div>
+                        <div class="accordion mt-3" id="monthlyAccordion"></div>
                     </div>
                     
                     <div id="assignee-view" class="tab-panel"><div class="assignee-grid" id="assigneeGrid"></div></div>
@@ -418,8 +458,8 @@
 
     <script>
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
-        let rawData = [], calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
-        let currentGanttMode = 'Month', currentUser = null;
+        let rawData = [], calendar, gantt, chart, activeTab = 'calendar-view';
+        let currentGanttMode = 'Month', currentUser = null, isStatsCollapsed = false;
         
         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
         const createModal = new bootstrap.Modal(document.getElementById('createModal'));
@@ -571,13 +611,13 @@
 
         function toggleStats() {
             isStatsCollapsed = !isStatsCollapsed;
-            const container = document.getElementById('statsContainer');
+            const wrap = document.getElementById('statsCollapseWrap');
             const btn = document.getElementById('statsToggleBtn');
             if(isStatsCollapsed) {
-                container.classList.add('collapsed');
+                wrap.classList.add('collapsed');
                 btn.innerText = '펼치기 ▼';
             } else {
-                container.classList.remove('collapsed');
+                wrap.classList.remove('collapsed');
                 btn.innerText = '접기 ▲';
             }
         }
@@ -619,7 +659,7 @@
         function applyFilter() { updateStats(); render(); }
 
         function getFiltered() {
-            const sheetF = document.getElementById('sheetFilterSelect')?.value || 'all';
+            const sheetF = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
             const statusF = document.getElementById('globalStatusFilter')?.value || 'active';
             const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
 
