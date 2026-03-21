@@ -19,6 +19,8 @@
             --surface: #ffffff; --surface-2: #f4fbf7; --border: #d6eee3;
             --text-primary: #0d2318; --text-secondary: #527060;
             --radius-lg: 16px; --radius-md: 10px;
+            --shadow-sm: 0 2px 8px rgba(0,154,68,.08);
+            --shadow-md: 0 8px 32px rgba(0,154,68,.12);
         }
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
@@ -32,7 +34,7 @@
         .main-wrap { padding: 0 16px 40px; margin-top: -45px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
 
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
-        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .stats-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; transition: all 0.3s ease; }
         .stat-card { background: var(--surface); border-radius: var(--radius-lg); padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1 1 calc(25% - 10px); min-width: 140px; transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-3px); }
         .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -50,18 +52,18 @@
         
         .filter-group { display: flex; gap: 4px; background: #f0f5f2; border-radius: 30px; padding: 4px; }
         .filter-chip input { display: none; }
-        .filter-chip label { padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: #666; transition: 0.2s; }
+        .filter-chip label { display: block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; color: #666; transition: 0.2s; }
         .filter-chip input:checked + label { background: #009A44; color: #fff; box-shadow: 0 2px 5px rgba(0,154,68,0.3); }
 
-        .view-tabs { display: flex; gap: 4px; }
-        .view-tab-btn { border: none; background: #f8f9fa; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; }
-        .view-tab-btn.active { background: #e7f3ed; color: #009A44; font-weight: 600; }
+        .view-tabs { display: flex; gap: 4px; background: #f0f5f2; border-radius: 10px; padding: 4px; }
+        .view-tab-btn { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; transition: 0.2s; }
+        .view-tab-btn.active { background: #fff; color: #009A44; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 
         .view-body { padding: 20px; min-height: 450px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* GANTT 상단 스크롤 및 숨김 처리 */
+        /* GANTT 상단 스크롤 및 레이아웃 */
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 12px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 8px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -86,16 +88,24 @@
         .drawer-item { border: 1px solid #eee; border-radius: 10px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
         .drawer-item:hover { border-color: #009A44; background: #fafffc; }
         
-        /* 모바일 최적화 */
+        /* 📱 모바일 UI/UX 최적화 */
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
             .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
-            .view-tabs { overflow-x: auto; width: 100%; }
             
-            /* 간트 컨트롤 레이아웃 개선 */
-            .gantt-controls-wrap { flex-direction: column; align-items: flex-start; gap: 10px; }
+            /* 툴바 칩 & 탭 줄바꿈 방지 및 100% 꽉 채우기 */
+            .panel-toolbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
+            .filter-group { width: 100%; border-radius: 8px; padding: 4px; }
+            .filter-chip { flex: 1; }
+            .filter-chip label { text-align: center; padding: 8px 0; border-radius: 6px; font-size: 13px; }
+            .view-tabs { width: 100%; border-radius: 8px; padding: 4px; }
+            .view-tab-btn { flex: 1; padding: 8px 0; font-size: 13px; text-align: center; border-radius: 6px; }
+            
+            /* 간트 컨트롤 풀사이즈 정렬 */
+            .gantt-controls-wrap { flex-direction: column; align-items: stretch !important; gap: 10px; }
             .gantt-controls-wrap select { width: 100% !important; }
-            .gantt-controls-wrap .btn-group { width: 100%; justify-content: flex-end; }
+            .gantt-controls-wrap .btn-group { width: 100%; display: flex; }
+            .gantt-controls-wrap .btn-group .btn { flex: 1; }
         }
     </style>
 </head>
@@ -124,10 +134,10 @@
                     <div class="filter-chip"><input type="radio" name="sheetFilter" id="fSmt" value="스마트"><label for="fSmt">스마트</label></div>
                 </div>
                 <div class="view-tabs">
-                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
-                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
-                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
-                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
+                    <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">캘린더</button>
+                    <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">간트차트</button>
+                    <button class="view-tab-btn" data-target="monthly-view" onclick="switchTab(this)">통계</button>
+                    <button class="view-tab-btn" data-target="assignee-view" onclick="switchTab(this)">담당자</button>
                 </div>
             </div>
 
@@ -146,7 +156,7 @@
                             <option value="적용 완료">적용 완료</option>
                             <option value="취소">취소</option>
                         </select>
-                        <div class="d-flex gap-1 btn-group">
+                        <div class="btn-group gap-1">
                             <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Day', this)">일</button>
                             <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
                             <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Month', this)">월</button>
@@ -317,6 +327,7 @@
             calendar.render();
         }
 
+        /* ── GANTT CHART 핵심 개선 ── */
         function renderGantt() {
             const el = document.getElementById('gantt');
             if (!el || el.offsetWidth === 0) return;
@@ -356,11 +367,11 @@
                     err = true;
                 }
 
+                let sheetPrefix = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
                 let reqName = i['요건명'] ? String(i['요건명']).replace(/['"]/g, '') : '제목없음';
                 let statusName = i['진행단계'] || '기타';
 
-                // 막대 텍스트 간소화 (색상이 상태를 대변하므로 요건명만 노출)
-                let displayName = err ? '⚠️ ' + reqName : reqName;
+                let displayName = err ? '⚠️ ' + reqName : `[${sheetPrefix}] [${statusName}] ${reqName}`;
 
                 return {
                     id: 'GT_' + idx,
@@ -384,19 +395,21 @@
 
         function injectGanttCSS() {
             const id = 'gantt-css';
-            if (document.getElementById(id)) return;
-            // 막대 색상을 !important로 강제 지정하고 글씨를 흰색으로 변경
-            let css = `.gantt .bar-label { fill: #ffffff !important; font-size: 11px; font-weight: 500; } .gantt .grid-header { fill: #f4fbf7; }\n`;
+            if (document.getElementById(id)) document.getElementById(id).remove(); // 중복 생성 방지 및 갱신
+            
+            // 텍스트 반투명 테두리(stroke) 트릭으로 배경 무관하게 높은 가독성 확보
+            let css = `.gantt .bar-label { fill: #ffffff !important; font-size: 11px; font-weight: 600; stroke: rgba(0,0,0,0.4); stroke-width: 2px; paint-order: stroke fill; }\n`;
+            css += `.gantt .grid-header { fill: #f4fbf7; }\n`;
+            
+            // 캘린더 톤앤매너 완벽 동기화 (!important 강제 덮어쓰기)
             Object.entries(MAP).forEach(([k, v]) => { 
                 if(k === '전체') return;
-                css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar { fill: ${v.c} !important; opacity: 0.8; }\n`;
-                css += `.gantt .bar.g-${k.replace(/\s/g, '')} .bar-progress { fill: ${v.c} !important; }\n`;
+                let safeClass = k.replace(/\s/g, '');
+                css += `.gantt .bar-wrapper.g-${safeClass} .bar { fill: ${v.c} !important; fill-opacity: 1 !important; }\n`;
+                css += `.gantt .bar-wrapper.g-${safeClass} .bar-progress { fill: ${v.c} !important; }\n`;
             });
-            css += `.gantt .bar.g-err .bar { fill: #ff4d4f !important; opacity: 0.8; }\n.gantt .bar.g-err .bar-progress { fill: #ff4d4f !important; }\n`;
+            css += `.gantt .bar-wrapper.g-err .bar { fill: #ff4d4f !important; }\n.gantt .bar-wrapper.g-err .bar-progress { fill: #ff4d4f !important; }\n`;
             
-            // 모바일 최적화 미디어 쿼리
-            css += `@media(max-width: 640px) { .gantt .bar-label { font-size: 10px; } }\n`;
-
             const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
         }
 
