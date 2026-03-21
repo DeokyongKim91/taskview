@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     <title>업무 현황 통합 관리 시스템</title>
-    <link rel="icon" type="image/png" href="./icon.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏦</text></svg>">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css">
@@ -180,6 +181,7 @@
         }
         .stats-collapse-wrap.collapsed { max-height: 0; opacity: 0; margin-bottom: 0; }
 
+        /* CSS GRID 기반 stat-card */
         .stats-wrap {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -330,6 +332,7 @@
         }
         .list-table td { padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; cursor: pointer; }
         .list-table tr:hover td { background: #f4fbf7; }
+        .list-table tbody tr { transition: background 0.15s; }
 
         /* D-Day 배지 */
         .dday-badge {
@@ -340,6 +343,50 @@
         .dday-soon { background: #fef3cd; color: #b7791f; }
         .dday-ok { background: #e8f5e9; color: #2e7d32; }
         .dday-day { background: #ffe4c4; color: #c05621; }
+
+        /* ===== 진행단계 스텝바 (모달 상단) ===== */
+        .step-progress-wrap {
+            padding: 16px 20px 4px;
+            background: linear-gradient(180deg, #f8fcf9 0%, #fff 100%);
+            border-bottom: 1px solid #eef5ee;
+            overflow-x: auto;
+        }
+        .step-progress { display: flex; align-items: center; gap: 0; min-width: 480px; }
+        .step-item {
+            display: flex; flex-direction: column; align-items: center;
+            flex: 1; position: relative;
+        }
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 14px; left: 50%; width: 100%;
+            height: 2px; background: #e0e0e0; z-index: 0;
+        }
+        .step-item.done:not(:last-child)::after { background: #009A44; }
+        .step-circle {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; z-index: 1;
+            position: relative; transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        .step-circle.done { background: #009A44; color: #fff; border-color: #009A44; }
+        .step-circle.current {
+            background: #005BAC; color: #fff; border-color: #005BAC;
+            box-shadow: 0 0 0 4px rgba(0,91,172,0.15);
+            animation: pulse-step 2s infinite;
+        }
+        .step-circle.pending { background: #f3f4f6; color: #aaa; border-color: #e0e0e0; }
+        @keyframes pulse-step {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(0,91,172,0.15); }
+            50% { box-shadow: 0 0 0 7px rgba(0,91,172,0.08); }
+        }
+        .step-label {
+            font-size: 9px; margin-top: 5px; color: #888;
+            white-space: nowrap; font-weight: 500;
+        }
+        .step-label.current { color: #005BAC; font-weight: 700; }
+        .step-label.done { color: #009A44; }
 
         /* ===== Empty State ===== */
         .empty-state {
@@ -404,7 +451,7 @@
             padding: 0; line-height: 1;
         }
 
-        /* ===== 로딩 오버레이 ===== */
+        /* ===== 로딩 오버레이 (저장/삭제 등 사용자 조작 시에만 사용) ===== */
         #loading {
             display: none; position: fixed; inset: 0;
             background: rgba(255,255,255,0.75);
@@ -427,7 +474,7 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== 스켈레톤 UI ===== */
+        /* ===== 스켈레톤 UI (초기 데이터 로딩용) ===== */
         @keyframes skeleton-wave {
             0%   { background-position: -400px 0; }
             100% { background-position: 400px 0; }
@@ -438,6 +485,7 @@
             animation: skeleton-wave 1.4s ease-in-out infinite;
             border-radius: 6px;
         }
+        /* 통계카드 스켈레톤 */
         .stat-card-skeleton {
             background: var(--surface); border-radius: var(--radius-lg);
             padding: 14px 16px; border: 1px solid var(--border);
@@ -448,6 +496,7 @@
         .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .sk-line-lg { height: 22px; border-radius: 4px; width: 50%; }
         .sk-line-sm { height: 12px; border-radius: 4px; width: 70%; }
+        /* 테이블 로우 스켈레톤 */
         .sk-table-row {
             display: flex; gap: 12px; align-items: center;
             padding: 12px 12px; border-bottom: 1px solid #f0f0f0;
@@ -457,6 +506,7 @@
         .sk-cell-sm  { width: 80px; }
         .sk-cell-md  { width: 140px; }
         .sk-cell-lg  { flex: 1; }
+        /* 캘린더 스켈레톤 */
         .skeleton-calendar { padding: 8px; }
         .sk-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .sk-cal-title { height: 28px; width: 160px; border-radius: 6px; }
@@ -513,6 +563,25 @@
             background-color: #f8f9fa; opacity: 1; pointer-events: none;
         }
 
+        /* ===== 키보드 단축키 힌트 패널 ===== */
+        .shortcut-panel {
+            position: fixed; bottom: 100px; right: 30px;
+            background: rgba(20,20,20,0.92); color: #fff;
+            border-radius: 12px; padding: 14px 18px;
+            font-size: 12px; z-index: 1025;
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.3s; backdrop-filter: blur(6px);
+            max-width: 220px;
+        }
+        .shortcut-panel.visible { opacity: 1; }
+        .shortcut-panel h6 { font-size: 11px; color: #aaa; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .shortcut-row { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
+        .shortcut-key {
+            background: rgba(255,255,255,0.15); border-radius: 4px;
+            padding: 1px 7px; font-family: monospace; font-size: 11px;
+            font-weight: 600; white-space: nowrap;
+        }
+
         /* ===== URL 상태 표시 ===== */
         .filter-permalink {
             font-size: 11px; color: #aaa; cursor: pointer;
@@ -533,6 +602,7 @@
             .filter-bar { flex-direction: column; align-items: stretch; }
             .search-box { width: 100%; max-width: none; }
             .fab-btn { bottom: 20px; right: 20px; width: 52px; height: 52px; font-size: 24px; }
+            .shortcut-panel { display: none; }
             .fc .fc-toolbar.fc-header-toolbar { flex-wrap: wrap; gap: 8px; justify-content: center; }
         }
     </style>
@@ -562,8 +632,18 @@
 
     <datalist id="bizList"></datalist>
 
-    <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()" title="신규 등록">+</button>
-    <div class="fab-tooltip admin-only">신규 등록</div>
+    <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()" title="신규 등록 (N)">+</button>
+    <div class="fab-tooltip admin-only">신규 등록 <span class="keyboard-hint">N</span></div>
+
+    <div class="shortcut-panel" id="shortcutPanel">
+        <h6>⌨ 단축키</h6>
+        <div class="shortcut-row"><span>신규 등록</span><span class="shortcut-key">N</span></div>
+        <div class="shortcut-row"><span>검색 포커스</span><span class="shortcut-key">F</span></div>
+        <div class="shortcut-row"><span>필터 초기화</span><span class="shortcut-key">R</span></div>
+        <div class="shortcut-row"><span>새로고침</span><span class="shortcut-key">⌘R</span></div>
+        <div class="shortcut-row"><span>단축키 목록</span><span class="shortcut-key">?</span></div>
+        <div class="shortcut-row"><span>닫기</span><span class="shortcut-key">Esc</span></div>
+    </div>
 
     <div id="app-container" style="display: none;">
         <div id="loading">
@@ -581,14 +661,15 @@
                     <div class="header-badges">
                         <span class="badge-item" id="lastUpdateTime">⏱ 최종 동기화: -</span>
                         <span class="badge-item" id="userInfoDisplay">👤 접속자: -</span>
+                        <span class="badge-item" id="shortcutHintBadge" onclick="toggleShortcutPanel()" style="cursor:pointer;">⌨ ?</span>
                     </div>
                 </div>
                 <div class="header-controls">
                     <button class="header-btn admin-only" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
                     <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
                     <button class="header-btn" onclick="copyFilterLink()" title="현재 필터 링크 복사">🔗 링크 복사</button>
-                    <button class="header-btn border-0" style="background: rgba(0,0,0,0.3);" onclick="logout()">로그아웃</button>
-                    <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelUpload(event)">
+                    <button class="header-btn" style="background:rgba(0,0,0,0.3);" onclick="logout()">로그아웃</button>
+                    <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExcelUpload(event)">
                 </div>
             </div>
         </div>
@@ -598,7 +679,6 @@
                 <div class="stats-header-title">📊 요약 현황</div>
                 <button id="statsToggleBtn" class="stats-toggle-btn" onclick="toggleStats()">접기 ▲</button>
             </div>
-            
             <div class="stats-collapse-wrap" id="statsCollapseWrap">
                 <div class="stats-wrap" id="statsContainer"></div>
             </div>
@@ -621,7 +701,8 @@
                             </div>
                         </div>
 
-                        <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill border-1" style="background:#f9fbf9; color:#555; border-color:#e2f0e9;" onchange="applyFilter(true)">
+                        <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill border-1"
+                            style="background:#f9fbf9; color:#555; border-color:#e2f0e9;" onchange="applyFilter(true)">
                             <option value="active" selected>진행 업무 (완료/취소 제외)</option>
                             <option value="all">모든 단계</option>
                             <option value="작업 대기">작업 대기</option>
@@ -636,11 +717,12 @@
                         <div class="search-box">
                             <span style="font-size:14px; color:#aaa;">🔍</span>
                             <input type="text" id="searchInput" placeholder="요건명 또는 담당자 검색" onkeyup="debouncedFilterFromSearch()">
+                            <span class="keyboard-hint">F</span>
                         </div>
 
                         <span class="filter-permalink" id="filterPermalink" onclick="copyFilterLink()" title="현재 필터 URL 복사">🔗 공유</span>
                     </div>
-                    
+
                     <div class="view-tabs">
                         <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
                         <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
@@ -653,7 +735,7 @@
 
                 <div class="view-body">
                     <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
-                    
+
                     <div id="gantt-view" class="tab-panel">
                         <div class="d-flex justify-content-end mb-2">
                             <div class="btn-group gap-1">
@@ -665,7 +747,7 @@
                         <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
                         <div id="gantt"></div>
                     </div>
-                    
+
                     <div id="list-view" class="tab-panel">
                         <div class="list-table-wrap">
                             <table class="list-table" id="listTable">
@@ -686,8 +768,10 @@
                         <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
                         <div class="accordion mt-3" id="monthlyAccordion"></div>
                     </div>
-                    
-                    <div id="assignee-view" class="tab-panel"><div class="assignee-grid" id="assigneeGrid"></div></div>
+
+                    <div id="assignee-view" class="tab-panel">
+                        <div class="assignee-grid" id="assigneeGrid"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -702,6 +786,11 @@
                         </div>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
+
+                    <div class="step-progress-wrap">
+                        <div class="step-progress" id="stepProgressBar"></div>
+                    </div>
+
                     <div class="modal-body p-4">
                         <form id="taskForm">
                             <input type="hidden" name="출처시트">
@@ -712,7 +801,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">진행단계</label>
-                                    <select class="form-select" name="진행단계">
+                                    <select class="form-select" name="진행단계" onchange="updateStepProgress(this.value)">
                                         <option>작업 대기</option><option>진행중</option><option>검증 반영</option>
                                         <option>개발 대기</option><option>개발중</option><option>적용 완료</option><option>취소</option>
                                     </select>
@@ -898,7 +987,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                        <button type="button" class="btn btn-primary btn-primary-custom px-4" onclick="saveNewTask()">등록</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="saveNewTask()">등록</button>
                     </div>
                 </div>
             </div>
@@ -955,8 +1044,8 @@
 
     <script>
     /* ===================================================
-       CONSTANTS & STATE
-       =================================================== */
+        CONSTANTS & STATE
+        =================================================== */
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
 
     const AppState = {
@@ -964,13 +1053,19 @@
         currentUser: null,
         isStatsCollapsed: false,
         activeTab: 'calendar-view',
-        currentGanttMode: 'Month'
+        currentGanttMode: 'Month',
+        isShortcutPanelVisible: false,
+        pendingChanges: new Map(),
     };
 
     let calendar, gantt, chart;
+
     const modal = new bootstrap.Modal(document.getElementById('eventModal'));
     const createModal = new bootstrap.Modal(document.getElementById('createModal'));
     const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+
+    /* 진행단계 → 순서 정의 */
+    const STEPS = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료'];
 
     const MAP = {
         '전체':    { c: '#4b5563', i: '📋', b: '#f3f4f6' },
@@ -984,8 +1079,8 @@
     };
 
     /* ===================================================
-       TOAST & UI HELPERS
-       =================================================== */
+        TOAST
+        =================================================== */
     function showToast(msg, type = 'success') {
         const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const container = document.getElementById('toastContainer');
@@ -997,29 +1092,9 @@
         setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
-    function toggleLoad(show, msg = '처리 중...') {
-        document.getElementById('loadingText').innerText = msg;
-        document.getElementById('loading').style.display = show ? 'flex' : 'none';
-    }
-
-    const _ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;' };
-    function esc(str) {
-        if (str === null || str === undefined) return '';
-        return String(str).replace(/[&<>"'`]/g, c => _ESC[c]);
-    }
-
-    function debounce(fn, delay) {
-        let timer;
-        return function (...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), delay);
-        };
-    }
-    const debouncedFilterFromSearch = debounce(() => applyFilter(true), 300);
-
     /* ===================================================
-       SECURITY & SESSION
-       =================================================== */
+        SECURITY — 세션 서명 & 검증
+        =================================================== */
     const SESSION_KEY = (() => {
         const seed = (location.hostname || 'localhost') + navigator.userAgent.slice(0, 20);
         let h = 0;
@@ -1085,6 +1160,9 @@
         sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
     }
 
+    /* ===================================================
+        LOGIN
+        =================================================== */
     function togglePassword() {
         const el = document.getElementById('loginPw');
         const btn = document.getElementById('pwToggleBtn');
@@ -1092,14 +1170,16 @@
         btn.innerText = el.type === 'password' ? '보기' : '숨김';
     }
 
-    function checkLoginStatus() {
-        const user = loadSession();
+    async function checkLoginStatus() {
+        const user = await loadSession();
         if (user) {
             AppState.currentUser = user;
             applyUserRoleUI();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
-            initUI(); restoreFilterFromURL(); fetchData();
+            initUI();
+            restoreFilterFromURL();
+            fetchData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
@@ -1119,12 +1199,12 @@
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'login', id, password: pw }) })
             .then(r => r.json())
-            .then(res => {
+            .then(async res => {
                 btn.innerText = '로그인'; btn.disabled = false;
                 if (res.result === 'success') {
                     if (rememberMe) localStorage.setItem('savedId', id);
                     else localStorage.removeItem('savedId');
-                    storeSession(res.user, keepLoggedIn);
+                    await storeSession(res.user, keepLoggedIn);
                     document.getElementById('login-screen').classList.add('fade-out');
                     setTimeout(() => checkLoginStatus(), 400);
                 } else showToast('로그인 실패: ' + res.message, 'error');
@@ -1132,7 +1212,10 @@
             .catch(() => { showToast('통신 에러 발생', 'error'); btn.innerText = '로그인'; btn.disabled = false; });
     }
 
-    function logout() { clearSession(); location.reload(); }
+    function logout() {
+        clearSession();
+        location.reload();
+    }
 
     function applyUserRoleUI() {
         if (!AppState.currentUser) return;
@@ -1144,8 +1227,30 @@
     }
 
     /* ===================================================
-       URL STATE
-       =================================================== */
+        DEBOUNCE 유틸
+        =================================================== */
+    function debounce(fn, delay) {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+
+    const debouncedFilterFromSearch = debounce(() => applyFilter(true), 300);
+
+    /* ===================================================
+        XSS 방어 — escapeHTML 유틸
+        =================================================== */
+    const _ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;' };
+    function esc(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>"'`]/g, c => _ESC[c]);
+    }
+
+    /* ===================================================
+        URL 필터 상태 관리
+        =================================================== */
     function saveFilterToURL() {
         const sheet = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
         const status = document.getElementById('globalStatusFilter')?.value || 'active';
@@ -1176,22 +1281,123 @@
         const keyword = params.get('q');
         const tab = params.get('tab');
 
-        if (sheet) { const radio = document.querySelector(`input[name="sheetFilter"][value="${sheet}"]`); if (radio) radio.checked = true; }
-        if (status) { const sel = document.getElementById('globalStatusFilter'); if (sel) sel.value = status; }
-        if (keyword) { const inp = document.getElementById('searchInput'); if (inp) inp.value = keyword; }
-        if (tab) { const btn = document.querySelector(`.view-tab-btn[data-target="${tab}"]`); if (btn) switchTab(btn); }
+        if (sheet) {
+            const radio = document.querySelector(`input[name="sheetFilter"][value="${sheet}"]`);
+            if (radio) radio.checked = true;
+        }
+        if (status) {
+            const sel = document.getElementById('globalStatusFilter');
+            if (sel) sel.value = status;
+        }
+        if (keyword) {
+            const inp = document.getElementById('searchInput');
+            if (inp) inp.value = keyword;
+        }
+        if (tab) {
+            const btn = document.querySelector(`.view-tab-btn[data-target="${tab}"]`);
+            if (btn) switchTab(btn);
+        }
     }
 
     function copyFilterLink() {
         saveFilterToURL();
         navigator.clipboard.writeText(location.href)
-            .then(() => showToast('필터 링크가 복사되었습니다.', 'success'))
-            .catch(() => showToast('링크 복사 실패', 'info'));
+            .then(() => showToast('필터 링크가 클립보드에 복사되었습니다.', 'success'))
+            .catch(() => showToast('링크 복사 실패. 브라우저 주소창에서 직접 복사해 주세요.', 'info'));
     }
 
     /* ===================================================
-       SKELETON & INIT
-       =================================================== */
+        KEYBOARD SHORTCUTS
+        =================================================== */
+    function toggleShortcutPanel() {
+        AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
+        document.getElementById('shortcutPanel').classList.toggle('visible', AppState.isShortcutPanelVisible);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = document.activeElement?.tagName.toLowerCase();
+        const isInput = ['input', 'textarea', 'select'].includes(tag);
+        const modalOpen = document.querySelector('.modal.show');
+
+        if (e.key === 'Escape') {
+            if (AppState.isShortcutPanelVisible) { toggleShortcutPanel(); return; }
+            closeDrawer();
+            return;
+        }
+        if (e.key === '?') { toggleShortcutPanel(); return; }
+
+        if (isInput || modalOpen) return;
+
+        if (e.key === 'n' || e.key === 'N') {
+            if (AppState.currentUser?.role === 'admin') openCreatePop();
+        }
+        if (e.key === 'f' || e.key === 'F') {
+            e.preventDefault();
+            document.getElementById('searchInput')?.focus();
+        }
+        if (e.key === 'r' || e.key === 'R') {
+            if (!e.metaKey && !e.ctrlKey) resetFilters();
+        }
+    });
+
+    function resetFilters() {
+        document.querySelector('#fAll').checked = true;
+        document.getElementById('globalStatusFilter').value = 'active';
+        document.getElementById('searchInput').value = '';
+        applyFilter(true);
+        showToast('필터가 초기화되었습니다.', 'info');
+    }
+
+    /* ===================================================
+        INIT UI
+        =================================================== */
+    function initUI() {
+        let h = '';
+        Object.entries(MAP).forEach(([k, v]) => {
+            const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
+            h += `<div class="stat-card" onclick="showDrawer('${k}')">
+                    <div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div>
+                    <div>
+                        <div class="stat-num" id="st-${id}">-</div>
+                        <div class="stat-label">${k}</div>
+                    </div>
+                  </div>`;
+        });
+        document.getElementById('statsContainer').innerHTML = h;
+
+        const savedId = localStorage.getItem('savedId');
+        if (savedId) {
+            document.getElementById('loginId').value = savedId;
+            document.getElementById('rememberId').checked = true;
+        }
+
+        const topScroll = document.getElementById('gantt-top-scroll');
+        const ganttWrap = document.getElementById('gantt');
+        let syncTop = false, syncBot = false;
+        topScroll.addEventListener('scroll', () => {
+            if (!syncTop) { syncBot = true; ganttWrap.scrollLeft = topScroll.scrollLeft; }
+            syncTop = false;
+        });
+        ganttWrap.addEventListener('scroll', () => {
+            if (!syncBot) { syncTop = true; topScroll.scrollLeft = ganttWrap.scrollLeft; }
+            syncBot = false;
+        });
+
+        const tForm = document.getElementById('taskForm');
+        tForm.elements['담당_기획'].addEventListener('input', updateFieldDependency);
+        tForm.elements['담당_디자인'].addEventListener('change', updateFieldDependency);
+        tForm.elements['담당_퍼블'].addEventListener('change', updateFieldDependency);
+
+        document.getElementById('createGubun').addEventListener('change', function () {
+            const val = this.value;
+            document.getElementById('bizBankWrapper').style.display = val !== '상호' ? 'block' : 'none';
+            document.getElementById('bizMutualWrapper').style.display = val !== '은행' ? 'block' : 'none';
+        });
+    }
+
+    /* ===================================================
+        SKELETON UI 렌더러
+        =================================================== */
     function showSkeletonStats() {
         const container = document.getElementById('statsContainer');
         if (!container) return;
@@ -1241,41 +1447,9 @@
             </div>`;
     }
 
-    function initUI() {
-        let h = '';
-        Object.entries(MAP).forEach(([k, v]) => {
-            const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
-            h += `<div class="stat-card" onclick="showDrawer('${k}')">
-                    <div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div>
-                    <div>
-                        <div class="stat-num" id="st-${id}">-</div>
-                        <div class="stat-label">${k}</div>
-                    </div>
-                  </div>`;
-        });
-        document.getElementById('statsContainer').innerHTML = h;
-
-        const topScroll = document.getElementById('gantt-top-scroll');
-        const ganttWrap = document.getElementById('gantt');
-        let syncTop = false, syncBot = false;
-        topScroll.addEventListener('scroll', () => { if (!syncTop) { syncBot = true; ganttWrap.scrollLeft = topScroll.scrollLeft; } syncTop = false; });
-        ganttWrap.addEventListener('scroll', () => { if (!syncBot) { syncTop = true; topScroll.scrollLeft = ganttWrap.scrollLeft; } syncBot = false; });
-
-        const tForm = document.getElementById('taskForm');
-        tForm.elements['담당_기획'].addEventListener('input', updateFieldDependency);
-        tForm.elements['담당_디자인'].addEventListener('change', updateFieldDependency);
-        tForm.elements['담당_퍼블'].addEventListener('change', updateFieldDependency);
-
-        document.getElementById('createGubun').addEventListener('change', function () {
-            const val = this.value;
-            document.getElementById('bizBankWrapper').style.display = val !== '상호' ? 'block' : 'none';
-            document.getElementById('bizMutualWrapper').style.display = val !== '은행' ? 'block' : 'none';
-        });
-    }
-
     /* ===================================================
-       FETCH DATA
-       =================================================== */
+        FETCH DATA
+        =================================================== */
     function fetchData(isSilent = false) {
         if (!isSilent) {
             showSkeletonStats();
@@ -1292,12 +1466,12 @@
                 applyFilter();
             })
             .catch(err => {
-                console.error(err);
+                console.error('fetchData error:', err);
                 if (!isSilent) {
                     initUI();
                     showFetchErrorState();
                 }
-                showToast('데이터 로드 실패', 'error');
+                showToast('데이터 로드에 실패했습니다. 새로고침을 눌러 다시 시도해 주세요.', 'error');
             });
     }
 
@@ -1306,15 +1480,32 @@
             <div class="empty-state">
                 <div class="empty-icon">⚠️</div>
                 <div class="empty-title">데이터를 불러오지 못했습니다</div>
-                <div class="empty-sub">네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요.</div>
-                <button class="btn-reset-filter" onclick="fetchData()" style="background:#005BAC;">↺ 다시 시도</button>
+                <div class="empty-sub">
+                    서버와의 연결에 실패했습니다.<br>
+                    네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요.
+                </div>
+                <button class="btn-reset-filter" onclick="fetchData()" style="background:#005BAC;">
+                    ↺ 다시 시도
+                </button>
             </div>`;
+
         const tab = AppState.activeTab;
-        if (tab === 'calendar-view') { const el = document.getElementById('calendar'); if (el) el.innerHTML = errorHTML; }
-        else if (tab === 'list-view') { const tbody = document.querySelector('#listTable tbody'); if (tbody) tbody.innerHTML = `<tr><td colspan="9">${errorHTML}</td></tr>`; }
-        else if (tab === 'gantt-view') { const el = document.getElementById('gantt'); if (el) el.innerHTML = errorHTML; }
-        else if (tab === 'monthly-view') { const el = document.getElementById('monthlyAccordion'); if (el) el.innerHTML = errorHTML; }
-        else if (tab === 'assignee-view') { const el = document.getElementById('assigneeGrid'); if (el) el.innerHTML = errorHTML; }
+        if (tab === 'calendar-view') {
+            const el = document.getElementById('calendar');
+            if (el) el.innerHTML = errorHTML;
+        } else if (tab === 'list-view') {
+            const tbody = document.querySelector('#listTable tbody');
+            if (tbody) tbody.innerHTML = `<tr><td colspan="9">${errorHTML}</td></tr>`;
+        } else if (tab === 'gantt-view') {
+            const el = document.getElementById('gantt');
+            if (el) el.innerHTML = errorHTML;
+        } else if (tab === 'monthly-view') {
+            const el = document.getElementById('monthlyAccordion');
+            if (el) el.innerHTML = errorHTML;
+        } else if (tab === 'assignee-view') {
+            const el = document.getElementById('assigneeGrid');
+            if (el) el.innerHTML = errorHTML;
+        }
     }
 
     function updateDropdowns() {
@@ -1346,8 +1537,8 @@
     }
 
     /* ===================================================
-       FILTER & RENDER
-       =================================================== */
+        FILTER
+        =================================================== */
     function applyFilter(updateURL = false) {
         updateStats();
         render();
@@ -1371,6 +1562,23 @@
     }
 
     function updateStats() {
+        const container = document.getElementById('statsContainer');
+        // 스켈레톤 상태라면 실제 카드 HTML로 복구
+        if (container && container.querySelector('.stat-card-skeleton')) {
+            let h = '';
+            Object.entries(MAP).forEach(([k, v]) => {
+                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
+                h += `<div class="stat-card" onclick="showDrawer('${k}')">
+                        <div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div>
+                        <div>
+                            <div class="stat-num" id="st-${id}">-</div>
+                            <div class="stat-label">${k}</div>
+                        </div>
+                      </div>`;
+            });
+            container.innerHTML = h;
+        }
+
         const d = getFiltered();
         const allEl = document.getElementById('st-all');
         if (allEl) allEl.innerText = d.length;
@@ -1381,22 +1589,9 @@
         });
     }
 
-    function switchTab(btn) {
-        document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        AppState.activeTab = btn.dataset.target;
-        document.getElementById(AppState.activeTab).classList.add('active');
-        render();
-        saveFilterToURL();
-    }
-
-    function toggleStats() {
-        AppState.isStatsCollapsed = !AppState.isStatsCollapsed;
-        document.getElementById('statsCollapseWrap').classList.toggle('collapsed', AppState.isStatsCollapsed);
-        document.getElementById('statsToggleBtn').innerText = AppState.isStatsCollapsed ? '펼치기 ▼' : '접기 ▲';
-    }
-
+    /* ===================================================
+        RENDER DISPATCHER
+        =================================================== */
     function render() {
         const tab = AppState.activeTab;
         if (tab === 'calendar-view') renderCalendar();
@@ -1406,7 +1601,9 @@
         else if (tab === 'assignee-view') renderAssignee();
     }
 
-    /* DATE HELPERS */
+    /* ===================================================
+        DATE HELPERS
+        =================================================== */
     function getSafeDateStr(raw) {
         if (!raw || raw === '미정') return null;
         const d = new Date(raw);
@@ -1418,7 +1615,8 @@
         const dStr = getSafeDateStr(date);
         if (!dStr) return null;
         const today = getSafeDateStr(new Date());
-        return Math.ceil((new Date(dStr) - new Date(today)) / 86400000);
+        const diff = Math.ceil((new Date(dStr) - new Date(today)) / 86400000);
+        return diff;
     }
 
     function renderDdayBadge(date) {
@@ -1430,23 +1628,9 @@
         return `<span class="dday-badge dday-ok">D-${diff}</span>`;
     }
 
-    function renderEmptyState(title, sub) {
-        return `<div class="empty-state">
-            <div class="empty-icon">🔍</div>
-            <div class="empty-title">${title}</div>
-            ${sub ? `<div class="empty-sub">${sub}</div>` : ''}
-            <button class="btn-reset-filter" onclick="resetFilters()">필터 초기화</button>
-        </div>`;
-    }
-
-    function resetFilters() {
-        document.querySelector('#fAll').checked = true;
-        document.getElementById('globalStatusFilter').value = 'active';
-        document.getElementById('searchInput').value = '';
-        applyFilter(true);
-    }
-
-    /* CALENDAR */
+    /* ===================================================
+        CALENDAR — 인스턴스 재사용으로 메모리 누수 방지
+        =================================================== */
     function renderCalendar() {
         const evs = getFiltered().flatMap(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
@@ -1463,10 +1647,14 @@
         });
 
         const calEl = document.getElementById('calendar');
+
         if (!calendar) {
             calendar = new FullCalendar.Calendar(calEl, {
                 initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth',
-                locale: 'ko', events: evs, displayEventTime: false, height: 'auto',
+                locale: 'ko',
+                events: evs,
+                displayEventTime: false,
+                height: 'auto',
                 eventClick: (info) => openPop(info.event.extendedProps),
             });
             calendar.render();
@@ -1476,7 +1664,9 @@
         }
     }
 
-    /* GANTT */
+    /* ===================================================
+        GANTT — refresh() 인스턴스 재사용
+        =================================================== */
     function renderGantt() {
         const el = document.getElementById('gantt');
         if (!el || el.offsetWidth === 0) return;
@@ -1501,8 +1691,11 @@
             const sheet = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
             const name = i['요건명'] ? String(i['요건명']).replace(/[<>"']/g, '') : '제목없음';
             const status = i['진행단계'] || '기타';
+            const displayName = err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`;
+
             return {
-                id: 'GT_' + idx, name: err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`,
+                id: 'GT_' + idx,
+                name: displayName,
                 start: s, end: e, progress: 100,
                 custom_class: err ? 'g-err' : 'g-' + status.replace(/\s/g, ''),
                 extendedProps: i,
@@ -1513,37 +1706,51 @@
             if (!gantt) {
                 el.innerHTML = '';
                 gantt = new Gantt('#gantt', tasks, {
-                    language: 'en', bar_height: 26, view_mode: AppState.currentGanttMode,
+                    language: 'en', bar_height: 26,
+                    view_mode: AppState.currentGanttMode,
                     on_click: (t) => openPop(t.extendedProps),
                 });
             } else {
                 gantt.refresh(tasks);
                 gantt.change_view_mode(AppState.currentGanttMode);
             }
-            injectGanttCSS(); syncGanttScroll();
+            injectGanttCSS();
+            syncGanttScroll();
         } catch (e) {
-            el.innerHTML = ''; gantt = null;
+            el.innerHTML = '';
+            gantt = null;
             try {
                 gantt = new Gantt('#gantt', tasks, {
-                    language: 'en', bar_height: 26, view_mode: AppState.currentGanttMode,
+                    language: 'en', bar_height: 26,
+                    view_mode: AppState.currentGanttMode,
                     on_click: (t) => openPop(t.extendedProps),
                 });
-                injectGanttCSS(); syncGanttScroll();
-            } catch (e2) { el.innerHTML = `<div class="text-center py-5 text-danger small">렌더링 오류: ${esc(e2.message)}</div>`; }
+                injectGanttCSS();
+                syncGanttScroll();
+            } catch (e2) {
+                el.innerHTML = `<div class="text-center py-5 text-danger small">렌더링 오류: ${esc(e2.message)}</div>`;
+            }
         }
     }
 
     function injectGanttCSS() {
         const id = 'gantt-css';
         if (document.getElementById(id)) document.getElementById(id).remove();
-        let css = `.gantt .bar-label { fill: #fff !important; font-size: 11px; font-weight: 600; stroke: rgba(0,0,0,0.35); stroke-width: 2px; paint-order: stroke fill; }\n.gantt .grid-header { fill: #f4fbf7; }\n`;
+        let css = `.gantt .bar-label { fill: #fff !important; font-size: 11px; font-weight: 600; stroke: rgba(0,0,0,0.35); stroke-width: 2px; paint-order: stroke fill; }
+.gantt .grid-header { fill: #f4fbf7; }
+`;
         Object.entries(MAP).forEach(([k, v]) => {
             if (k === '전체') return;
             const sc = k.replace(/\s/g, '');
-            css += `.gantt .bar-wrapper.g-${sc} .bar { fill: ${v.c} !important; }\n.gantt .bar-wrapper.g-${sc} .bar-progress { fill: ${v.c} !important; }\n`;
+            css += `.gantt .bar-wrapper.g-${sc} .bar { fill: ${v.c} !important; }
+.gantt .bar-wrapper.g-${sc} .bar-progress { fill: ${v.c} !important; }
+`;
         });
-        css += `.gantt .bar-wrapper.g-err .bar { fill: #e74c3c !important; }\n`;
-        const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
+        css += `.gantt .bar-wrapper.g-err .bar { fill: #e74c3c !important; }
+`;
+        const s = document.createElement('style');
+        s.id = id; s.innerHTML = css;
+        document.head.appendChild(s);
     }
 
     function syncGanttScroll() {
@@ -1570,14 +1777,18 @@
         syncGanttScroll();
     }
 
-    /* LIST VIEW */
+    /* ===================================================
+        LIST VIEW (개선 #9 D-Day 표시)
+        =================================================== */
     function renderList() {
         const tbody = document.querySelector('#listTable tbody');
         const d = getFiltered();
+
         if (d.length === 0) {
             tbody.innerHTML = `<tr><td colspan="9">${renderEmptyState('검색 결과가 없습니다.', '다른 검색어나 필터를 사용해 보세요.')}</td></tr>`;
             return;
         }
+
         tbody.innerHTML = d.map(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
             return `<tr onclick="openPopById('${esc(i['요구사항 ID'])}')">
@@ -1594,7 +1805,9 @@
         }).join('');
     }
 
-    /* MONTHLY VIEW */
+    /* ===================================================
+        MONTHLY VIEW
+        =================================================== */
     function renderMonthly() {
         const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
         const mData = {};
@@ -1620,7 +1833,10 @@
                     { label: '소', data: sorted.map(m => mData[m].소), backgroundColor: '#76c893' },
                 ],
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { x: { stacked: true }, y: { stacked: true } },
+            },
         });
 
         let acc = '';
@@ -1645,7 +1861,9 @@
         document.getElementById('monthlyAccordion').innerHTML = acc || renderEmptyState('완료된 업무가 없습니다.', '');
     }
 
-    /* ASSIGNEE VIEW */
+    /* ===================================================
+        ASSIGNEE VIEW
+        =================================================== */
     function renderAssignee() {
         const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const uMap = {};
@@ -1699,8 +1917,34 @@
     }
 
     /* ===================================================
-       MODAL & SAVE
-       =================================================== */
+        MODAL OPEN / SAVE
+        =================================================== */
+    function updateStepProgress(currentStatus) {
+        const bar = document.getElementById('stepProgressBar');
+        if (!bar) return;
+
+        const currentIdx = STEPS.indexOf(currentStatus);
+        const isCancelled = currentStatus === '취소';
+
+        bar.innerHTML = STEPS.map((step, idx) => {
+            let cls = 'pending';
+            let label = '';
+            if (isCancelled) { cls = 'pending'; }
+            else if (idx < currentIdx) { cls = 'done'; label = 'done'; }
+            else if (idx === currentIdx) { cls = 'current'; label = 'current'; }
+
+            const itemDone = !isCancelled && idx < currentIdx;
+            return `<div class="step-item ${itemDone ? 'done' : ''}">
+                <div class="step-circle ${cls}">${cls === 'done' ? '✓' : idx + 1}</div>
+                <div class="step-label ${label}">${step}</div>
+            </div>`;
+        }).join('');
+
+        if (isCancelled) {
+            bar.innerHTML = `<div style="text-align:center; padding:6px 0; font-size:12px; color:#9ca3af; width:100%;">⚪ 이 요건은 취소 상태입니다.</div>`;
+        }
+    }
+
     function openPop(data) {
         document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
 
@@ -1713,10 +1957,16 @@
             else ddayEl.innerText = `📅 마감 D-${diff}`;
         } else ddayEl.innerText = '';
 
+        updateStepProgress(data['진행단계'] || '');
+
         const f = document.getElementById('taskForm');
         f.reset();
         Object.keys(data).forEach(k => {
-            if (f.elements[k]) f.elements[k].value = f.elements[k].type === 'date' ? (getSafeDateStr(data[k]) || '') : (data[k] || '');
+            if (f.elements[k]) {
+                f.elements[k].value = f.elements[k].type === 'date'
+                    ? (getSafeDateStr(data[k]) || '')
+                    : (data[k] || '');
+            }
         });
 
         const isUser = AppState.currentUser?.role !== 'admin';
@@ -1735,26 +1985,6 @@
         if (d) openPop(d);
     }
 
-    function updateFieldDependency() {
-        const f = document.getElementById('taskForm');
-        if (!f) return;
-        ['기획', '디자인', '퍼블'].forEach(role => {
-            const val = (f.elements['담당_' + role]?.value || '').trim();
-            const pDate = f.elements['계획_' + role];
-            const pRate = f.elements['진척_' + role];
-            if (!val || val === '-') {
-                if (pDate) { pDate.value = ''; pDate.disabled = true; }
-                if (pRate) { pRate.value = '-'; pRate.disabled = true; }
-            } else if (val.toUpperCase() === 'X') {
-                if (pDate) { pDate.value = ''; pDate.disabled = true; }
-                if (pRate) { pRate.value = 'X'; pRate.disabled = true; }
-            } else {
-                const isUser = AppState.currentUser?.role !== 'admin';
-                if (!isUser) { if (pDate) pDate.disabled = false; if (pRate) pRate.disabled = false; }
-            }
-        });
-    }
-
     function saveChanges() {
         const f = document.getElementById('taskForm');
         Array.from(f.elements).forEach(el => el.disabled = false);
@@ -1769,7 +1999,10 @@
             AppState.rawData[idx] = { ...AppState.rawData[idx], ...payload };
         }
 
-        modal.hide(); updateStats(); render(); showToast('저장 중...', 'info');
+        modal.hide();
+        updateStats();
+        render();
+        showToast('저장 중...', 'info');
 
         const spinner = document.getElementById('saveSpinner');
         if (spinner) spinner.style.display = 'inline-block';
@@ -1778,18 +2011,21 @@
             .then(r => r.json())
             .then(res => {
                 if (spinner) spinner.style.display = 'none';
-                if (res.result === 'success') { showToast('저장되었습니다.', 'success'); fetchData(true); } 
-                else {
+                if (res.result === 'success') {
+                    showToast('성공적으로 저장되었습니다.', 'success');
+                    fetchData(true);
+                } else {
                     if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
                     updateStats(); render();
                     showToast('저장 실패', 'error');
                 }
             })
-            .catch(() => {
+            .catch(err => {
                 if (spinner) spinner.style.display = 'none';
                 if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
                 updateStats(); render();
                 showToast('통신 오류', 'error');
+                console.error('SaveChanges network error:', err);
             });
     }
 
@@ -1797,26 +2033,34 @@
         const id = document.querySelector('#taskForm input[name="요구사항 ID"]')?.value;
         const sheet = document.querySelector('#taskForm input[name="출처시트"]')?.value;
         if (!id) return showToast('삭제할 대상이 없습니다.', 'error');
-        if (!confirm('정말 삭제하시겠습니까?')) return;
+        if (!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
 
         const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(id));
         const removed = idx !== -1 ? AppState.rawData.splice(idx, 1)[0] : null;
-        modal.hide(); updateStats(); render(); showToast('삭제 중...', 'info');
+        modal.hide();
+        updateStats(); render();
+        showToast('삭제 중...', 'info');
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet }) })
             .then(r => r.json())
             .then(res => {
-                if (res.result === 'success') { showToast('삭제되었습니다.', 'success'); fetchData(true); }
+                if (res.result === 'success') { showToast('삭제가 완료되었습니다.', 'success'); fetchData(true); }
                 else {
                     if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
-                    updateStats(); render(); showToast('삭제 실패', 'error');
+                    updateStats(); render();
+                    showToast('삭제 실패', 'error');
                 }
-            }).catch(() => {
+            })
+            .catch(() => {
                 if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
-                updateStats(); render(); showToast('통신 오류', 'error');
+                updateStats(); render();
+                showToast('삭제 실패 (통신 오류)', 'error');
             });
     }
 
+    /* ===================================================
+        PLANNER RECOMMENDATION
+        =================================================== */
     function recommendPlanner(planners) {
         if (!planners || planners.size === 0) return '';
         const active = AppState.rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
@@ -1858,14 +2102,18 @@
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => {
-                if (res.result === 'success') { createModal.hide(); showToast('등록되었습니다.', 'success'); fetchData(true); } 
-                else showToast('등록 실패', 'error');
-            }).catch(() => { showToast('통신 오류', 'error'); });
+                if (res.result === 'success') {
+                    createModal.hide();
+                    showToast('성공적으로 등록되었습니다.', 'success');
+                    fetchData(true);
+                } else showToast('생성 실패', 'error');
+            })
+            .catch(() => { showToast('통신 오류', 'error'); });
     }
 
     /* ===================================================
-       REPORT
-       =================================================== */
+        REPORT
+        =================================================== */
     function openReportModal() {
         document.getElementById('reportStartDate').value = '';
         document.getElementById('reportEndDate').value = getSafeDateStr(new Date());
@@ -1878,11 +2126,15 @@
         const endStr = document.getElementById('reportEndDate').value;
         if (!startStr || !endStr) return showToast('조회 기간을 지정하세요.', 'error');
 
-        const start = new Date(startStr); const end = new Date(endStr); end.setHours(23, 59, 59, 999);
+        const start = new Date(startStr);
+        const end = new Date(endStr); end.setHours(23, 59, 59, 999);
+
         const wb = XLSX.utils.book_new();
 
         const generateSheet = (dataArr, sheetName) => {
-            const wsData = []; const merges = []; let row = 0;
+            const wsData = [];
+            const merges = [];
+            let row = 0;
             wsData.push(['요구사항 ID', '채널구분', '구분', '요건명', '규모', '사업부서 담당자', '분류', '기획', '디자인', '퍼블', '접수일자', '운영이관(예정)일', '진행단계']);
             row++;
             dataArr.forEach(i => {
@@ -1915,20 +2167,28 @@
             generateSheet(data.filter(i => ['은행', '공통'].includes(i['구분'])), '월간보고_은행');
             generateSheet(data.filter(i => ['상호', '공통'].includes(i['구분'])), '월간보고_상호');
         }
+
         XLSX.writeFile(wb, `업무현황_${type}_${startStr}_${endStr}.xlsx`);
-        reportModal.hide(); showToast('다운로드 완료', 'success');
+        reportModal.hide();
+        showToast('엑셀 다운로드 완료', 'success');
     }
 
+    /* ===================================================
+        DRAWER
+        =================================================== */
     function showDrawer(st) {
         const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
         document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
-        document.getElementById('drawerBody').innerHTML = d.length ? d.map(i => `<div class="drawer-item" onclick="openPopById('${esc(i['요구사항 ID'])}')">
-            <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${esc(i['요건명']) || ''}</div>
-            <div class="d-flex gap-2 align-items-center">
-                <span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || ''}</span>
-                <span class="badge" style="background:${esc(MAP[i['진행단계']]?.c || '#999')}; font-size:10px;">${esc(i['진행단계']) || ''}</span>
-                ${renderDdayBadge(i['운영이관(예정)일'])}
-            </div></div>`).join('') : '<div class="text-center py-5 text-muted small">데이터 없음</div>';
+        document.getElementById('drawerBody').innerHTML = d.length
+            ? d.map(i => `<div class="drawer-item" onclick="openPopById('${esc(i['요구사항 ID'])}')">
+                <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${esc(i['요건명']) || ''}</div>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || ''}</span>
+                    <span class="badge" style="background:${esc(MAP[i['진행단계']]?.c || '#999')}; font-size:10px;">${esc(i['진행단계']) || ''}</span>
+                    ${renderDdayBadge(i['운영이관(예정)일'])}
+                </div>
+            </div>`).join('')
+            : '<div class="text-center py-5 text-muted small">데이터 없음</div>';
         document.getElementById('drawerOverlay').style.display = 'block';
         document.getElementById('statusDrawer').classList.add('open');
     }
@@ -1937,31 +2197,88 @@
         document.getElementById('statusDrawer').classList.remove('open');
         setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
     }
-    
+
+    /* ===================================================
+        TAB SWITCH
+        =================================================== */
+    function switchTab(btn) {
+        document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        AppState.activeTab = btn.dataset.target;
+        document.getElementById(AppState.activeTab).classList.add('active');
+        render();
+        saveFilterToURL();
+    }
+
+    /* ===================================================
+        MISC
+        =================================================== */
+    function toggleLoad(show, msg = '처리 중...') {
+        document.getElementById('loadingText').innerText = msg;
+        document.getElementById('loading').style.display = show ? 'flex' : 'none';
+    }
+
     function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
+
     function handleExcelUpload(event) {
-        const file = event.target.files[0]; if (!file) return;
-        toggleLoad(true, '업로드 중...');
+        const file = event.target.files[0];
+        if (!file) return;
+        toggleLoad(true, '엑셀 처리 중...');
         const reader = new FileReader();
         reader.onload = function (e) {
             const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
             const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false });
+
+            const REQUIRED_COLS = ['요구사항 ID', '요건명', '진행단계'];
+            const VALID_STAGES = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료', '취소'];
+            const VALID_SIZES = ['대', '중', '소'];
+
+            const errors = [];
+            json.forEach((row, i) => {
+                REQUIRED_COLS.forEach(col => { if (!row[col]) errors.push(`행 ${i + 2}: '${col}' 필수값 누락`); });
+                if (row['진행단계'] && !VALID_STAGES.includes(row['진행단계'])) errors.push(`행 ${i + 2}: 잘못된 진행단계 값 '${row['진행단계']}'`);
+                if (row['규모'] && !VALID_SIZES.includes(row['규모'])) errors.push(`행 ${i + 2}: 잘못된 규모 값 '${row['규모']}'`);
+            });
+
+            if (errors.length > 0) {
+                showToast(`업로드 오류 (${errors.length}건): ${errors[0]}`, 'error');
+                toggleLoad(false);
+                event.target.value = '';
+                return;
+            }
+
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'bulk_upload', data: json }) })
-                .then(r => r.json()).then(res => { if (res.result === 'success') { showToast('업로드 완료', 'success'); fetchData(true); } else showToast('업로드 실패', 'error'); })
-                .catch(() => showToast('통신 오류', 'error'));
+                .then(r => r.json())
+                .then(res => {
+                    if (res.result === 'success') { showToast('업로드 성공', 'success'); fetchData(true); }
+                    else { showToast('업로드 실패', 'error'); }
+                })
+                .catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
             event.target.value = '';
         };
         reader.readAsArrayBuffer(file);
     }
 
-    document.addEventListener('keydown', (e) => {
-        const tag = document.activeElement?.tagName.toLowerCase();
-        const isInput = ['input', 'textarea', 'select'].includes(tag);
-        const modalOpen = document.querySelector('.modal.show');
-        if (e.key === 'Escape') { closeDrawer(); return; }
-        if (isInput || modalOpen) return;
-        if ((e.key === 'n' || e.key === 'N') && AppState.currentUser?.role === 'admin') openCreatePop();
-        if (e.key === 'f' || e.key === 'F') { e.preventDefault(); document.getElementById('searchInput')?.focus(); }
+    /* ===================================================
+        DOM READY
+        =================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+        checkLoginStatus();
+
+        let prevIsMobile = window.innerWidth < 640;
+        const onResize = debounce(() => {
+            const isMobile = window.innerWidth < 640;
+            if (isMobile === prevIsMobile) return;
+            prevIsMobile = isMobile;
+
+            if (AppState.activeTab === 'calendar-view' && calendar) {
+                const targetView = isMobile ? 'listMonth' : 'dayGridMonth';
+                calendar.changeView(targetView);
+            }
+        }, 250);
+
+        window.addEventListener('resize', onResize);
     });
     </script>
 </body>
