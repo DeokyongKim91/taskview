@@ -45,15 +45,8 @@
         .header-controls { position: absolute; top: 30px; right: 24px; display: flex; gap: 8px; }
         .header-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all .2s; }
         .header-btn:hover { background: rgba(255,255,255,.3); }
-
-        /* 신규 등록 플로팅 버튼 */
-        .fab-btn {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-            background-color: #005BAC; color: #fff; border: none; border-radius: 50%;
-            font-size: 32px; font-weight: 300; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 91, 172, 0.4); cursor: pointer; z-index: 1030; transition: transform 0.2s;
-        }
-        .fab-btn:hover { transform: scale(1.05); background-color: #004a8e; }
+        .btn-primary-custom { background: #005BAC; border-color: #005BAC; }
+        .btn-primary-custom:hover { background: #004a8e; }
 
         .main-wrap { padding: 0 16px 40px; margin-top: -45px; position: relative; z-index: 1; max-width: 1300px; margin-left: auto; margin-right: auto; }
         .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
@@ -105,7 +98,6 @@
         .theme-modal-header { background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); color: #fff; border-bottom: none; }
         .admin-only { display: none !important; }
         .recommend-badge { font-size: 10px; background: #e0ede5; color: #009A44; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
-        input[disabled], select[disabled], textarea[disabled] { background-color: #f8f9fa; opacity: 1; pointer-events: none; }
 
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
@@ -128,9 +120,9 @@
             .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
             .modal-body .form-label { font-size: 11px; margin-bottom: 2px; }
             .modal-body .form-control, .modal-body .form-select { font-size: 12px; padding: 6px 10px; min-height: 32px; }
+            .modal-body textarea.form-control { height: 44px; min-height: 44px; }
             .modal-footer { padding: 12px !important; }
             .modal-footer .btn { font-size: 12px; padding: 6px 16px; }
-            .fab-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 28px; }
         }
     </style>
 </head>
@@ -154,8 +146,6 @@
 
     <datalist id="bizList"></datalist>
 
-    <button id="fabCreate" class="fab-btn admin-only" onclick="openCreatePop()">+</button>
-
     <div id="app-container" style="display: none;">
         <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 동기화 중...</div></div>
 
@@ -167,6 +157,7 @@
                 <span class="update-time" id="userInfoDisplay" style="background: rgba(255,255,255,0.2);">접속자: -</span>
             </div>
             <div class="header-controls">
+                <button class="header-btn btn-primary-custom admin-only" onclick="openCreatePop()">➕ 신규 등록</button>
                 <button class="header-btn admin-only" onclick="triggerExcelUpload()">📤 엑셀 업로드</button>
                 <button class="header-btn" onclick="fetchData()">↺ 새로고침</button>
                 <button class="header-btn" onclick="logout()" style="background: rgba(0,0,0,0.2); border:none;">로그아웃</button>
@@ -348,7 +339,7 @@
             <div class="drawer-body" id="drawerBody"></div>
         </div>
         <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-    </div> 
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -389,7 +380,42 @@
                 else if (val === '상호') { bWrap.style.display = 'none'; mWrap.style.display = 'block'; } 
                 else if (val === '공통') { bWrap.style.display = 'block'; mWrap.style.display = 'block'; }
             });
+
+            // 필드 종속성 실시간 업데이트 이벤트 연결
+            const tForm = document.getElementById('taskForm');
+            tForm.elements['담당_기획'].addEventListener('input', updateFieldDependency);
+            tForm.elements['담당_디자인'].addEventListener('change', updateFieldDependency);
+            tForm.elements['담당_퍼블'].addEventListener('change', updateFieldDependency);
         });
+
+        // ── 로직: 담당자 할당 여부에 따른 일정/진척 필드 제어 ──
+        function updateFieldDependency() {
+            const f = document.getElementById('taskForm');
+            if (!f) return;
+            
+            const roles = ['기획', '디자인', '퍼블'];
+            
+            roles.forEach(role => {
+                const val = f.elements['담당_' + role].value.trim();
+                const pDate = f.elements['계획_' + role];
+                const pRate = f.elements['진척_' + role];
+
+                if (!val || val === '-') {
+                    pDate.value = '';
+                    pRate.value = '-';
+                    pDate.disabled = true;
+                    pRate.disabled = true;
+                } else if (val.toUpperCase() === 'X') {
+                    pDate.value = '';
+                    pRate.value = 'X';
+                    pDate.disabled = true;
+                    pRate.disabled = true;
+                } else {
+                    pDate.disabled = false;
+                    pRate.disabled = false;
+                }
+            });
+        }
 
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
@@ -497,7 +523,12 @@
             rawData.forEach(item => {
                 if (item['bizBank']) String(item['bizBank']).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
                 if (item['bizMutual']) String(item['bizMutual']).split(/[,/]/).forEach(n => { let clean = n.trim(); if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean); });
-                if (item['담당_기획']) String(item['담당_기획']).split(/[,/]/).forEach(n => { let clean = n.trim(); if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정') planners.add(clean); });
+                if (item['담당_기획']) {
+                    String(item['담당_기획']).split(/[,/]/).forEach(n => {
+                        let clean = n.trim();
+                        if (clean && clean !== '-' && clean !== 'X' && clean !== '신유정' && !/^\d{4}-\d{2}-\d{2}$/.test(clean)) planners.add(clean);
+                    });
+                }
             });
 
             const bizDataList = document.getElementById('bizList');
@@ -670,7 +701,6 @@
             return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
         }
 
-        // ── 권한 연동 모달 & 데이터 수정/삭제 ──
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
@@ -688,12 +718,12 @@
             
             Array.from(f.elements).forEach(el => {
                 if (!el.name) return;
-                if (isUser && !allowedKeys.includes(el.name)) {
-                    el.disabled = true;
-                } else {
-                    el.disabled = false;
-                }
+                if (isUser && !allowedKeys.includes(el.name)) el.disabled = true;
+                else el.disabled = false;
             });
+
+            // 필드 종속성 계산
+            updateFieldDependency();
 
             modal.show();
         }
@@ -702,6 +732,7 @@
 
         function saveChanges() {
             const f = document.getElementById('taskForm');
+            // FormData 수집 전 disabled 강제 해제 (값 누락 방지)
             Array.from(f.elements).forEach(el => el.disabled = false);
             
             const payload = Object.fromEntries(new FormData(f).entries());
@@ -789,7 +820,7 @@
             
             formData.action = 'create_task';
 
-            toggleLoad(true, "신규 생성 중...");
+            toggleLoad(true, "신규 요구사항 생성 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => { 
