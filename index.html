@@ -25,7 +25,6 @@
         body { font-family: 'Noto Sans KR', sans-serif; background: #eef8f2; min-height: 100vh; color: var(--text-primary); margin: 0; padding: 0; }
         a { text-decoration: none !important; color: inherit !important; }
 
-        /* 로그인 화면 */
         #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #009A44 0%, #005BAC 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-box { background: #fff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%; max-width: 360px; text-align: center; }
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
@@ -33,18 +32,20 @@
         .password-wrap { position: relative; width: 100%; margin-bottom: 12px; }
         .password-wrap .login-input { margin-bottom: 0; padding-right: 60px; }
         .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #555; padding: 4px 8px; font-size: 11px; font-weight: 500; transition: 0.2s; z-index: 10; }
+        .pw-toggle:hover { background: #f0f0f0; }
         .login-options { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 20px; padding: 0 4px; }
         .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .login-btn:hover { background: #007a36; }
 
-        /* 메인 레이아웃 */
         .app-header { background: linear-gradient(135deg, #009A44 0%, #007a36 40%, #005BAC 100%); padding: 30px 24px 70px; position: relative; overflow: hidden; }
         .header-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 4px; }
         .header-sub { font-size: 13px; color: rgba(255,255,255,.8); margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .update-time { font-size: 11px; background: rgba(0,0,0,0.15); padding: 2px 8px; border-radius: 12px; }
         .header-controls { position: absolute; top: 30px; right: 24px; display: flex; gap: 8px; }
         .header-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all .2s; }
-        
+        .btn-primary-custom { background: #005BAC; border-color: #005BAC; }
+
         .fab-btn {
             position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
             background-color: #005BAC; color: #fff; border: none; border-radius: 50%;
@@ -63,8 +64,6 @@
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
         
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-        
-        /* 다중 필터 & 툴바 영역 개선 */
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px; border-bottom: 1px solid #f0f0f0; }
         .complex-filter-wrap { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; flex: 1; }
         .filter-group { display: flex; gap: 4px; background: #f0f5f2; border-radius: 30px; padding: 4px; }
@@ -78,11 +77,19 @@
         .view-tabs { display: flex; gap: 4px; background: #f0f5f2; border-radius: 10px; padding: 4px; }
         .view-tab-btn { border: none; background: transparent; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #777; cursor: pointer; transition: 0.2s; }
         .view-tab-btn.active { background: #fff; color: #009A44; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        /* 엑셀 다운로드 버튼 강조 */
+        .btn-excel-export { background: #107c41; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; padding: 7px 14px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+        .btn-excel-export:hover { background: #0b5e31; }
+
         .view-body { padding: 20px; min-height: 450px; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* GANTT */
+        .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 10px !important; padding: 0 5px; }
+        .fc .fc-toolbar-title { font-size: 16px !important; font-weight: 600; }
+        .fc .fc-button { padding: 4px 10px !important; font-size: 12px !important; height: auto !important; }
+
         #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 14px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         #gantt-top-scroll::-webkit-scrollbar { height: 10px; }
         #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -94,14 +101,12 @@
         .task-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; cursor: pointer; }
         .chart-wrap { height: 280px; width: 100%; margin-bottom: 20px; }
 
-        /* List View */
         .list-table-wrap { overflow-x: auto; }
         .list-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 800px; }
         .list-table th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; color: #444; }
         .list-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle; cursor: pointer; }
         .list-table tr:hover td { background: #f4fbf7; }
 
-        /* 토스트 알림 UI */
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1060; display: flex; flex-direction: column; gap: 10px; }
         .toast-msg { min-width: 250px; background: #333; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; display: flex; align-items: center; justify-content: space-between; }
         .toast-msg.show { opacity: 1; transform: translateY(0); }
@@ -126,8 +131,9 @@
             .complex-filter-wrap { flex-direction: column; align-items: stretch; }
             .search-box { max-width: 100%; }
             .panel-toolbar { flex-direction: column; align-items: stretch; }
-            .view-tabs { width: 100%; }
-            .view-tab-btn { flex: 1; }
+            .view-tabs { width: 100%; flex-wrap: wrap; }
+            .view-tab-btn { flex: 1; min-width: 80px; }
+            .fab-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 28px; }
         }
     </style>
 </head>
@@ -154,7 +160,7 @@
     <datalist id="bizList"></datalist>
 
     <div id="app-container" style="display: none;">
-        <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 처리 중...</div></div>
+        <div id="loading"><div class="spinner-border text-success mb-2"></div><div id="loadingText" style="color:#009A44; font-weight:600;">데이터 동기화 중...</div></div>
 
         <div class="app-header">
             <h1 class="header-title">업무 현황 관리</h1>
@@ -186,7 +192,6 @@
                             <div class="filter-chip"><input type="radio" name="sheetFilter" id="fInt" value="인터넷"><label for="fInt">인터넷</label></div>
                             <div class="filter-chip"><input type="radio" name="sheetFilter" id="fSmt" value="스마트"><label for="fSmt">스마트</label></div>
                         </div>
-                        
                         <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill border-0" style="background:#f0f5f2; color:#555;" onchange="applyFilter()">
                             <option value="active" selected>진행 업무 (완료/취소 제외)</option>
                             <option value="all">모든 단계</option>
@@ -198,25 +203,24 @@
                             <option value="적용 완료">적용 완료</option>
                             <option value="취소">취소</option>
                         </select>
-
                         <div class="search-box">
                             <span>🔍</span>
                             <input type="text" id="searchInput" placeholder="요건명, 담당자 검색" onkeyup="applyFilter()">
                         </div>
                     </div>
-                    
-                    <div class="view-tabs mt-2 mt-md-0">
+                    <div class="view-tabs mt-2 mt-md-0 d-flex align-items-center">
                         <button class="view-tab-btn active" data-target="calendar-view" onclick="switchTab(this)">🗓 캘린더</button>
                         <button class="view-tab-btn" data-target="gantt-view" onclick="switchTab(this)">📊 간트차트</button>
                         <button class="view-tab-btn" data-target="list-view" onclick="switchTab(this)">📋 목록</button>
                         <button class="view-tab-btn admin-only" data-target="monthly-view" onclick="switchTab(this)">📈 통계</button>
                         <button class="view-tab-btn admin-only" data-target="assignee-view" onclick="switchTab(this)">🧑‍💻 담당자</button>
+                        <span style="border-left: 1px solid #ddd; height: 20px; margin: 0 8px;"></span>
+                        <button class="btn-excel-export" onclick="openReportModal()">📥 보고서 추출</button>
                     </div>
                 </div>
 
                 <div class="view-body">
                     <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
-                    
                     <div id="gantt-view" class="tab-panel">
                         <div class="d-flex justify-content-end mb-2">
                             <div class="btn-group gap-1">
@@ -228,7 +232,6 @@
                         <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
                         <div id="gantt"></div>
                     </div>
-
                     <div id="list-view" class="tab-panel">
                         <div class="list-table-wrap">
                             <table class="list-table" id="listTable">
@@ -237,7 +240,6 @@
                             </table>
                         </div>
                     </div>
-
                     <div id="monthly-view" class="tab-panel">
                         <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
                         <div class="accordion" id="monthlyAccordion"></div>
@@ -362,6 +364,35 @@
             </div>
         </div>
 
+        <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header theme-modal-header">
+                        <h6 class="modal-title">보고서 데이터 추출</h6>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">보고 타입</label>
+                            <select id="reportType" class="form-select">
+                                <option value="weekly">주간 보고 (진행 전체 + 기간 내 완료)</option>
+                                <option value="monthly">월간 보고 (기간 내 완료 건만, 은행/상호 분리)</option>
+                            </select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><label class="form-label small fw-bold">시작일 (완료일 기준)</label><input type="date" id="reportStartDate" class="form-control"></div>
+                            <div class="col-6"><label class="form-label small fw-bold">종료일 (완료일 기준)</label><input type="date" id="reportEndDate" class="form-control"></div>
+                        </div>
+                        <div class="text-muted" style="font-size:11px;">※ 완료일은 '운영이관(예정)일'을 기준으로 산정됩니다.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-success px-4" onclick="downloadReport()">엑셀 다운로드</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="drawer" id="statusDrawer">
             <div class="drawer-header"><h6 class="m-0" id="drawerTitle">목록</h6><button class="btn-close btn-close-white" onclick="closeDrawer()"></button></div>
             <div class="drawer-body" id="drawerBody"></div>
@@ -377,10 +408,12 @@
 
     <script>
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
-        let rawData = [], calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
+        let rawData = [], filter = 'all', calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
         let currentGanttMode = 'Month', currentUser = null;
+        
         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
         const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+        const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
 
         const MAP = {
             '전체': { c: '#4b5563', i: '📋', b: '#f3f4f6' },
@@ -393,7 +426,6 @@
             '취소': { c: '#9ca3af', i: '⚪', b: '#f3f4f6' }
         };
 
-        // ── 토스트 알림 함수 ──
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -415,8 +447,6 @@
                 document.getElementById('rememberId').checked = true;
             }
             checkLoginStatus();
-
-            document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.onchange = applyFilter);
 
             document.getElementById('createGubun').addEventListener('change', function(e) {
                 const val = e.target.value;
@@ -450,11 +480,8 @@
                     pDate.value = ''; pRate.value = 'X';
                     pDate.disabled = true; pRate.disabled = true;
                 } else {
-                    // 유저 권한 체크하여 활성화 여부 결정
                     const isUser = currentUser && currentUser.role !== 'admin';
-                    if(!isUser) {
-                        pDate.disabled = false; pRate.disabled = false;
-                    }
+                    if(!isUser) { pDate.disabled = false; pRate.disabled = false; }
                 }
             });
         }
@@ -462,11 +489,8 @@
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
             const pwBtn = document.getElementById('pwToggleBtn');
-            if (pwInput.type === 'password') {
-                pwInput.type = 'text'; pwBtn.innerText = '숨김';
-            } else {
-                pwInput.type = 'password'; pwBtn.innerText = '보기';
-            }
+            if (pwInput.type === 'password') { pwInput.type = 'text'; pwBtn.innerText = '숨김'; } 
+            else { pwInput.type = 'password'; pwBtn.innerText = '보기'; }
         }
 
         function checkLoginStatus() {
@@ -511,10 +535,7 @@
             }).catch(err => { showToast('통신 에러 발생', 'error'); btn.innerText = '로그인'; btn.disabled = false; });
         }
 
-        function logout() {
-            sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
-            location.reload();
-        }
+        function logout() { sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser'); location.reload(); }
 
         function applyUserRoleUI() {
             if(!currentUser) return;
@@ -551,7 +572,7 @@
                 document.getElementById('lastUpdateTime').innerText = '⏱ 최종 동기화: ' + res.updateTime;
                 toggleLoad(false); 
                 updateDropdowns(); 
-                applyFilter(); // 데이터 패치 후 전체 필터 적용 및 렌더링
+                applyFilter();
             }).catch(() => { showToast('데이터 로드 실패', 'error'); toggleLoad(false); });
         }
 
@@ -578,28 +599,20 @@
             window.globalPlanners = planners;
         }
 
-        // ── 다중 복합 필터 로직 ──
-        function applyFilter() {
-            updateStats();
-            render();
-        }
+        function applyFilter() { updateStats(); render(); }
 
         function getFiltered() {
-            const sheetF = document.querySelector('input[name="sheetFilter"]:checked').value;
-            const statusF = document.getElementById('globalStatusFilter').value;
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const sheetF = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
+            const statusF = document.getElementById('globalStatusFilter')?.value || 'active';
+            const keyword = document.getElementById('searchInput')?.value.toLowerCase() || '';
 
             return rawData.filter(i => {
-                // 1. 출처시트 체크
                 let matchSheet = (sheetF === 'all' || i['출처시트'] === sheetF);
-                
-                // 2. 진행단계 체크
                 let matchStatus = false;
                 if (statusF === 'all') matchStatus = true;
                 else if (statusF === 'active') matchStatus = !['적용 완료', '취소'].includes(i['진행단계']);
                 else matchStatus = (i['진행단계'] === statusF);
 
-                // 3. 통합 키워드 체크
                 let matchKeyword = true;
                 if (keyword) {
                     const combinedText = Object.values(i).join(' ').toLowerCase();
@@ -628,7 +641,7 @@
             else if (activeTab === 'monthly-view') renderMonthly();
             else if (activeTab === 'assignee-view') renderAssignee();
         }
-        
+
         function getSafeDateStr(raw) {
             if (!raw || raw === '미정') return null;
             let d = new Date(raw);
@@ -660,7 +673,6 @@
             const el = document.getElementById('gantt');
             if (!el || el.offsetWidth === 0) return;
             const d = getFiltered();
-            
             if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">항목 없음</div>'; document.getElementById('gantt-top-scroll-inner').style.width = '100%'; return; }
 
             const todayStr = getSafeDateStr(new Date());
@@ -782,13 +794,6 @@
             document.getElementById('assigneeGrid').innerHTML = h || '<div class="w-100 py-5 text-center text-muted">진행 중인 업무 없음</div>';
         }
 
-        function getDday(date) {
-            let dStr = getSafeDateStr(date);
-            if (!dStr) return '';
-            const diff = Math.ceil((new Date(dStr) - new Date(getSafeDateStr(new Date()))) / 86400000);
-            return diff === 0 ? 'D-Day' : (diff > 0 ? 'D-' + diff : 'D+' + Math.abs(diff));
-        }
-
         function openPop(data) {
             document.getElementById('modalTaskTitle').innerText = data['요건명'] || '상세 정보';
             const f = document.getElementById('taskForm');
@@ -806,11 +811,8 @@
             
             Array.from(f.elements).forEach(el => {
                 if (!el.name) return;
-                if (isUser && !allowedKeys.includes(el.name)) {
-                    el.disabled = true;
-                } else {
-                    el.disabled = false;
-                }
+                if (isUser && !allowedKeys.includes(el.name)) el.disabled = true;
+                else el.disabled = false;
             });
 
             updateFieldDependency();
@@ -830,88 +832,188 @@
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
             .then(r => r.json())
             .then(res => { 
-                if(res.result === 'success') { modal.hide(); showToast('성공적으로 저장되었습니다.', 'success'); fetchData(); } 
-                else showToast('저장 실패: ' + res.message, 'error'); 
-            }).catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
+                if(res.result === 'success') { modal.hide(); showToast('저장 완료', 'success'); fetchData(); } 
+                else showToast('저장 실패', 'error'); 
+            });
         }
 
         function deleteTask() {
             const id = document.querySelector('#taskForm input[name="요구사항 ID"]').value;
             const sheet = document.querySelector('#taskForm input[name="출처시트"]').value;
-            if(!id) return showToast('삭제할 대상이 없습니다.', 'error');
-            if(!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
+            if(!id) return showToast('삭제 대상 부재', 'error');
+            if(!confirm('해당 요구사항을 삭제하시겠습니까?\n복구 불가합니다.')) return;
 
             toggleLoad(true, "삭제 중...");
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet })
-            })
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet }) })
             .then(r => r.json())
             .then(res => {
-                if(res.result === 'success') { modal.hide(); showToast('삭제가 완료되었습니다.', 'success'); fetchData(); }
-                else showToast('삭제 실패: ' + res.message, 'error');
+                if(res.result === 'success') { modal.hide(); showToast('삭제 완료', 'success'); fetchData(); }
+                else showToast('삭제 실패', 'error');
             }).catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
-        }
-
-        function recommendPlanner(plannersSet) {
-            if(!plannersSet || plannersSet.size === 0) return '';
-            const activeTasks = rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
-            const plannerScores = {};
-            plannersSet.forEach(p => plannerScores[p] = 0);
-
-            activeTasks.forEach(t => {
-                const pList = String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X');
-                const difficulty = t['규모'] || '중';
-                let score = 2; 
-                if(difficulty === '대') score = 3;
-                if(difficulty === '소') score = 1;
-
-                pList.forEach(p => {
-                    if (plannerScores[p] !== undefined) plannerScores[p] += score;
-                });
-            });
-
-            return Object.keys(plannerScores).reduce((a, b) => plannerScores[a] < plannerScores[b] ? a : b);
         }
 
         function openCreatePop() {
             document.getElementById('createForm').reset();
-            
-            const today = getSafeDateStr(new Date());
-            document.querySelector('#createForm input[name="접수일자"]').value = today;
-            
+            document.querySelector('#createForm input[name="접수일자"]').value = getSafeDateStr(new Date());
             document.getElementById('createGubun').value = '은행';
             document.getElementById('bizBankWrapper').style.display = 'block';
             document.getElementById('bizMutualWrapper').style.display = 'none';
             
             const plannerSelect = document.getElementById('createPlanner');
-            const recommended = recommendPlanner(window.globalPlanners);
+            const recommended = (function(plannersSet) {
+                if(!plannersSet || plannersSet.size === 0) return '';
+                const activeTasks = rawData.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
+                const scores = {};
+                plannersSet.forEach(p => scores[p] = 0);
+                activeTasks.forEach(t => {
+                    String(t['담당_기획'] || '').split(/[,/]/).map(n => n.trim()).filter(n => n && n !== '-' && n !== 'X').forEach(p => {
+                        if (scores[p] !== undefined) scores[p] += (t['규모'] === '대' ? 3 : (t['규모'] === '소' ? 1 : 2));
+                    });
+                });
+                return Object.keys(scores).reduce((a, b) => scores[a] < scores[b] ? a : b);
+            })(window.globalPlanners);
+
             if (recommended && window.globalPlanners.has(recommended)) {
                 plannerSelect.value = recommended;
                 document.getElementById('recommendBadge').style.display = 'inline-block';
             } else {
                 document.getElementById('recommendBadge').style.display = 'none';
             }
-            
             createModal.show();
         }
 
         function saveNewTask() {
             const formData = Object.fromEntries(new FormData(document.getElementById('createForm')).entries());
-            if(!formData['요건명']) return showToast('요건명을 입력하세요.', 'error');
+            if(!formData['요건명']) return showToast('요건명 입력 필요', 'error');
             
             if (formData['구분'] === '은행') formData['bizMutual'] = '';
             else if (formData['구분'] === '상호') formData['bizBank'] = '';
             
             formData.action = 'create_task';
 
-            toggleLoad(true, "신규 요구사항 생성 중...");
+            toggleLoad(true, "등록 중...");
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(formData) })
             .then(r => r.json())
             .then(res => { 
-                if(res.result === 'success') { createModal.hide(); showToast('성공적으로 등록되었습니다.', 'success'); fetchData(); } 
-                else showToast('생성 실패: ' + res.message, 'error'); 
+                if(res.result === 'success') { createModal.hide(); showToast('등록 완료', 'success'); fetchData(); } 
+                else showToast('생성 실패', 'error'); 
             }).catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
+        }
+
+        function openReportModal() {
+            document.getElementById('reportStartDate').value = '';
+            document.getElementById('reportEndDate').value = getSafeDateStr(new Date());
+            reportModal.show();
+        }
+
+        function downloadReport() {
+            const type = document.getElementById('reportType').value;
+            const startDateStr = document.getElementById('reportStartDate').value;
+            const endDateStr = document.getElementById('reportEndDate').value;
+            
+            if (!startDateStr || !endDateStr) {
+                showToast('시작일과 종료일을 지정하세요.', 'error');
+                return;
+            }
+
+            const start = new Date(startDateStr);
+            const end = new Date(endDateStr);
+            end.setHours(23, 59, 59, 999);
+
+            const wb = XLSX.utils.book_new();
+
+            if (type === 'weekly') {
+                const weeklyData = rawData.filter(i => {
+                    const status = i['진행단계'];
+                    if (!['적용 완료', '취소'].includes(status)) return true;
+                    
+                    const compDateStr = getSafeDateStr(i['운영이관(예정)일']);
+                    if (!compDateStr) return false;
+                    const compDate = new Date(compDateStr);
+                    return compDate >= start && compDate <= end;
+                });
+
+                const headers = ['채널구분', '요구사항 ID', '진행단계', '구분', '요건명', '규모', '사업부서 담당자(은행)', '사업부서 담당자(상호)', '접수일자', '운영이관(예정)일', '담당 기획', '담당 디자인', '담당 퍼블', '진척 기획', '진척 디자인', '진척 퍼블'];
+                
+                const aoa = [headers];
+                weeklyData.forEach(i => {
+                    aoa.push([
+                        i['출처시트'] === '인터넷' ? '기업인터넷' : '기업스마트',
+                        i['요구사항 ID'] || '',
+                        i['진행단계'] || '',
+                        i['구분'] || '',
+                        i['요건명'] || '',
+                        i['규모'] || '',
+                        i['bizBank'] || '',
+                        i['bizMutual'] || '',
+                        getSafeDateStr(i['접수일자']) || '',
+                        getSafeDateStr(i['운영이관(예정)일']) || '',
+                        i['담당_기획'] || '',
+                        i['담당_디자인'] || '',
+                        i['담당_퍼블'] || '',
+                        i['진척_기획'] || '',
+                        i['진척_디자인'] || '',
+                        i['진척_퍼블'] || ''
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(aoa);
+                XLSX.utils.book_append_sheet(wb, ws, "주간보고");
+
+            } else if (type === 'monthly') {
+                const monthlyData = rawData.filter(i => {
+                    if (i['진행단계'] !== '적용 완료') return false;
+                    const compDateStr = getSafeDateStr(i['운영이관(예정)일']);
+                    if (!compDateStr) return false;
+                    const compDate = new Date(compDateStr);
+                    return compDate >= start && compDate <= end;
+                });
+
+                const bankData = monthlyData.filter(i => ['은행', '공통'].includes(i['구분']));
+                const mutualData = monthlyData.filter(i => ['상호', '공통'].includes(i['구분']));
+
+                const headers = ['요구사항 ID', '채널구분', '구분', '요건명', '규모', '사업부서 담당자', '완료일(운영이관일)', '담당 기획', '담당 디자인', '담당 퍼블'];
+
+                // 은행 시트
+                const bankAoa = [headers];
+                bankData.forEach(i => {
+                    bankAoa.push([
+                        i['요구사항 ID'] || '',
+                        i['출처시트'] === '인터넷' ? '기업인터넷' : '기업스마트',
+                        i['구분'] || '',
+                        i['요건명'] || '',
+                        i['규모'] || '',
+                        i['bizBank'] || '',
+                        getSafeDateStr(i['운영이관(예정)일']) || '',
+                        i['담당_기획'] || '',
+                        i['담당_디자인'] || '',
+                        i['담당_퍼블'] || ''
+                    ]);
+                });
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bankAoa), "월간보고_은행");
+
+                // 상호 시트
+                const mutualAoa = [headers];
+                mutualData.forEach(i => {
+                    mutualAoa.push([
+                        i['요구사항 ID'] || '',
+                        i['출처시트'] === '인터넷' ? '기업인터넷' : '기업스마트',
+                        i['구분'] || '',
+                        i['요건명'] || '',
+                        i['규모'] || '',
+                        i['bizMutual'] || '',
+                        getSafeDateStr(i['운영이관(예정)일']) || '',
+                        i['담당_기획'] || '',
+                        i['담당_디자인'] || '',
+                        i['담당_퍼블'] || ''
+                    ]);
+                });
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(mutualAoa), "월간보고_상호");
+            }
+
+            XLSX.writeFile(wb, `업무현황_${type}_${startDateStr}_${endDateStr}.xlsx`);
+            reportModal.hide();
+            showToast('엑셀 다운로드 완료', 'success');
         }
 
         function showDrawer(st) {
@@ -924,21 +1026,21 @@
 
         function closeDrawer() { document.getElementById('statusDrawer').classList.remove('open'); setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 300); }
         function switchTab(btn) { document.querySelectorAll('.view-tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); activeTab = btn.dataset.target; document.getElementById(activeTab).classList.add('active'); render(); }
-        function toggleLoad(show, msg = "데이터 동기화 중...") { document.getElementById('loadingText').innerText = msg; document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
+        function toggleLoad(show, msg = "데이터 처리 중...") { document.getElementById('loadingText').innerText = msg; document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
         
         function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            toggleLoad(true, "엑셀 처리 중...");
+            toggleLoad(true, "엑셀 업로드 중...");
             const reader = new FileReader();
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {raw: false});
                 fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'bulk_upload', data: json }) })
-                .then(r => r.json()).then(res => { if(res.result === 'success') { showToast('업로드 성공', 'success'); fetchData(); } else { showToast('업로드 실패: ' + res.message, 'error'); toggleLoad(false); } })
-                .catch(() => { showToast('통신 오류', 'error'); toggleLoad(false); });
+                .then(r => r.json()).then(res => { if(res.result === 'success') { showToast('업로드 완료', 'success'); fetchData(); } else { showToast('업로드 실패', 'error'); toggleLoad(false); } })
+                .catch(() => { showToast('통신 에러', 'error'); toggleLoad(false); });
                 event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
