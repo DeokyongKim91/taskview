@@ -61,7 +61,16 @@
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-radius: 10px; }
+        /* GANTT 상단 스크롤 및 숨김 처리 */
+        #gantt-top-scroll { overflow-x: auto; overflow-y: hidden; height: 12px; background: #fcfcfc; border: 1px solid #eee; border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        #gantt-top-scroll::-webkit-scrollbar { height: 8px; }
+        #gantt-top-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        #gantt-top-scroll::-webkit-scrollbar-track { background: #fcfcfc; }
+        #gantt-top-scroll-inner { height: 1px; }
+        
+        #gantt { overflow-x: auto; min-height: 400px; border: 1px solid #eee; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-top: none; }
+        #gantt::-webkit-scrollbar { display: none; } /* 하단 스크롤바 숨김 */
+        #gantt { -ms-overflow-style: none; scrollbar-width: none; }
         .gantt-error-box { text-align: center; padding: 50px 20px; color: #dc3545; }
 
         .assignee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
@@ -119,11 +128,25 @@
             <div class="view-body">
                 <div id="calendar-view" class="tab-panel active"><div id="calendar"></div></div>
                 <div id="gantt-view" class="tab-panel">
-                    <div class="d-flex justify-content-end mb-3 gap-1">
-                        <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Day', this)">일</button>
-                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
-                        <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Month', this)">월</button>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <select id="ganttFilter" class="form-select form-select-sm w-auto shadow-sm" onchange="renderGantt()">
+                            <option value="active" selected>진행 업무 (완료/취소 제외)</option>
+                            <option value="all">전체 내역</option>
+                            <option value="작업 대기">작업 대기</option>
+                            <option value="진행중">진행중</option>
+                            <option value="검증 반영">검증 반영</option>
+                            <option value="개발 대기">개발 대기</option>
+                            <option value="개발중">개발중</option>
+                            <option value="적용 완료">적용 완료</option>
+                            <option value="취소">취소</option>
+                        </select>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Day', this)">일</button>
+                            <button class="btn btn-sm btn-outline-secondary g-btn" onclick="setGanttMode('Week', this)">주</button>
+                            <button class="btn btn-sm btn-outline-secondary g-btn active" onclick="setGanttMode('Month', this)">월</button>
+                        </div>
                     </div>
+                    <div id="gantt-top-scroll"><div id="gantt-top-scroll-inner"></div></div>
                     <div id="gantt"></div>
                 </div>
                 <div id="monthly-view" class="tab-panel">
@@ -177,6 +200,7 @@
     <script>
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJ2RfBGpKPy3xPgN83iW_dQMf5TsRYoCXp9nmkU6nO9TX-xFTCn21LaCu-uYBnJeQF/exec';
         let rawData = [], filter = 'all', calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
+        let currentGanttMode = 'Month';
         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
 
         const MAP = {
@@ -200,6 +224,20 @@
             });
             document.getElementById('statsContainer').innerHTML = h;
             document.querySelectorAll('input[name="sheetFilter"]').forEach(r => r.onchange = (e) => { filter = e.target.value; updateStats(); render(); });
+
+            // 간트 상단 스크롤 동기화 이벤트
+            const topScroll = document.getElementById('gantt-top-scroll');
+            const ganttWrap = document.getElementById('gantt');
+            let isSyncingTop = false, isSyncingBottom = false;
+
+            topScroll.addEventListener('scroll', () => {
+                if (!isSyncingTop) { isSyncingBottom = true; ganttWrap.scrollLeft = topScroll.scrollLeft; }
+                isSyncingTop = false;
+            });
+            ganttWrap.addEventListener('scroll', () => {
+                if (!isSyncingBottom) { isSyncingTop = true; topScroll.scrollLeft = ganttWrap.scrollLeft; }
+                isSyncingBottom = false;
+            });
         }
 
         function toggleStats() {
@@ -276,8 +314,21 @@
         function renderGantt() {
             const el = document.getElementById('gantt');
             if (!el || el.offsetWidth === 0) return;
-            const d = getFiltered();
-            if (d.length === 0) { el.innerHTML = '<div class="py-5 text-center text-muted">항목 없음</div>'; return; }
+            
+            let d = getFiltered();
+            const gFilter = document.getElementById('ganttFilter').value;
+            
+            if (gFilter === 'active') {
+                d = d.filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
+            } else if (gFilter !== 'all') {
+                d = d.filter(i => i['진행단계'] === gFilter);
+            }
+
+            if (d.length === 0) { 
+                el.innerHTML = '<div class="py-5 text-center text-muted">항목 없음</div>'; 
+                document.getElementById('gantt-top-scroll-inner').style.width = '100%';
+                return; 
+            }
 
             const todayStr = getSafeDateStr(new Date());
             const tasks = d.map((i, idx) => {
@@ -301,20 +352,22 @@
 
                 let sheetPrefix = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
                 let reqName = i['요건명'] ? String(i['요건명']).replace(/['"]/g, '') : '제목없음';
+                let statusName = i['진행단계'] || '기타';
 
                 return {
                     id: 'GT_' + idx,
-                    name: (err ? '[확인요망] ' : '') + '[' + sheetPrefix + '] ' + reqName,
+                    name: (err ? '[확인요망] ' : '') + '[' + sheetPrefix + '] [' + statusName + '] ' + reqName,
                     start: s, end: e, progress: 100,
-                    custom_class: err ? 'g-err' : 'g-' + String(i['진행단계'] || '기타').replace(/\s/g, ''),
+                    custom_class: err ? 'g-err' : 'g-' + statusName.replace(/\s/g, ''),
                     extendedProps: i
                 };
             });
 
             el.innerHTML = '';
             try {
-                gantt = new Gantt("#gantt", tasks, { language: 'en', bar_height: 20, view_mode: 'Day', on_click: (t) => openPop(t.extendedProps) });
+                gantt = new Gantt("#gantt", tasks, { language: 'en', bar_height: 20, view_mode: currentGanttMode, on_click: (t) => openPop(t.extendedProps) });
                 injectGanttCSS();
+                syncGanttScroll();
             } catch(e) { 
                 console.error("Gantt Error:", e);
                 el.innerHTML = `<div class="gantt-error-box small">렌더링 오류: ${e.message}<br>개발자 도구(F12) 콘솔창 확인 요망.</div>`; 
@@ -329,10 +382,21 @@
             const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
         }
 
+        function syncGanttScroll() {
+            setTimeout(() => {
+                const svg = document.querySelector('#gantt svg');
+                if (svg) {
+                    document.getElementById('gantt-top-scroll-inner').style.width = svg.getBoundingClientRect().width + 'px';
+                }
+            }, 100);
+        }
+
         function setGanttMode(m, btn) {
+            currentGanttMode = m;
             document.querySelectorAll('.g-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if(gantt) gantt.change_view_mode(m);
+            syncGanttScroll();
         }
 
         function renderMonthly() {
