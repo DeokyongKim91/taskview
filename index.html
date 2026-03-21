@@ -31,8 +31,9 @@
         .login-title { font-size: 22px; font-weight: 700; color: #005BAC; margin-bottom: 24px; }
         .login-input { width: 100%; padding: 12px 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--surface-2); }
         .password-wrap { position: relative; width: 100%; margin-bottom: 12px; }
-        .password-wrap .login-input { margin-bottom: 0; padding-right: 40px; }
-        .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; padding: 5px; font-size: 16px; }
+        .password-wrap .login-input { margin-bottom: 0; padding-right: 60px; }
+        .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; color: #555; padding: 4px 8px; font-size: 11px; font-weight: 500; transition: 0.2s; }
+        .pw-toggle:hover { background: #f0f0f0; }
         .login-options { display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 20px; padding: 0 4px; }
         .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .login-btn { width: 100%; padding: 12px; background: #009A44; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
@@ -153,7 +154,7 @@
             
             <div class="password-wrap">
                 <input type="password" id="loginPw" class="login-input" placeholder="비밀번호" onkeyup="if(event.keyCode===13) handleLogin()">
-                <button type="button" class="pw-toggle" onclick="togglePassword()" tabindex="-1">👁️</button>
+                <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePassword()" tabindex="-1">보기</button>
             </div>
             
             <div class="login-options">
@@ -280,6 +281,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
+        // 🚨 새로 발급받은 URL 유지 필수
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
         let rawData = [], filter = 'all', calendar, gantt, chart, activeTab = 'calendar-view', isStatsCollapsed = false;
         let currentGanttMode = 'Month';
@@ -297,6 +299,7 @@
             '취소': { c: '#9ca3af', i: '⚪', b: '#f3f4f6' }
         };
 
+        // ── 시스템 진입 로직 (로그인 체크) ──
         document.addEventListener('DOMContentLoaded', () => { 
             // 아이디 기억하기 로드
             const savedId = localStorage.getItem('savedId');
@@ -310,10 +313,13 @@
         // ── 로그인 UI 제어 함수 ──
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
+            const pwBtn = document.getElementById('pwToggleBtn');
             if (pwInput.type === 'password') {
                 pwInput.type = 'text';
+                pwBtn.innerText = '숨김';
             } else {
                 pwInput.type = 'password';
+                pwBtn.innerText = '보기';
             }
         }
 
