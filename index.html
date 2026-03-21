@@ -63,7 +63,14 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .login-logo { font-size: 36px; margin-bottom: 8px; }
+        
+        /* 로고 이미지 크기 조절 */
+        .login-logo-image {
+            max-width: 100%; height: auto; max-height: 52px;
+            display: block; margin: 0 auto 12px auto;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+        }
+        
         .login-title { font-size: 20px; font-weight: 700; color: #005BAC; margin-bottom: 6px; }
         .login-subtitle { font-size: 12px; color: #888; margin-bottom: 28px; }
         .login-input {
@@ -215,6 +222,8 @@
             box-shadow: var(--shadow-md); border: 1px solid var(--border);
             overflow: hidden;
         }
+        
+        /* 통합 필터 바 (일괄 42px 높이 맞춤 최적화) */
         .panel-toolbar {
             display: flex; flex-direction: column; gap: 10px;
             padding: 14px 16px; border-bottom: 1px solid #f0f5f0;
@@ -222,28 +231,53 @@
         }
         .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; align-items: center; }
 
-        /* 칩 필터 */
+        /* 1. 칩 필터 */
         .filter-group {
-            display: flex; gap: 4px;
+            display: flex; gap: 4px; align-items: center;
             background: #f0f5f2; border-radius: 30px;
-            padding: 4px; border: 1px solid #e2f0e9;
+            padding: 4px; border: 1.5px solid #e2f0e9;
+            height: 42px; /* 통일된 높이 */
         }
         .filter-chip input { display: none; }
         .filter-chip label {
-            display: block; padding: 6px 18px; border-radius: 20px;
-            font-size: 13px; font-weight: 500; cursor: pointer;
-            color: #555; transition: var(--transition); margin: 0;
+            display: flex; align-items: center; padding: 0 16px; 
+            border-radius: 20px; font-size: 13px; font-weight: 500; 
+            cursor: pointer; color: #555; transition: var(--transition); 
+            margin: 0; height: 100%;
         }
         .filter-chip input:checked + label {
             background: #009A44; color: #fff;
             box-shadow: 0 2px 8px rgba(0,154,68,0.3); font-weight: 600;
         }
 
+        /* 2. 셀렉트 필터 (커스텀 디자인 적용) */
+        .filter-select {
+            appearance: none; -webkit-appearance: none;
+            background-color: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 30px;
+            padding: 0 36px 0 16px;
+            font-size: 13px; font-weight: 500; color: #555;
+            cursor: pointer; outline: none;
+            height: 42px; /* 통일된 높이 */
+            transition: border-color 0.2s, box-shadow 0.2s;
+            /* 셀렉트 드롭다운 SVG 아이콘 (▼) */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+        .filter-select:focus {
+            border-color: #009A44;
+            box-shadow: 0 0 0 3px rgba(0,154,68,0.1);
+        }
+
+        /* 3. 검색 박스 */
         .search-box {
             display: flex; align-items: center;
             background: #f8f9fa; border: 1.5px solid #e5e7eb;
-            border-radius: 20px; padding: 0 14px;
-            flex-grow: 1; min-width: 200px;
+            border-radius: 30px; padding: 0 16px;
+            flex-grow: 1; min-width: 200px; 
+            height: 42px; /* 통일된 높이 */
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .search-box:focus-within {
@@ -252,7 +286,7 @@
         }
         .search-box input {
             border: none; background: transparent; outline: none;
-            width: 100%; font-size: 13px; padding: 9px 4px;
+            width: 100%; font-size: 13px; padding: 0 8px;
         }
         .keyboard-hint {
             font-size: 10px; color: #aaa;
@@ -451,7 +485,7 @@
             padding: 0; line-height: 1;
         }
 
-        /* ===== 로딩 오버레이 (저장/삭제 등 사용자 조작 시에만 사용) ===== */
+        /* ===== 로딩 오버레이 ===== */
         #loading {
             display: none; position: fixed; inset: 0;
             background: rgba(255,255,255,0.75);
@@ -474,7 +508,7 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== 스켈레톤 UI (초기 데이터 로딩용) ===== */
+        /* ===== 스켈레톤 UI ===== */
         @keyframes skeleton-wave {
             0%   { background-position: -400px 0; }
             100% { background-position: 400px 0; }
@@ -613,7 +647,9 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <div class="login-logo">🏦</div>
+            <div class="login-logo">
+                <img src="./logo.png" class="login-logo-image" alt="🏦">
+            </div>
             <div class="login-title">업무 현황 관리</div>
             <div class="login-subtitle">2026 기업뱅킹 상시운영 프로젝트</div>
             <input type="text" id="loginId" class="login-input" placeholder="아이디" autocomplete="username">
@@ -701,8 +737,7 @@
                             </div>
                         </div>
 
-                        <select id="globalStatusFilter" class="form-select form-select-sm w-auto rounded-pill border-1"
-                            style="background:#f9fbf9; color:#555; border-color:#e2f0e9;" onchange="applyFilter(true)">
+                        <select id="globalStatusFilter" class="filter-select shadow-sm" onchange="applyFilter(true)">
                             <option value="active" selected>진행 업무 (완료/취소 제외)</option>
                             <option value="all">모든 단계</option>
                             <option value="작업 대기">작업 대기</option>
@@ -714,7 +749,7 @@
                             <option value="취소">취소</option>
                         </select>
 
-                        <div class="search-box">
+                        <div class="search-box shadow-sm">
                             <span style="font-size:14px; color:#aaa;">🔍</span>
                             <input type="text" id="searchInput" placeholder="요건명 또는 담당자 검색" onkeyup="debouncedFilterFromSearch()">
                             <span class="keyboard-hint">F</span>
@@ -1094,11 +1129,9 @@
 
     /* ===================================================
        SECURITY — 세션 평문 저장만 방지 (기본 Base64 인코딩)
-       (이전의 비동기 암호화 로직이 환경에 따라 에러를 일으켜 롤백함)
        =================================================== */
     function storeSession(user, persistent) {
         const json = JSON.stringify(user);
-        // 간단한 Base64 인코딩 (한글 깨짐 방지를 위해 encodeURIComponent 사용)
         const encoded = btoa(encodeURIComponent(json));
         if (persistent) localStorage.setItem('_pms_sess', encoded);
         else sessionStorage.setItem('_pms_sess', encoded);
@@ -1265,7 +1298,7 @@
     function copyFilterLink() {
         saveFilterToURL();
         navigator.clipboard.writeText(location.href)
-            .then(() => showToast('필터 링크가 클립보드에 복사되었습니다.', 'success'))
+            .then(() => showToast('필터 링크가 복사되었습니다.', 'success'))
             .catch(() => showToast('링크 복사 실패. 브라우저 주소창에서 직접 복사해 주세요.', 'info'));
     }
 
@@ -1395,7 +1428,6 @@
         const el = document.getElementById('calendar');
         if (!el) return;
 
-        // ★ 방어 로직: 인스턴스가 파괴되지 않으면 에러가 남
         if (calendar) {
             try { calendar.destroy(); } catch (_) {}
             calendar = null;
@@ -1537,7 +1569,6 @@
 
     function updateStats() {
         const container = document.getElementById('statsContainer');
-        // 스켈레톤 상태라면 실제 카드 HTML로 복구
         if (container && container.querySelector('.stat-card-skeleton')) {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
@@ -1621,11 +1652,6 @@
         });
 
         const calEl = document.getElementById('calendar');
-
-        if (calendar && !calEl.querySelector('.fc')) {
-            try { calendar.destroy(); } catch (_) {}
-            calendar = null;
-        }
 
         if (!calendar) {
             calendar = new FullCalendar.Calendar(calEl, {
