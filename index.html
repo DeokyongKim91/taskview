@@ -56,11 +56,6 @@
         .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
         .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
-        .stats-wrap.collapsed { gap: 6px; }
-        .stats-wrap.collapsed .stat-card { flex: 0 0 auto; min-width: 100px; padding: 6px 12px; border-radius: 30px; flex-direction: row; }
-        .stats-wrap.collapsed .stat-icon { width: 22px; height: 22px; font-size: 11px; }
-        .stats-wrap.collapsed .stat-text-box { display: flex; align-items: center; gap: 6px; }
-        .stats-wrap.collapsed .stat-label { margin: 0; white-space: nowrap; font-size: 11px; }
 
         .panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
         .panel-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px; border-bottom: 1px solid #f0f0f0; }
@@ -101,7 +96,6 @@
 
         @media (max-width: 640px) {
             .stat-card { flex: 1 1 calc(50% - 10px); }
-            .stats-wrap.collapsed .stat-card { flex: 1 1 calc(25% - 6px); padding: 5px; }
             .header-controls { position: relative; top: auto; right: auto; margin-top: 15px; justify-content: flex-start; flex-wrap: wrap; }
             .panel-toolbar { flex-direction: column; align-items: stretch; padding: 12px; gap: 10px; }
             .filter-group { width: 100%; border-radius: 8px; padding: 4px; }
@@ -113,15 +107,8 @@
             .gantt-controls-wrap select { width: 100% !important; }
             .gantt-controls-wrap .btn-group { width: 100%; display: flex; }
             .gantt-controls-wrap .btn-group .btn { flex: 1; }
-            .fc .fc-toolbar-title { font-size: 18px !important; }
-            .fc .fc-button-primary { font-size: 11px !important; padding: 4px 8px !important; }
             .modal-dialog { margin: 10px; }
             .modal-body { padding: 15px !important; }
-            .modal-body .g-3 { --bs-gutter-y: 10px; --bs-gutter-x: 10px; }
-            .modal-body .form-label { font-size: 11px; margin-bottom: 2px; }
-            .modal-body .form-control, .modal-body .form-select { font-size: 12px; padding: 6px 10px; min-height: 32px; }
-            .modal-footer { padding: 12px !important; }
-            .modal-footer .btn { font-size: 12px; padding: 6px 16px; }
         }
     </style>
 </head>
@@ -167,7 +154,6 @@
         <div class="main-wrap">
             <div class="stats-header">
                 <span class="small fw-bold text-muted">📊 요약 현황</span>
-                <button id="statsToggleBtn" class="btn btn-sm text-muted p-0" onclick="toggleStats()">접기 ▲</button>
             </div>
             <div class="stats-wrap" id="statsContainer"></div>
 
@@ -239,10 +225,10 @@
                                 <div class="col-12"><label class="form-label small fw-bold">요건명</label><textarea class="form-control" name="요건명" rows="2"></textarea></div>
                                 
                                 <div class="col-md-6"><label class="form-label small fw-bold">은행 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="은행 사업부서 담당자" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                    <input type="text" class="form-control" name="bizBank" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 <div class="col-md-6"><label class="form-label small fw-bold">상호 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="상호 사업부서 담당자" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                    <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 
                                 <div class="col-md-4"><label class="form-label small fw-bold">담당 기획</label><input type="text" class="form-control" name="담당_기획"></div>
@@ -292,11 +278,11 @@
                                 
                                 <div class="col-md-6" id="bizBankWrapper">
                                     <label class="form-label small fw-bold">은행 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="은행 사업부서 담당자" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                    <input type="text" class="form-control" name="bizBank" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 <div class="col-md-6" id="bizMutualWrapper" style="display:none;">
                                     <label class="form-label small fw-bold">상호 사업부서 담당자</label>
-                                    <input type="text" class="form-control" name="상호 사업부서 담당자" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
+                                    <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 
                                 <div class="col-md-4"><label class="form-label small fw-bold">난이도</label>
@@ -375,7 +361,7 @@
             });
         });
 
-        // ── 로그인 & 보안 기능 ──
+        // ── 로그인 ──
         function togglePassword() {
             const pwInput = document.getElementById('loginPw');
             const pwBtn = document.getElementById('pwToggleBtn');
@@ -424,7 +410,6 @@
                     
                     if (keepLoggedIn) localStorage.setItem('currentUser', JSON.stringify(res.user));
                     else sessionStorage.setItem('currentUser', JSON.stringify(res.user));
-                    
                     checkLoginStatus();
                 } else alert('로그인 실패: ' + res.message);
             }).catch(err => { alert('통신 에러 발생'); btn.innerText = '로그인'; btn.disabled = false; });
@@ -443,7 +428,7 @@
             else adminEls.forEach(el => el.style.setProperty('display', 'none', 'important'));
         }
 
-        // ── 메인 UI 초기화 & 데이터 연동 ──
+        // ── 초기화 및 데이터 연동 ──
         function initUI() {
             let h = '';
             Object.entries(MAP).forEach(([k, v]) => {
@@ -466,7 +451,7 @@
         }
 
         function fetchData() {
-            toggleLoad(true, "데이터 동기화 중...");
+            toggleLoad(true, "데이터 가져오는 중...");
             fetch(GAS_URL).then(r => r.json()).then(res => { 
                 rawData = res.data; 
                 document.getElementById('lastUpdateTime').innerText = '⏱ 최종 동기화: ' + res.updateTime;
@@ -477,20 +462,25 @@
             }).catch(() => { alert('데이터 로드 실패'); toggleLoad(false); });
         }
 
-        // ── 동적 옵션 및 담당자 데이터 추출 ──
+        // ── 담당자 옵션 추출 및 바인딩 ──
         function updateDropdowns() {
             const bizManagers = new Set();
             const planners = new Set(['김민경']);
             
             rawData.forEach(item => {
-                ['은행 사업부서 담당자', '상호 사업부서 담당자'].forEach(k => {
-                    if (item[k]) {
-                        String(item[k]).split(/[,/]/).forEach(n => {
-                            let clean = n.trim();
-                            if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
-                        });
-                    }
-                });
+                // 물리적 열 이름(bizBank, bizMutual)으로 확실하게 매핑
+                if (item['bizBank']) {
+                    String(item['bizBank']).split(/[,/]/).forEach(n => {
+                        let clean = n.trim();
+                        if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
+                    });
+                }
+                if (item['bizMutual']) {
+                    String(item['bizMutual']).split(/[,/]/).forEach(n => {
+                        let clean = n.trim();
+                        if(clean && clean !== '-' && clean !== 'X') bizManagers.add(clean);
+                    });
+                }
                 if (item['담당_기획']) {
                     String(item['담당_기획']).split(/[,/]/).forEach(n => {
                         let clean = n.trim();
@@ -539,7 +529,6 @@
             return `${y}-${m}-${day}`;
         }
 
-        // ── 탭별 렌더링 ──
         function renderCalendar() {
             const evs = getFiltered().flatMap(i => {
                 const c = MAP[i['진행단계']]?.c || '#666';
@@ -683,6 +672,7 @@
             });
             modal.show();
         }
+
         function openPopById(id) { const d = rawData.find(x => String(x['요구사항 ID']) === String(id)); if(d) openPop(d); }
 
         function saveChanges() {
@@ -740,10 +730,11 @@
             if(!formData['요건명']) return alert('요건명을 입력하세요.');
             
             if (formData['구분'] === '은행') {
-                formData['상호 사업부서 담당자'] = '';
+                formData['bizMutual'] = '';
             } else if (formData['구분'] === '상호') {
-                formData['은행 사업부서 담당자'] = '';
+                formData['bizBank'] = '';
             }
+            
             formData.action = 'create_task';
 
             toggleLoad(true, "신규 요구사항 생성 중...");
@@ -755,7 +746,6 @@
             }).catch(() => { alert('통신 오류'); toggleLoad(false); });
         }
 
-        // ── 서랍 및 엑셀 로직 ──
         function showDrawer(st) {
             const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
             document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
