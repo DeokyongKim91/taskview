@@ -1076,7 +1076,7 @@
     }
 
     /* ===================================================
-       KEYBOARD SHORTCUTS & POPSTATE (모바일 뒤로가기 제어)
+       KEYBOARD SHORTCUTS
        =================================================== */
     function toggleShortcutPanel() {
         AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
@@ -1109,24 +1109,45 @@
         showToast('필터가 초기화되었습니다.', 'info');
     }
 
-    // 뒤로가기 방어 로직
-    document.querySelectorAll('.modal').forEach(modalEl => {
-        modalEl.addEventListener('show.bs.modal', () => history.pushState({ popupOpen: true }, '', ''));
-        modalEl.addEventListener('hide.bs.modal', () => {
-            if (history.state && history.state.popupOpen) history.back();
-        });
+    // 🌟 완벽하고 안전한 모바일 뒤로가기(팝업 닫기) 전용 로직 🌟
+    const MODAL_IDS = ['eventModal', 'createModal', 'reportModal'];
+    MODAL_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.addEventListener('show.bs.modal', () => {
+                history.pushState({ modal: id }, null, '');
+            });
+            el.addEventListener('hidden.bs.modal', () => {
+                // 사용자가 X버튼을 누르거나 바깥을 클릭해서 모달을 직접 닫았을 때
+                // 브라우저의 히스토리 가장 위에 모달 기록이 남아있다면, 한 번 뒤로가기를 호출해서 기록을 청소해줌.
+                if (history.state && history.state.modal === id) {
+                    history.back();
+                }
+            });
+        }
     });
 
     window.addEventListener('popstate', (e) => {
-        const openModalEl = document.querySelector('.modal.show');
-        if (openModalEl) {
-            const m = bootstrap.Modal.getInstance(openModalEl);
-            if (m) m.hide();
-        }
+        // 스마트폰 뒤로가기 버튼을 눌렀을 때, 혹은 history.back()이 호출되었을 때 실행됨.
+        // 열려있는 모달이 있다면 닫아줌. (hidden.bs.modal 이벤트가 뒤따라 발생하지만, 이미 history가 변경된 상태라 루프에 빠지지 않음)
+        MODAL_IDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.classList.contains('show')) {
+                const m = bootstrap.Modal.getInstance(el);
+                if (m) m.hide();
+            }
+        });
+
+        // 드로어가 열려있는데, 브라우저가 돌아간 상태값이 '드로어 열림' 상태가 아니라면 드로어를 닫음.
         const drawer = document.getElementById('statusDrawer');
         if (drawer && drawer.classList.contains('open')) {
-            document.getElementById('statusDrawer').classList.remove('open');
-            setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
+            if (!e.state || e.state.drawer !== 'open') {
+                drawer.classList.remove('open');
+                setTimeout(() => {
+                    const overlay = document.getElementById('drawerOverlay');
+                    if (overlay) overlay.style.display = 'none';
+                }, 350);
+            }
         }
     });
 
@@ -1619,11 +1640,28 @@
         });
     }
 
+    function handleApiError(res) {
+        if (!res) return '알 수 없는 오류';
+        if (res.code === 'PERMISSION_DENIED') return '권한이 없습니다.';
+        if (res.code === 'NOT_FOUND') return '해당 항목을 찾을 수 없습니다.';
+        if (res.code === 'VALIDATION_ERROR') return `입력값 오류: ${res.message}`;
+        if (res.code === 'NETWORK_ERROR') return '서버 연결에 실패했습니다.';
+        return res.message || '오류가 발생했습니다.';
+    }
+
     function saveChanges() {
         const f = document.getElementById('taskForm');
         Array.from(f.elements).forEach(el => el.disabled = false);
         const payload = Object.fromEntries(new FormData(f).entries());
+        const taskId = payload['요구사항 ID'];
         payload.action = 'update_task';
+
+        const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(taskId));
+        let originalData = null;
+        if (idx !== -1) {
+            originalData = { ...AppState.rawData[idx] };
+            AppState.rawData[idx] = { ...AppState.rawData[idx], ...payload };
+        }
 
         modal.hide(); document.getElementById('loading').style.display = 'flex';
 
@@ -1632,9 +1670,16 @@
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') { showToast('저장 성공', 'success'); fetchData(true); } 
-                else showToast('저장 실패', 'error');
+                else {
+                    if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
+                    updateStats(); render(); showToast('저장 실패: ' + handleApiError(res), 'error');
+                }
             })
-            .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
+            .catch(() => { 
+                if (originalData && idx !== -1) AppState.rawData[idx] = originalData;
+                updateStats(); render();
+                document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); 
+            });
     }
 
     function deleteTask() {
@@ -1643,6 +1688,9 @@
         if (!id) return;
         if (!confirm('정말 삭제하시겠습니까?')) return;
 
+        const idx = AppState.rawData.findIndex(x => String(x['요구사항 ID']) === String(id));
+        const removed = idx !== -1 ? AppState.rawData.splice(idx, 1)[0] : null;
+
         modal.hide(); document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet }) })
@@ -1650,9 +1698,16 @@
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') { showToast('삭제 성공', 'success'); fetchData(true); }
-                else showToast('삭제 실패', 'error');
+                else {
+                    if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
+                    updateStats(); render(); showToast('삭제 실패', 'error');
+                }
             })
-            .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
+            .catch(() => { 
+                if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
+                updateStats(); render();
+                document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); 
+            });
     }
 
     function openCreatePop() {
@@ -1737,7 +1792,7 @@
     }
 
     function showDrawer(st) {
-        history.pushState({ popupOpen: true }, '', ''); // 드로어 열 때 히스토리 추가
+        history.pushState({ drawer: 'open' }, null, '');
         const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
         document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
         document.getElementById('drawerBody').innerHTML = d.length
@@ -1755,12 +1810,12 @@
     }
 
     function closeDrawer() {
-        if (history.state && history.state.popupOpen) {
-            history.back();
-            return;
+        if (history.state && history.state.drawer === 'open') {
+            history.back(); 
+        } else {
+            document.getElementById('statusDrawer').classList.remove('open');
+            setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
         }
-        document.getElementById('statusDrawer').classList.remove('open');
-        setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
     }
 
     function switchTab(btn) {
@@ -1800,7 +1855,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         checkLoginStatus();
 
-        // 서비스 워커(PWA) 연결 - 홈 화면 추가용
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW 등록 실패:', err));
         }
