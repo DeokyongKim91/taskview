@@ -335,7 +335,8 @@
         .dday-day { background: #ffe4c4; color: #c05621; }
 
         /* ===== 진행단계 스텝바 (모달 상단) ===== */
-        .step-progress-wrap { padding: 16px 20px 4px; background: linear-gradient(180deg, #f8fcf9 0%, #fff 100%); border-bottom: 1px solid #eef5ee; overflow-x: auto; }
+        /* 하단 padding을 16px로 수정하여 글자 잘림 방지 */
+        .step-progress-wrap { padding: 16px 20px 16px; background: linear-gradient(180deg, #f8fcf9 0%, #fff 100%); border-bottom: 1px solid #eef5ee; overflow-x: auto; }
         .step-progress { display: flex; align-items: center; gap: 0; min-width: 480px; }
         .step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
         .step-item:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 50%; width: 100%; height: 2px; background: #e0e0e0; z-index: 0; }
@@ -902,7 +903,6 @@
     let calendar, gantt, chart;
     let modal, createModal, reportModal;
 
-    // 👇 이 한 줄이 빠져서 에러가 났습니다! 이 줄을 꼭 추가해 주세요.
     const STEPS = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료'];
 
     const MAP = {
