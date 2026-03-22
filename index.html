@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
-    <title>업무 현황 통합 관리 시스템</title>
-    <link rel="icon" type="image/png" href="./edited-image.png">
     
-    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#009A44">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="업무현황">
     <link rel="apple-touch-icon" href="./logo.png">
+    <link rel="manifest" href="./manifest.json">
 
+    <title>업무 현황 통합 관리 시스템</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏦</text></svg>">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css">
@@ -387,21 +388,21 @@
         @keyframes skeleton-wave { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
         .skeleton { background: linear-gradient(90deg, #e8f0eb 25%, #d4e8da 50%, #e8f0eb 75%); background-size: 800px 100%; animation: skeleton-wave 1.4s ease-in-out infinite; border-radius: 6px; }
         .stat-card-skeleton { background: var(--surface); border-radius: var(--radius-lg); padding: 14px 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; min-height: 72px; }
-        .sk-icon { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; }
+        .sk-icon  { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; }
         .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .sk-line-lg { height: 22px; border-radius: 4px; width: 50%; }
         .sk-line-sm { height: 12px; border-radius: 4px; width: 70%; }
         .sk-table-row { display: flex; gap: 12px; align-items: center; padding: 12px 12px; border-bottom: 1px solid #f0f0f0; }
         .sk-cell { height: 14px; border-radius: 4px; }
-        .sk-cell-xs { width: 50px; } .sk-cell-sm { width: 80px; } .sk-cell-md { width: 140px; } .sk-cell-lg { flex: 1; }
+        .sk-cell-xs  { width: 50px; } .sk-cell-sm  { width: 80px; } .sk-cell-md  { width: 140px; } .sk-cell-lg  { flex: 1; }
         .skeleton-calendar { padding: 8px; }
         .sk-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .sk-cal-title { height: 28px; width: 160px; border-radius: 6px; }
-        .sk-cal-btns { display: flex; gap: 8px; }
-        .sk-cal-btn { height: 28px; width: 60px; border-radius: 20px; }
-        .sk-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+        .sk-cal-btns  { display: flex; gap: 8px; }
+        .sk-cal-btn   { height: 28px; width: 60px; border-radius: 20px; }
+        .sk-cal-grid  { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
         .sk-cal-day-header { height: 32px; border-radius: 4px; margin-bottom: 8px; }
-        .sk-cal-cell { height: 90px; border-radius: 4px; border: 1px solid #f0f0f0; }
+        .sk-cal-cell  { height: 90px; border-radius: 4px; border: 1px solid #f0f0f0; }
 
         /* ===== 드로어 ===== */
         .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1040; cursor: pointer; backdrop-filter: blur(3px); transition: opacity 0.3s; }
@@ -887,11 +888,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
+    /* ===================================================
+       CONSTANTS & STATE
+       =================================================== */
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
 
     const AppState = {
         rawData: [], currentUser: null, isStatsCollapsed: false,
-        activeTab: 'calendar-view', currentGanttMode: 'Month'
+        activeTab: 'calendar-view', currentGanttMode: 'Month',
+        isShortcutPanelVisible: false
     };
 
     let calendar, gantt, chart;
@@ -910,6 +915,9 @@
         '취소':    { c: '#9ca3af', i: '⚪', b: '#f3f4f6' },
     };
 
+    /* ===================================================
+       TOAST
+       =================================================== */
     function showToast(msg, type = 'success') {
         const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const container = document.getElementById('toastContainer');
@@ -921,6 +929,9 @@
         setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
+    /* ===================================================
+       SECURITY
+       =================================================== */
     function storeSession(user, persistent) {
         const json = JSON.stringify(user);
         const encoded = btoa(encodeURIComponent(json));
@@ -942,6 +953,9 @@
         sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
     }
 
+    /* ===================================================
+       LOGIN
+       =================================================== */
     function togglePassword() {
         const el = document.getElementById('loginPw');
         const btn = document.getElementById('pwToggleBtn');
@@ -956,7 +970,7 @@
             applyUserRoleUI();
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
-            initUI(); fetchData();
+            initUI(); restoreFilterFromURL(); fetchData();
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
@@ -1000,20 +1014,125 @@
         });
     }
 
-    function toggleStats() {
-        AppState.isStatsCollapsed = !AppState.isStatsCollapsed;
-        const wrap = document.getElementById('statsCollapseWrap');
-        const btn = document.getElementById('statsToggleBtn');
-        
-        if (AppState.isStatsCollapsed) {
-            wrap.style.display = 'none';
-            btn.innerText = '펼치기 ▼';
-        } else {
-            wrap.style.display = 'block';
-            btn.innerText = '접기 ▲';
+    /* ===================================================
+       UTILITIES
+       =================================================== */
+    function debounce(fn, delay) {
+        let timer;
+        return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
+    }
+    const debouncedFilterFromSearch = debounce(() => applyFilter(true), 300);
+
+    const _ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;' };
+    function esc(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>"'`]/g, c => _ESC[c]);
+    }
+
+    /* ===================================================
+       URL FILTER STATE
+       =================================================== */
+    function saveFilterToURL() {
+        const sheet = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
+        const status = document.getElementById('globalStatusFilter')?.value || 'active';
+        const keyword = document.getElementById('searchInput')?.value || '';
+        const tab = AppState.activeTab;
+
+        const params = new URLSearchParams();
+        if (sheet !== 'all') params.set('sheet', sheet);
+        if (status !== 'active') params.set('status', status);
+        if (keyword) params.set('q', keyword);
+        if (tab !== 'calendar-view') params.set('tab', tab);
+
+        const url = params.toString() ? `${location.pathname}?${params}` : location.pathname;
+        history.replaceState(null, '', url);
+
+        const permalink = document.getElementById('filterPermalink');
+        if (permalink) {
+            const hasFilter = params.toString().length > 0;
+            permalink.textContent = hasFilter ? '🔗 필터 공유' : '🔗 공유';
+            permalink.style.color = hasFilter ? '#009A44' : '';
         }
     }
 
+    function restoreFilterFromURL() {
+        const params = new URLSearchParams(location.search);
+        const sheet = params.get('sheet');
+        const status = params.get('status');
+        const keyword = params.get('q');
+        const tab = params.get('tab');
+
+        if (sheet) { const radio = document.querySelector(`input[name="sheetFilter"][value="${sheet}"]`); if (radio) radio.checked = true; }
+        if (status) { const sel = document.getElementById('globalStatusFilter'); if (sel) sel.value = status; }
+        if (keyword) { const inp = document.getElementById('searchInput'); if (inp) inp.value = keyword; }
+        if (tab) { const btn = document.querySelector(`.view-tab-btn[data-target="${tab}"]`); if (btn) switchTab(btn); }
+    }
+
+    function copyFilterLink() {
+        saveFilterToURL();
+        navigator.clipboard.writeText(location.href)
+            .then(() => showToast('필터 링크가 복사되었습니다.', 'success'))
+            .catch(() => showToast('링크 복사 실패', 'info'));
+    }
+
+    /* ===================================================
+       KEYBOARD SHORTCUTS & POPSTATE (모바일 뒤로가기 제어)
+       =================================================== */
+    function toggleShortcutPanel() {
+        AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
+        document.getElementById('shortcutPanel').classList.toggle('visible', AppState.isShortcutPanelVisible);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        const tag = document.activeElement?.tagName.toLowerCase();
+        const isInput = ['input', 'textarea', 'select'].includes(tag);
+        const modalOpen = document.querySelector('.modal.show');
+
+        if (e.key === 'Escape') {
+            if (AppState.isShortcutPanelVisible) { toggleShortcutPanel(); return; }
+            closeDrawer();
+            return;
+        }
+        if (e.key === '?') { toggleShortcutPanel(); return; }
+        if (isInput || modalOpen) return;
+
+        if ((e.key === 'n' || e.key === 'N') && AppState.currentUser?.role === 'admin') openCreatePop();
+        if (e.key === 'f' || e.key === 'F') { e.preventDefault(); document.getElementById('searchInput')?.focus(); }
+        if (e.key === 'r' || e.key === 'R') { if (!e.metaKey && !e.ctrlKey) resetFilters(); }
+    });
+
+    function resetFilters() {
+        document.querySelector('#fAll').checked = true;
+        document.getElementById('globalStatusFilter').value = 'active';
+        document.getElementById('searchInput').value = '';
+        applyFilter(true);
+        showToast('필터가 초기화되었습니다.', 'info');
+    }
+
+    // 뒤로가기 방어 로직
+    document.querySelectorAll('.modal').forEach(modalEl => {
+        modalEl.addEventListener('show.bs.modal', () => history.pushState({ popupOpen: true }, '', ''));
+        modalEl.addEventListener('hide.bs.modal', () => {
+            if (history.state && history.state.popupOpen) history.back();
+        });
+    });
+
+    window.addEventListener('popstate', (e) => {
+        const openModalEl = document.querySelector('.modal.show');
+        if (openModalEl) {
+            const m = bootstrap.Modal.getInstance(openModalEl);
+            if (m) m.hide();
+        }
+        const drawer = document.getElementById('statusDrawer');
+        if (drawer && drawer.classList.contains('open')) {
+            document.getElementById('statusDrawer').classList.remove('open');
+            setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
+        }
+    });
+
+    /* ===================================================
+       INIT UI
+       =================================================== */
     function initUI() {
         let h = '';
         Object.entries(MAP).forEach(([k, v]) => {
@@ -1037,14 +1156,8 @@
         const topScroll = document.getElementById('gantt-top-scroll');
         const ganttWrap = document.getElementById('gantt');
         let syncTop = false, syncBot = false;
-        topScroll.addEventListener('scroll', () => {
-            if (!syncTop) { syncBot = true; ganttWrap.scrollLeft = topScroll.scrollLeft; }
-            syncTop = false;
-        });
-        ganttWrap.addEventListener('scroll', () => {
-            if (!syncBot) { syncTop = true; topScroll.scrollLeft = ganttWrap.scrollLeft; }
-            syncBot = false;
-        });
+        topScroll.addEventListener('scroll', () => { if (!syncTop) { syncBot = true; ganttWrap.scrollLeft = topScroll.scrollLeft; } syncTop = false; });
+        ganttWrap.addEventListener('scroll', () => { if (!syncBot) { syncTop = true; topScroll.scrollLeft = ganttWrap.scrollLeft; } syncBot = false; });
 
         const tForm = document.getElementById('taskForm');
         tForm.elements['담당_기획'].addEventListener('input', updateFieldDependency);
@@ -1053,15 +1166,70 @@
 
         document.getElementById('createGubun').addEventListener('change', function () {
             const val = this.value;
-            // 1. 사업부서 담당자 노출/숨김
             document.getElementById('bizBankWrapper').style.display = val !== '상호' ? 'block' : 'none';
             document.getElementById('bizMutualWrapper').style.display = val !== '은행' ? 'block' : 'none';
-            // 자바스크립트로 강제로 폭을 늘리던 코드 완벽 삭제! (항상 HTML의 col-md-4에 의해 3등분으로 유지됨)
         });
     }
 
-    function fetchData() {
-        document.getElementById('loading').style.display = 'flex';
+    function toggleStats() {
+        AppState.isStatsCollapsed = !AppState.isStatsCollapsed;
+        const wrap = document.getElementById('statsCollapseWrap');
+        const btn = document.getElementById('statsToggleBtn');
+        if (AppState.isStatsCollapsed) { wrap.style.display = 'none'; btn.innerText = '펼치기 ▼'; } 
+        else { wrap.style.display = 'block'; btn.innerText = '접기 ▲'; }
+    }
+
+    /* ===================================================
+       SKELETON & FETCH
+       =================================================== */
+    function showSkeletonStats() {
+        const container = document.getElementById('statsContainer');
+        if (!container) return;
+        container.innerHTML = Array(8).fill(0).map(() => `
+            <div class="stat-card-skeleton">
+                <div class="skeleton sk-icon"></div>
+                <div class="sk-lines"><div class="skeleton sk-line-lg"></div><div class="skeleton sk-line-sm"></div></div>
+            </div>`).join('');
+    }
+
+    function showSkeletonList() {
+        const tbody = document.querySelector('#listTable tbody');
+        if (!tbody) return;
+        tbody.innerHTML = Array(8).fill(0).map(() => `
+            <tr class="sk-table-row">
+                <td><div class="skeleton sk-cell sk-cell-xs"></div></td><td><div class="skeleton sk-cell sk-cell-sm"></div></td>
+                <td><div class="skeleton sk-cell sk-cell-xs"></div></td><td><div class="skeleton sk-cell sk-cell-lg"></div></td>
+                <td><div class="skeleton sk-cell sk-cell-sm"></div></td><td><div class="skeleton sk-cell sk-cell-sm"></div></td>
+                <td><div class="skeleton sk-cell sk-cell-sm"></div></td><td><div class="skeleton sk-cell sk-cell-xs"></div></td>
+                <td><div class="skeleton sk-cell sk-cell-sm"></div></td>
+            </tr>`).join('');
+    }
+
+    function showSkeletonCalendar() {
+        const el = document.getElementById('calendar');
+        if (!el) return;
+        if (calendar) { try { calendar.destroy(); } catch (_) {} calendar = null; }
+        el.innerHTML = `
+            <div class="skeleton-calendar">
+                <div class="sk-cal-header">
+                    <div class="skeleton sk-cal-title"></div>
+                    <div class="sk-cal-btns"><div class="skeleton sk-cal-btn"></div><div class="skeleton sk-cal-btn"></div></div>
+                </div>
+                <div class="sk-cal-grid">
+                    ${Array(7).fill(0).map(() => `<div class="skeleton sk-cal-day-header"></div>`).join('')}
+                    ${Array(35).fill(0).map(() => `<div class="skeleton sk-cal-cell"></div>`).join('')}
+                </div>
+            </div>`;
+    }
+
+    function fetchData(isSilent = false) {
+        if (!isSilent) {
+            if (calendar) { try { calendar.destroy(); } catch (_) {} calendar = null; }
+            showSkeletonStats();
+            if (AppState.activeTab === 'calendar-view') showSkeletonCalendar();
+            if (AppState.activeTab === 'list-view') showSkeletonList();
+        }
+
         fetch(GAS_URL)
             .then(r => r.json())
             .then(res => {
@@ -1069,13 +1237,22 @@
                 document.getElementById('lastUpdateTime').innerText = '⏱ ' + res.updateTime;
                 updateDropdowns();
                 applyFilter();
-                document.getElementById('loading').style.display = 'none';
             })
             .catch(err => {
                 console.error(err);
-                document.getElementById('loading').style.display = 'none';
+                if (!isSilent) { initUI(); showFetchErrorState(); }
                 showToast('데이터 로드 실패', 'error');
             });
+    }
+
+    function showFetchErrorState() {
+        const errorHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">데이터 불러오기 실패</div><button class="btn-reset-filter" onclick="fetchData()" style="background:#005BAC;">↺ 다시 시도</button></div>`;
+        const tab = AppState.activeTab;
+        if (tab === 'calendar-view') { const el = document.getElementById('calendar'); if (el) el.innerHTML = errorHTML; }
+        else if (tab === 'list-view') { const tbody = document.querySelector('#listTable tbody'); if (tbody) tbody.innerHTML = `<tr><td colspan="9">${errorHTML}</td></tr>`; }
+        else if (tab === 'gantt-view') { const el = document.getElementById('gantt'); if (el) el.innerHTML = errorHTML; }
+        else if (tab === 'monthly-view') { const el = document.getElementById('monthlyAccordion'); if (el) el.innerHTML = errorHTML; }
+        else if (tab === 'assignee-view') { const el = document.getElementById('assigneeGrid'); if (el) el.innerHTML = errorHTML; }
     }
 
     function updateDropdowns() {
@@ -1105,10 +1282,10 @@
         window.globalPlanners = planners;
     }
 
-    function applyFilter() {
-        updateStats();
-        render();
-    }
+    /* ===================================================
+       FILTER & RENDER
+       =================================================== */
+    function applyFilter(updateURL = false) { updateStats(); render(); if (updateURL) saveFilterToURL(); }
 
     function getFiltered() {
         const sheetF = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
@@ -1121,13 +1298,21 @@
             if (statusF === 'all') matchStatus = true;
             else if (statusF === 'active') matchStatus = !['적용 완료', '취소'].includes(i['진행단계']);
             else matchStatus = i['진행단계'] === statusF;
-            
             const matchKeyword = !keyword || Object.values(i).join(' ').toLowerCase().includes(keyword);
             return matchSheet && matchStatus && matchKeyword;
         });
     }
 
     function updateStats() {
+        const container = document.getElementById('statsContainer');
+        if (container && container.querySelector('.stat-card-skeleton')) {
+            let h = '';
+            Object.entries(MAP).forEach(([k, v]) => {
+                const id = k === '전체' ? 'all' : k.replace(/\s/g, '');
+                h += `<div class="stat-card" onclick="showDrawer('${k}')"><div class="stat-icon" style="background:${v.b};color:${v.c}">${v.i}</div><div><div class="stat-num" id="st-${id}">-</div><div class="stat-label">${k}</div></div></div>`;
+            });
+            container.innerHTML = h;
+        }
         const d = getFiltered();
         const allEl = document.getElementById('st-all');
         if (allEl) allEl.innerText = d.length;
@@ -1154,12 +1339,27 @@
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
+    function getDday(date) {
+        const dStr = getSafeDateStr(date);
+        if (!dStr) return null;
+        return Math.ceil((new Date(dStr) - new Date(getSafeDateStr(new Date()))) / 86400000);
+    }
+
+    function renderDdayBadge(date) {
+        const diff = getDday(date);
+        if (diff === null) return '<span class="text-muted" style="font-size:11px;">-</span>';
+        if (diff === 0) return `<span class="dday-badge dday-day">D-Day</span>`;
+        if (diff < 0) return `<span class="dday-badge dday-overdue">D+${Math.abs(diff)}</span>`;
+        if (diff <= 3) return `<span class="dday-badge dday-soon">D-${diff}</span>`;
+        return `<span class="dday-badge dday-ok">D-${diff}</span>`;
+    }
+
+    /* CALENDAR */
     function renderCalendar() {
         const evs = getFiltered().flatMap(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
             const r = [];
-            const s = getSafeDateStr(i['접수일자']);
-            const e = getSafeDateStr(i['운영이관(예정)일']);
+            const s = getSafeDateStr(i['접수일자']), e = getSafeDateStr(i['운영이관(예정)일']);
             const sheet = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
             if (s) r.push({ title: `[${sheet}] ${i['요건명'] || ''}`, start: s, color: c, allDay: true, extendedProps: i });
             if (e) {
@@ -1170,12 +1370,7 @@
         });
 
         const calEl = document.getElementById('calendar');
-
-        if (calendar && !calEl.querySelector('.fc')) {
-            try { calendar.destroy(); } catch (_) {}
-            calendar = null;
-        }
-
+        if (calendar && !calEl.querySelector('.fc')) { try { calendar.destroy(); } catch (_) {} calendar = null; }
         if (!calendar) {
             calendar = new FullCalendar.Calendar(calEl, {
                 initialView: window.innerWidth < 640 ? 'listMonth' : 'dayGridMonth',
@@ -1184,54 +1379,43 @@
             });
             calendar.render();
         } else {
-            calendar.removeAllEventSources();
-            calendar.addEventSource(evs);
+            calendar.removeAllEventSources(); calendar.addEventSource(evs);
         }
     }
 
+    /* GANTT */
     function renderGantt() {
         const el = document.getElementById('gantt');
         if (!el || el.offsetWidth === 0) return;
         const d = getFiltered();
-
         if (d.length === 0) {
             if (gantt) { el.innerHTML = ''; gantt = null; }
             el.innerHTML = '<div class="py-5 text-center text-muted">표시할 항목이 없습니다.</div>';
+            document.getElementById('gantt-top-scroll-inner').style.width = '100%';
             return;
         }
 
         const todayStr = getSafeDateStr(new Date());
         const tasks = d.map((i, idx) => {
-            let s = getSafeDateStr(i['접수일자']);
-            let e = getSafeDateStr(i['운영이관(예정)일']);
-            let err = false;
+            let s = getSafeDateStr(i['접수일자']), e = getSafeDateStr(i['운영이관(예정)일']), err = false;
             if (!s) { s = todayStr; err = true; }
             if (!e) { const tmp = new Date(s); tmp.setDate(tmp.getDate() + 7); e = getSafeDateStr(tmp); err = true; }
             if (new Date(s) >= new Date(e)) { const tmp = new Date(s); tmp.setDate(tmp.getDate() + 1); e = getSafeDateStr(tmp); err = true; }
-
             const sheet = i['출처시트'] ? String(i['출처시트']).substring(0, 1) : '-';
             const name = i['요건명'] ? String(i['요건명']).replace(/[<>"']/g, '') : '제목없음';
             const status = i['진행단계'] || '기타';
-            const displayName = err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`;
-
             return {
-                id: 'GT_' + idx, name: displayName,
-                start: s, end: e, progress: 100,
-                custom_class: err ? 'g-err' : 'g-' + status.replace(/\s/g, ''),
-                extendedProps: i,
+                id: 'GT_' + idx, name: err ? `⚠️ ${name}` : `[${sheet}][${status}] ${name}`,
+                start: s, end: e, progress: 100, custom_class: err ? 'g-err' : 'g-' + status.replace(/\s/g, ''), extendedProps: i,
             };
         });
 
         try {
             if (!gantt) {
                 el.innerHTML = '';
-                gantt = new Gantt('#gantt', tasks, {
-                    language: 'en', bar_height: 26, view_mode: AppState.currentGanttMode,
-                    on_click: (t) => openPop(t.extendedProps),
-                });
+                gantt = new Gantt('#gantt', tasks, { language: 'en', bar_height: 26, view_mode: AppState.currentGanttMode, on_click: (t) => openPop(t.extendedProps) });
             } else {
-                gantt.refresh(tasks);
-                gantt.change_view_mode(AppState.currentGanttMode);
+                gantt.refresh(tasks); gantt.change_view_mode(AppState.currentGanttMode);
             }
             const id = 'gantt-css';
             if (document.getElementById(id)) document.getElementById(id).remove();
@@ -1244,22 +1428,15 @@
             const s = document.createElement('style'); s.id = id; s.innerHTML = css; document.head.appendChild(s);
             
             setTimeout(() => {
-                const gc = document.querySelector('.gantt-container');
-                const svg = document.querySelector('.gantt-container svg');
-                const top = document.getElementById('gantt-top-scroll');
-                const inner = document.getElementById('gantt-top-scroll-inner');
+                const gc = document.querySelector('.gantt-container'), svg = document.querySelector('.gantt-container svg'), top = document.getElementById('gantt-top-scroll'), inner = document.getElementById('gantt-top-scroll-inner');
                 if (gc && svg && top && inner) {
                     inner.style.width = svg.getBoundingClientRect().width + 'px';
-                    top.onscroll = null; gc.onscroll = null;
-                    let sT = false, sB = false;
+                    top.onscroll = null; gc.onscroll = null; let sT = false, sB = false;
                     top.onscroll = () => { if (!sT) { sB = true; gc.scrollLeft = top.scrollLeft; } sT = false; };
                     gc.onscroll = () => { if (!sB) { sT = true; top.scrollLeft = gc.scrollLeft; } sB = false; };
                 }
             }, 200);
-
-        } catch (e) {
-            el.innerHTML = ''; gantt = null;
-        }
+        } catch (e) { el.innerHTML = ''; gantt = null; }
     }
 
     function setGanttMode(m, btn) {
@@ -1269,28 +1446,31 @@
         if (gantt) gantt.change_view_mode(m);
     }
 
+    /* LIST VIEW */
     function renderList() {
         const tbody = document.querySelector('#listTable tbody');
         const d = getFiltered();
         if (d.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-muted">검색 결과가 없습니다.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">검색 결과가 없습니다.</td></tr>`;
             return;
         }
         tbody.innerHTML = d.map(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
-            return `<tr onclick="openPopById('${i['요구사항 ID']}')">
-                <td style="font-size:11px; color:#888;">${i['요구사항 ID'] || '-'}</td>
-                <td><span class="badge bg-light text-dark border" style="font-size:10px;">${i['출처시트'] || '-'}</span></td>
-                <td style="font-size:11px;">${i['구분'] || '-'}</td>
-                <td class="fw-bold" style="font-size:12px;">${i['요건명'] || '-'}</td>
-                <td><span class="badge" style="background:${c}; font-size:10px;">${i['진행단계'] || '-'}</span></td>
-                <td style="font-size:11px; color:#666;">${getSafeDateStr(i['접수일자']) || '-'}</td>
-                <td style="font-size:11px; color:#666;">${getSafeDateStr(i['운영이관(예정)일']) || '-'}</td>
-                <td style="font-size:11px;">${i['담당_기획'] || '-'}</td>
+            return `<tr onclick="openPopById('${esc(i['요구사항 ID'])}')">
+                <td style="font-size:11px; color:#888;">${esc(i['요구사항 ID']) || '-'}</td>
+                <td><span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || '-'}</span></td>
+                <td style="font-size:11px;">${esc(i['구분']) || '-'}</td>
+                <td class="fw-bold" style="font-size:12px;">${esc(i['요건명']) || '-'}</td>
+                <td><span class="badge" style="background:${esc(c)}; font-size:10px;">${esc(i['진행단계']) || '-'}</span></td>
+                <td style="font-size:11px; color:#666;">${esc(getSafeDateStr(i['접수일자'])) || '-'}</td>
+                <td style="font-size:11px; color:#666;">${esc(getSafeDateStr(i['운영이관(예정)일'])) || '-'}</td>
+                <td>${renderDdayBadge(i['운영이관(예정)일'])}</td>
+                <td style="font-size:11px;">${esc(i['담당_기획']) || '-'}</td>
             </tr>`;
         }).join('');
     }
 
+    /* MONTHLY VIEW */
     function renderMonthly() {
         const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
         const mData = {};
@@ -1322,25 +1502,17 @@
         let acc = '';
         [...sorted].reverse().forEach((m, idx) => {
             const items = mData[m].list.map(i =>
-                `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${i['요구사항 ID']}')" style="cursor:pointer">
-                    <span>[${i['규모'] || '소'}] ${i['요건명'] || ''}</span>
+                `<div class="d-flex justify-content-between border-bottom py-2 small" onclick="openPopById('${esc(i['요구사항 ID'])}')">
+                    <span>[${esc(i['규모'] || '소')}] ${esc(i['요건명'] || '')}</span>
                     <span class="badge ${i['정산완료'] === '여' ? 'bg-light text-dark' : 'bg-danger'}">${i['정산완료'] === '여' ? '정산완료' : '미정산'}</span>
                 </div>`
             ).join('');
-            acc += `<div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">
-                        ${m} 완료내역 (${mData[m].list.length}건)
-                    </button>
-                </h2>
-                <div id="m${idx}" class="accordion-collapse collapse">
-                    <div class="accordion-body p-2">${items}</div>
-                </div>
-            </div>`;
+            acc += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed py-2 small" data-bs-toggle="collapse" data-bs-target="#m${idx}">${esc(m)} 완료내역 (${mData[m].list.length}건)</button></h2><div id="m${idx}" class="accordion-collapse collapse"><div class="accordion-body p-2">${items}</div></div></div>`;
         });
         document.getElementById('monthlyAccordion').innerHTML = acc || '<div class="text-center py-4 text-muted small">완료된 업무가 없습니다.</div>';
     }
 
+    /* ASSIGNEE VIEW */
     function renderAssignee() {
         const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const uMap = {};
@@ -1365,35 +1537,51 @@
 
         let h = '';
         Object.keys(uMap).sort().forEach(u => {
-            const tasks = uMap[u].map(t => {
-                return `<div class="task-item" onclick="openPopById('${t['요구사항 ID']}')">
-                    <div style="font-size:12px; margin-bottom:6px;">${t['요건명'] || ''}</div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-light text-dark border" style="font-size:10px;">${t['진행단계'] || ''}</span>
-                    </div>
-                </div>`;
-            }).join('');
-            h += `<div class="assignee-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="assignee-name">👤 ${u}</span>
-                    <span class="badge bg-white text-primary border">${uMap[u].length}건</span>
-                </div>
-                ${tasks}
-            </div>`;
+            const tasks = uMap[u].map(t => `<div class="task-item" onclick="openPopById('${esc(t['요구사항 ID'])}')"><div style="font-size:12px; margin-bottom:6px;">${esc(t['요건명']) || ''}</div><div class="d-flex justify-content-between align-items-center"><span class="badge bg-light text-dark border" style="font-size:10px;">${esc(t['진행단계']) || ''}</span>${renderDdayBadge(t['운영이관(예정)일'])}</div></div>`).join('');
+            h += `<div class="assignee-card"><div class="d-flex justify-content-between align-items-center mb-2"><span class="assignee-name">👤 ${esc(u)}</span><span class="badge bg-white text-primary border">${uMap[u].length}건</span></div>${tasks}</div>`;
         });
         document.getElementById('assigneeGrid').innerHTML = h;
     }
 
+    /* ===================================================
+       MODAL OPEN / SAVE
+       =================================================== */
+    function updateStepProgress(currentStatus) {
+        const bar = document.getElementById('stepProgressBar');
+        if (!bar) return;
+        const currentIdx = STEPS.indexOf(currentStatus);
+        const isCancelled = currentStatus === '취소';
+
+        bar.innerHTML = STEPS.map((step, idx) => {
+            let cls = 'pending', label = '';
+            if (isCancelled) { cls = 'pending'; }
+            else if (idx < currentIdx) { cls = 'done'; label = 'done'; }
+            else if (idx === currentIdx) { cls = 'current'; label = 'current'; }
+
+            const itemDone = !isCancelled && idx < currentIdx;
+            return `<div class="step-item ${itemDone ? 'done' : ''}"><div class="step-circle ${cls}">${cls === 'done' ? '✓' : idx + 1}</div><div class="step-label ${label}">${step}</div></div>`;
+        }).join('');
+
+        if (isCancelled) bar.innerHTML = `<div style="text-align:center; padding:6px 0; font-size:12px; color:#9ca3af; width:100%;">⚪ 이 요건은 취소 상태입니다.</div>`;
+    }
+
     function openPop(data) {
-        // 타이틀을 '요구사항 상세'로 항상 덮어쓰기!
         document.getElementById('modalTaskTitle').innerText = '요구사항 상세';
+        const ddayEl = document.getElementById('modalDdayDisplay');
+        const diff = getDday(data['운영이관(예정)일']);
+        if (diff !== null) {
+            if (diff < 0) ddayEl.innerText = `⚠️ ${Math.abs(diff)}일 지연`;
+            else if (diff === 0) ddayEl.innerText = '🔴 오늘이 마감일';
+            else if (diff <= 3) ddayEl.innerText = `🟡 마감 ${diff}일 전`;
+            else ddayEl.innerText = `📅 마감 D-${diff}`;
+        } else ddayEl.innerText = '';
+
+        updateStepProgress(data['진행단계'] || '');
 
         const f = document.getElementById('taskForm');
         f.reset();
         Object.keys(data).forEach(k => {
-            if (f.elements[k]) {
-                f.elements[k].value = f.elements[k].type === 'date' ? (getSafeDateStr(data[k]) || '') : (data[k] || '');
-            }
+            if (f.elements[k]) f.elements[k].value = f.elements[k].type === 'date' ? (getSafeDateStr(data[k]) || '') : (data[k] || '');
         });
 
         const isUser = AppState.currentUser?.role !== 'admin';
@@ -1417,8 +1605,7 @@
         if (!f) return;
         ['기획', '디자인', '퍼블'].forEach(role => {
             const val = (f.elements['담당_' + role]?.value || '').trim();
-            const pDate = f.elements['계획_' + role];
-            const pRate = f.elements['진척_' + role];
+            const pDate = f.elements['계획_' + role], pRate = f.elements['진척_' + role];
             if (!val || val === '-') {
                 if (pDate) { pDate.value = ''; pDate.disabled = true; }
                 if (pRate) { pRate.value = '-'; pRate.disabled = true; }
@@ -1438,46 +1625,34 @@
         const payload = Object.fromEntries(new FormData(f).entries());
         payload.action = 'update_task';
 
-        modal.hide();
-        document.getElementById('loading').style.display = 'flex';
+        modal.hide(); document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
             .then(r => r.json())
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
-                if (res.result === 'success') {
-                    showToast('성공적으로 저장되었습니다.', 'success');
-                    fetchData(true);
-                } else {
-                    showToast('저장 실패', 'error');
-                }
+                if (res.result === 'success') { showToast('저장 성공', 'success'); fetchData(true); } 
+                else showToast('저장 실패', 'error');
             })
-            .catch(err => {
-                document.getElementById('loading').style.display = 'none';
-                showToast('통신 오류', 'error');
-            });
+            .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
     }
 
     function deleteTask() {
         const id = document.querySelector('#taskForm input[name="요구사항 ID"]')?.value;
         const sheet = document.querySelector('#taskForm input[name="출처시트"]')?.value;
-        if (!id) return showToast('삭제할 대상이 없습니다.', 'error');
-        if (!confirm('정말 이 요구사항을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
+        if (!id) return;
+        if (!confirm('정말 삭제하시겠습니까?')) return;
 
-        modal.hide();
-        document.getElementById('loading').style.display = 'flex';
+        modal.hide(); document.getElementById('loading').style.display = 'flex';
 
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'delete_task', '요구사항 ID': id, '출처시트': sheet }) })
             .then(r => r.json())
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
-                if (res.result === 'success') { showToast('삭제가 완료되었습니다.', 'success'); fetchData(true); }
-                else { showToast('삭제 실패', 'error'); }
+                if (res.result === 'success') { showToast('삭제 성공', 'success'); fetchData(true); }
+                else showToast('삭제 실패', 'error');
             })
-            .catch(() => {
-                document.getElementById('loading').style.display = 'none';
-                showToast('통신 오류: 삭제에 실패했습니다.', 'error');
-            });
+            .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
     }
 
     function openCreatePop() {
@@ -1502,16 +1677,10 @@
             .then(r => r.json())
             .then(res => {
                 document.getElementById('loading').style.display = 'none';
-                if (res.result === 'success') {
-                    createModal.hide();
-                    showToast('성공적으로 등록되었습니다.', 'success');
-                    fetchData(true);
-                } else showToast('생성 실패', 'error');
+                if (res.result === 'success') { createModal.hide(); showToast('등록 성공', 'success'); fetchData(true); } 
+                else showToast('등록 실패', 'error');
             })
-            .catch(() => {
-                document.getElementById('loading').style.display = 'none';
-                showToast('통신 오류', 'error');
-            });
+            .catch(() => { document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); });
     }
 
     function openReportModal() {
@@ -1524,17 +1693,13 @@
         const type = document.getElementById('reportType').value;
         const startStr = document.getElementById('reportStartDate').value;
         const endStr = document.getElementById('reportEndDate').value;
-        if (!startStr || !endStr) return showToast('조회 기간을 지정하세요.', 'error');
+        if (!startStr || !endStr) return showToast('기간을 지정하세요.', 'error');
 
-        const start = new Date(startStr);
-        const end = new Date(endStr); end.setHours(23, 59, 59, 999);
-
+        const start = new Date(startStr); const end = new Date(endStr); end.setHours(23, 59, 59, 999);
         const wb = XLSX.utils.book_new();
 
         const generateSheet = (dataArr, sheetName) => {
-            const wsData = [];
-            const merges = [];
-            let row = 0;
+            const wsData = []; const merges = []; let row = 0;
             wsData.push(['요구사항 ID', '채널구분', '구분', '요건명', '규모', '사업부서 담당자', '분류', '기획', '디자인', '퍼블', '접수일자', '운영이관(예정)일', '진행단계']);
             row++;
             dataArr.forEach(i => {
@@ -1567,21 +1732,21 @@
             generateSheet(data.filter(i => ['은행', '공통'].includes(i['구분'])), '월간보고_은행');
             generateSheet(data.filter(i => ['상호', '공통'].includes(i['구분'])), '월간보고_상호');
         }
-
         XLSX.writeFile(wb, `업무현황_${type}_${startStr}_${endStr}.xlsx`);
-        reportModal.hide();
-        showToast('엑셀 다운로드 완료', 'success');
+        reportModal.hide(); showToast('엑셀 다운로드 완료', 'success');
     }
 
     function showDrawer(st) {
+        history.pushState({ popupOpen: true }, '', ''); // 드로어 열 때 히스토리 추가
         const d = getFiltered().filter(i => st === '전체' || i['진행단계'] === st);
         document.getElementById('drawerTitle').innerText = `${st} (${d.length}건)`;
         document.getElementById('drawerBody').innerHTML = d.length
-            ? d.map(i => `<div class="drawer-item" onclick="openPopById('${i['요구사항 ID']}')">
-                <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${i['요건명'] || ''}</div>
+            ? d.map(i => `<div class="drawer-item" onclick="openPopById('${esc(i['요구사항 ID'])}')">
+                <div class="fw-bold" style="font-size:13px; margin-bottom:5px;">${esc(i['요건명']) || ''}</div>
                 <div class="d-flex gap-2 align-items-center">
-                    <span class="badge bg-light text-dark border" style="font-size:10px;">${i['출처시트'] || ''}</span>
-                    <span class="badge" style="background:${MAP[i['진행단계']]?.c || '#999'}; font-size:10px;">${i['진행단계'] || ''}</span>
+                    <span class="badge bg-light text-dark border" style="font-size:10px;">${esc(i['출처시트']) || ''}</span>
+                    <span class="badge" style="background:${esc(MAP[i['진행단계']]?.c || '#999')}; font-size:10px;">${esc(i['진행단계']) || ''}</span>
+                    ${renderDdayBadge(i['운영이관(예정)일'])}
                 </div>
             </div>`).join('')
             : '<div class="text-center py-5 text-muted small">데이터 없음</div>';
@@ -1590,6 +1755,10 @@
     }
 
     function closeDrawer() {
+        if (history.state && history.state.popupOpen) {
+            history.back();
+            return;
+        }
         document.getElementById('statusDrawer').classList.remove('open');
         setTimeout(() => document.getElementById('drawerOverlay').style.display = 'none', 350);
     }
@@ -1601,6 +1770,7 @@
         AppState.activeTab = btn.dataset.target;
         document.getElementById(AppState.activeTab).classList.add('active');
         render();
+        saveFilterToURL();
     }
 
     function triggerExcelUpload() { document.getElementById('excelFileInput').click(); }
@@ -1629,6 +1799,12 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         checkLoginStatus();
+
+        // 서비스 워커(PWA) 연결 - 홈 화면 추가용
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW 등록 실패:', err));
+        }
+
         window.addEventListener('resize', debounce(() => {
             if (window.innerWidth < 640 && AppState.activeTab === 'calendar-view' && calendar) {
                 calendar.changeView('listMonth');
@@ -1637,16 +1813,6 @@
             }
         }, 250));
     });
-
-    // PWA 서비스 워커 등록
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker 등록 완료:', reg.scope))
-                .catch(err => console.log('Service Worker 등록 실패:', err));
-        });
-    }
-
     </script>
 </body>
 </html>
