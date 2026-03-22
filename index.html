@@ -335,6 +335,7 @@
         .dday-day { background: #ffe4c4; color: #c05621; }
 
         /* ===== 진행단계 스텝바 (모달 상단) ===== */
+        /* 하단 여백을 16px로 늘려 글자 잘림 방지 */
         .step-progress-wrap { padding: 16px 20px 16px; background: linear-gradient(180deg, #f8fcf9 0%, #fff 100%); border-bottom: 1px solid #eef5ee; overflow-x: auto; }
         .step-progress { display: flex; align-items: center; gap: 0; min-width: 480px; }
         .step-item { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
@@ -664,9 +665,7 @@
                                     <input type="text" class="form-control" name="bizMutual" list="bizList" autocomplete="off">
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 기획</label>
                                     <input type="text" class="form-control" name="담당_기획">
                                 </div>
@@ -684,9 +683,7 @@
                                     </select>
                                 </div>
 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold text-primary">계획 기획</label>
                                     <input type="date" class="form-control" name="계획_기획">
                                 </div>
@@ -730,9 +727,7 @@
                                     </select>
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">접수일자</label>
                                     <input type="date" class="form-control" name="접수일자">
                                 </div>
@@ -807,9 +802,7 @@
                                     <input type="text" class="form-control" name="bizMutual" list="bizList" placeholder="선택 또는 직접 입력" autocomplete="off">
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-4">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-4">
                                     <label class="form-label small fw-bold">담당 기획 <span class="recommend-badge" id="recommendBadge" style="display:none;">추천 반영</span></label>
                                     <select class="form-select" id="createPlanner" name="담당_기획"></select>
                                 </div>
@@ -827,9 +820,7 @@
                                     </select>
                                 </div>
                                 
-                                <div class="w-100 d-none d-md-block m-0 p-0"></div>
-
-                                <div class="col-md-6">
+                                <div class="w-100 d-none d-md-block m-0 p-0"></div> <div class="col-md-6">
                                     <label class="form-label small fw-bold">접수일자</label>
                                     <input type="date" class="form-control" name="접수일자">
                                 </div>
@@ -898,6 +889,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js"></script>
 
     <script>
+    /* ===================================================
+       CONSTANTS & STATE
+       =================================================== */
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKkmycsNRvNZy18TJfQFamvvHLXZMBeN2Sf4fokyq__o9dxKjdgTF11TfLUngyh5pc/exec';
 
     const AppState = {
@@ -907,7 +901,13 @@
     };
 
     let calendar, gantt, chart;
+    
+    // 모달을 문서 로드와 상관없이 전역에서 즉시 초기화하여 'undefined' 에러 완벽 차단
+    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+    const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
 
+    // 복구된 진행단계 배열
     const STEPS = ['작업 대기', '진행중', '검증 반영', '개발 대기', '개발중', '적용 완료'];
 
     const MAP = {
@@ -921,6 +921,9 @@
         '취소':    { c: '#9ca3af', i: '⚪', b: '#f3f4f6' },
     };
 
+    /* ===================================================
+       TOAST
+       =================================================== */
     function showToast(msg, type = 'success') {
         const icons = { success: '✅', error: '❌', info: 'ℹ️' };
         const container = document.getElementById('toastContainer');
@@ -932,6 +935,9 @@
         setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
+    /* ===================================================
+       SECURITY
+       =================================================== */
     function storeSession(user, persistent) {
         const json = JSON.stringify(user);
         const encoded = btoa(encodeURIComponent(json));
@@ -953,6 +959,9 @@
         sessionStorage.removeItem('currentUser'); localStorage.removeItem('currentUser');
     }
 
+    /* ===================================================
+       LOGIN
+       =================================================== */
     function togglePassword() {
         const el = document.getElementById('loginPw');
         const btn = document.getElementById('pwToggleBtn');
@@ -1011,6 +1020,9 @@
         });
     }
 
+    /* ===================================================
+       UTILITIES
+       =================================================== */
     function debounce(fn, delay) {
         let timer;
         return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
@@ -1023,6 +1035,9 @@
         return String(str).replace(/[&<>"'`]/g, c => _ESC[c]);
     }
 
+    /* ===================================================
+       URL FILTER STATE
+       =================================================== */
     function saveFilterToURL() {
         const sheet = document.querySelector('input[name="sheetFilter"]:checked')?.value || 'all';
         const status = document.getElementById('globalStatusFilter')?.value || 'active';
@@ -1066,6 +1081,9 @@
             .catch(() => showToast('링크 복사 실패', 'info'));
     }
 
+    /* ===================================================
+       KEYBOARD SHORTCUTS & HASH-BASED BACK BUTTON
+       =================================================== */
     function toggleShortcutPanel() {
         AppState.isShortcutPanelVisible = !AppState.isShortcutPanelVisible;
         document.getElementById('shortcutPanel').classList.toggle('visible', AppState.isShortcutPanelVisible);
@@ -1097,12 +1115,19 @@
         showToast('필터가 초기화되었습니다.', 'info');
     }
 
+    // 모바일 뒤로가기 방어 로직 (해시 기반)
     const MODAL_IDS = ['eventModal', 'createModal', 'reportModal'];
     MODAL_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.addEventListener('show.bs.modal', () => { window.location.hash = id; });
-            el.addEventListener('hidden.bs.modal', () => { if (window.location.hash === '#' + id) { window.history.back(); } });
+            el.addEventListener('show.bs.modal', () => {
+                window.location.hash = id;
+            });
+            el.addEventListener('hidden.bs.modal', () => {
+                if (window.location.hash === '#' + id) {
+                    window.history.back();
+                }
+            });
         }
     });
 
@@ -1129,6 +1154,9 @@
         }
     });
 
+    /* ===================================================
+       INIT UI
+       =================================================== */
     function initUI() {
         let h = '';
         Object.entries(MAP).forEach(([k, v]) => {
@@ -1175,6 +1203,9 @@
         else { wrap.style.display = 'block'; btn.innerText = '접기 ▲'; }
     }
 
+    /* ===================================================
+       SKELETON & FETCH
+       =================================================== */
     function showSkeletonStats() {
         const container = document.getElementById('statsContainer');
         if (!container) return;
@@ -1275,6 +1306,9 @@
         window.globalPlanners = planners;
     }
 
+    /* ===================================================
+       FILTER & RENDER
+       =================================================== */
     function applyFilter(updateURL = false) { updateStats(); render(); if (updateURL) saveFilterToURL(); }
 
     function getFiltered() {
@@ -1344,6 +1378,7 @@
         return `<span class="dday-badge dday-ok">D-${diff}</span>`;
     }
 
+    /* CALENDAR */
     function renderCalendar() {
         const evs = getFiltered().flatMap(i => {
             const c = MAP[i['진행단계']]?.c || '#666';
@@ -1372,6 +1407,7 @@
         }
     }
 
+    /* GANTT */
     function renderGantt() {
         const el = document.getElementById('gantt');
         if (!el || el.offsetWidth === 0) return;
@@ -1434,6 +1470,7 @@
         if (gantt) gantt.change_view_mode(m);
     }
 
+    /* LIST VIEW */
     function renderList() {
         const tbody = document.querySelector('#listTable tbody');
         const d = getFiltered();
@@ -1457,6 +1494,7 @@
         }).join('');
     }
 
+    /* MONTHLY VIEW */
     function renderMonthly() {
         const d = getFiltered().filter(i => i['진행단계'] === '적용 완료' && i['운영이관(예정)일']);
         const mData = {};
@@ -1498,6 +1536,7 @@
         document.getElementById('monthlyAccordion').innerHTML = acc || '<div class="text-center py-4 text-muted small">완료된 업무가 없습니다.</div>';
     }
 
+    /* ASSIGNEE VIEW */
     function renderAssignee() {
         const active = getFiltered().filter(i => !['적용 완료', '취소'].includes(i['진행단계']));
         const uMap = {};
@@ -1528,6 +1567,9 @@
         document.getElementById('assigneeGrid').innerHTML = h;
     }
 
+    /* ===================================================
+       MODAL OPEN / SAVE
+       =================================================== */
     function updateStepProgress(currentStatus) {
         const bar = document.getElementById('stepProgressBar');
         if (!bar) return;
@@ -1670,12 +1712,12 @@
                 document.getElementById('loading').style.display = 'none';
                 if (res.result === 'success') { showToast('삭제 성공', 'success'); fetchData(true); }
                 else {
-                    if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
+                    if (removed && idx !== -1) AppState.rawData[idx] = removed;
                     updateStats(); render(); showToast('삭제 실패', 'error');
                 }
             })
             .catch(() => { 
-                if (removed && idx !== -1) AppState.rawData.splice(idx, 0, removed);
+                if (removed && idx !== -1) AppState.rawData[idx] = removed;
                 updateStats(); render();
                 document.getElementById('loading').style.display = 'none'; showToast('통신 오류', 'error'); 
             });
