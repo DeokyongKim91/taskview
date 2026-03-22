@@ -900,9 +900,7 @@
     };
 
     let calendar, gantt, chart;
-    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-    const createModal = new bootstrap.Modal(document.getElementById('createModal'));
-    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+    let modal, createModal, reportModal;
 
     const MAP = {
         '전체':    { c: '#4b5563', i: '📋', b: '#f3f4f6' },
@@ -1882,6 +1880,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        modal = new bootstrap.Modal(document.getElementById('eventModal'));
+        createModal = new bootstrap.Modal(document.getElementById('createModal'));
+        reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+
         checkLoginStatus();
 
         if ('serviceWorker' in navigator) {
