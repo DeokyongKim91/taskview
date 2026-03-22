@@ -900,7 +900,11 @@
     };
 
     let calendar, gantt, chart;
-    let modal, createModal, reportModal;
+    
+    // 모달을 문서 로드와 상관없이 전역에서 즉시 초기화하여 'undefined' 에러 완벽 차단
+    const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+    const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
 
     const MAP = {
         '전체':    { c: '#4b5563', i: '📋', b: '#f3f4f6' },
@@ -1107,7 +1111,7 @@
         showToast('필터가 초기화되었습니다.', 'info');
     }
 
-    // 🌟 안전하고 완벽한 해시(#) 기반 모바일 뒤로가기 제어 로직 🌟
+    // 모바일 뒤로가기 방어 로직 (해시 기반)
     const MODAL_IDS = ['eventModal', 'createModal', 'reportModal'];
     MODAL_IDS.forEach(id => {
         const el = document.getElementById(id);
@@ -1125,8 +1129,6 @@
 
     window.addEventListener('hashchange', () => {
         const hash = window.location.hash;
-        
-        // 모달창 닫기 검사
         MODAL_IDS.forEach(id => {
             if (hash !== '#' + id) {
                 const el = document.getElementById(id);
@@ -1136,8 +1138,6 @@
                 }
             }
         });
-        
-        // 드로어 닫기 검사
         if (hash !== '#drawer') {
             const drawer = document.getElementById('statusDrawer');
             if (drawer && drawer.classList.contains('open')) {
@@ -1589,7 +1589,6 @@
         document.getElementById('modalTaskTitle').innerText = '요구사항 상세';
         const ddayEl = document.getElementById('modalDdayDisplay');
         
-        // D-Day 계산 및 렌더링 복구 완료!
         const diff = getDday(data['운영이관(예정)일']);
         if (diff !== null) {
             if (diff < 0) ddayEl.innerText = `⚠️ ${Math.abs(diff)}일 지연`;
@@ -1600,7 +1599,6 @@
             ddayEl.innerText = '';
         }
 
-        // 스텝바 렌더링 복구 완료!
         updateStepProgress(data['진행단계'] || '');
 
         const f = document.getElementById('taskForm');
@@ -1880,10 +1878,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        modal = new bootstrap.Modal(document.getElementById('eventModal'));
-        createModal = new bootstrap.Modal(document.getElementById('createModal'));
-        reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
-
         checkLoginStatus();
 
         if ('serviceWorker' in navigator) {
